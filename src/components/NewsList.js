@@ -29,30 +29,13 @@ const Item = ({ data }) => (
   </View>
 );
 
-const NewsList = ({ data }) => {
-  return (
-    <FlatList
-      style={styles.container}
-      data={data}
-      renderItem={({ item }) => <Item data={item} />}
-      keyExtractor={(item) => item.id}
-    />
-  );
-};
-
-export default NewsList;
+export default Item;
 
 const styles = StyleSheet.create({
-  container: {
-    margin: 10,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: COLORS.silver,
-  },
   itemContainer: {
     borderBottomWidth: 1,
     borderColor: COLORS.silver,
-    padding: 8,
+    margin: 10,
     flexDirection: "row",
   },
   image: {
@@ -72,21 +55,23 @@ const styles = StyleSheet.create({
   dateContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 5,
   },
   title: {
     fontWeight: "bold",
     fontSize: 14,
     textDecorationLine: "underline",
     color: COLORS.blue,
+    textAlign: 'justify'
   },
   content: {
     flex: 1, // Let the content take up the available space
     marginTop: 5,
     marginEnd: 5,
+    textAlign: 'justify'
   },
   date: {
     fontSize: 12,
     color: COLORS.gray,
+    marginLeft: 5
   },
 });
