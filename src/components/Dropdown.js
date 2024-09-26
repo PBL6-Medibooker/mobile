@@ -32,13 +32,13 @@ const Dropdown = ({ data, onChange, placeholder }) => {
         style={styles.button}
         activeOpacity={0.8}
         onPress={toggleExpanded}>
-        <MaterialIcons
+        {/* <MaterialIcons
           name="medical-information"
           size={20}
           color={COLORS.gray}
-        />
+        /> */}
         <Text
-          style={{ flex: 1, paddingHorizontal: 10 }}
+          style={{ flex: 1, paddingHorizontal: 0 }}
           numberOfLines={1}
           ellipsizeMode="tail"> {/* hiển thị "..." nếu văn bản vượt quá chiều rộng */}
           {value || placeholder}

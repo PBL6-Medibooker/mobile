@@ -13,10 +13,10 @@ import {
   UserInfo,
 } from "../screens";
 import { SafeAreaView } from "react-native-safe-area-context";
-import DrawerContent from "../components/DrawerContent";
 import { COLORS } from "../constants";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { DrawerContent } from "../components";
 
 const Drawer = createDrawerNavigator();
 

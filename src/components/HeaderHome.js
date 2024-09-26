@@ -3,8 +3,8 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { COLORS, images } from "../constants";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const Header = ({ title, user, onPress }) => {
-  const navigation = useNavigation();
+const HeaderHome = ({ title, navigation }) => {
+  // const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -21,7 +21,7 @@ const Header = ({ title, user, onPress }) => {
   );
 };
 
-export default Header;
+export default HeaderHome;
 
 const styles = StyleSheet.create({
   container: {

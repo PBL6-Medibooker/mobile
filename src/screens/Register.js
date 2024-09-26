@@ -1,4 +1,6 @@
 import {
+  Button,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -9,19 +11,11 @@ import {
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import RadioButton from "../components/RadioButton";
-import { COLORS } from "../constants";
+import { COLORS, images } from "../constants";
 import { useState } from "react";
-import Dropdown from "../components/Dropdown";
-import { specialities } from "../utils/specialities";
-import Entypo from '@expo/vector-icons/Entypo';
+import { RadioButton } from "../components";
 
-const dataSpecialities = specialities.map((s) => ({
-  value: s.label,
-  id: `${s.flag} ${s.value}`, // Sử dụng dấu nháy ngược
-}));
-
-const UserRegister = ({ navigation }) => {
+const Register = ({ navigation }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [message, setMessage] = useState("");
 
@@ -32,14 +26,10 @@ const UserRegister = ({ navigation }) => {
 
   const handleRegister = () => {
     selectedOption === "user"
-      ? navigation.navigate("UserRegister")
+      ? navigation.navigate("Home", { user: {email: "lehue@gmail.com", name: "Le Hue"} })
       : selectedOption === "doctor"
       ? navigation.navigate("DoctorRegister")
       : setMessage("Bạn chưa chọn loại tài khoản muốn đăng kí");
-  };
-
-  const handleSpecialityChange = (item) => {
-    console.log("Selected country:", item.id);
   };
 
   return (
@@ -61,31 +51,48 @@ const UserRegister = ({ navigation }) => {
 
         <Text style={styles.message}>{message}</Text>
         <View style={{ flex: 1, margin: 20 }}>
-          <Text style={styles.label}>Chuyên khoa</Text>
-          <Dropdown
-            data={dataSpecialities}
-            onChange={handleSpecialityChange}
-            placeholder="Chọn chuyên khoa"
-          />
-
-          <Text style={styles.label}>Thông tin giới thiệu(Bio)</Text>
+          <Text style={styles.label}>Họ và tên</Text>
           <TextInput
-            multiline
-            numberOfLines={4}
-            style={styles.inputMultiline}
+            style={styles.textInput}
             placeholder="Value"
-            keyboardType="default"
           />
-
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={styles.label}>Minh chứng (nếu có)</Text>
-            <TouchableOpacity style={{width: 30, height: 30, backgroundColor: COLORS.silver, alignItems: 'center', justifyContent: 'center', borderRadius: 10, marginLeft: 15}}>
-            <Entypo name="upload" size={18} color={COLORS.gray} />
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Value"
+            inputMode="email"
+            keyboardType="email-address"
+          />
+          <Text style={styles.label}>Số điện thoại</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Value"
+            keyboardType="phone-pad"
+          />
+          <Text style={styles.label}>Mật khẩu</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Value"
+            secureTextEntry
+          />
+          <Text style={styles.label}>Xác nhận lại mật khẩu</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Value"
+            secureTextEntry
+          />
+          <Text style={styles.label}>Loại tài khoản</Text>
+          {/* radiobutton */}
+          <RadioButton
+            options={options}
+            selectedOption={selectedOption}
+            onSelect={(value) => (setMessage(""), setSelectedOption(value))}
+          />
 
           <Pressable
             onPress={() => {
+              // console.log(selectedOption);
+              handleRegister();
             }}
             style={({ pressed }) => [
               {
@@ -102,7 +109,7 @@ const UserRegister = ({ navigation }) => {
                 fontWeight: "bold",
                 fontSize: 15,
               }}>
-              Hoàn thành
+              Đăng ký
             </Text>
           </Pressable>
         </View>
@@ -111,7 +118,7 @@ const UserRegister = ({ navigation }) => {
   );
 };
 
-export default UserRegister;
+export default Register;
 
 const styles = StyleSheet.create({
   header: {
@@ -135,16 +142,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 999,
     marginBottom: 10,
-  },
-  inputMultiline: {
-    height: 100,
-    borderWidth: 1,
-    borderColor: COLORS.silver,
-    paddingVertical: 4,
-    paddingHorizontal: 14,
-    borderRadius: 15,
-    marginBottom: 10,
-    textAlignVertical: "top",
   },
   label: {
     color: COLORS.PersianGreen,

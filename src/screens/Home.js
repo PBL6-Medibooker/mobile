@@ -9,14 +9,14 @@ import {
   FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Header from "../components/Header";
 import { COLORS, images } from "../constants";
 import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { articles } from "../utils/articles";
-import Item from "../components/NewsList";
+import { useNavigation } from "@react-navigation/native";
+import { ArticleItem, HeaderHome } from "../components";
 
 const dataArticles = articles.map((s) => ({
   title: s.title,
@@ -25,7 +25,9 @@ const dataArticles = articles.map((s) => ({
   date: s.date,
 }));
 
-const HomeScreen = ({ route }) => {
+const Home = ({ route }) => {
+  const navigation = useNavigation();
+
   const { user } = route.params || {};
 
   const handleLogin = () => {
@@ -36,35 +38,21 @@ const HomeScreen = ({ route }) => {
     }
   };
 
-  // Render function for articles
-  const renderArticleItem = ({ item }) => (
-    <View style={{ padding: 10, borderBottomWidth: 1, borderColor: COLORS.silver }}>
-      <Text style={{ fontWeight: "bold" }}>{item.title}</Text>
-      <Text>{item.content}</Text>
-      <Text>{item.date}</Text>
-    </View>
-  );
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
         data={dataArticles}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <Item data={item} />}
+        renderItem={({ item }) => <ArticleItem data={item} />}
         ListHeaderComponent={() => (
           <>
-            <Header title="TRANG CHỦ" user={user} />
+            <HeaderHome title="TRANG CHỦ" user={user} navigation={navigation} />
 
             <View style={styles.container}>
               <Image source={images.poster} style={styles.imgPoster} />
 
               <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginTop: 15,
-                }}>
+                style={styles.bookingFrame}>
                 <View style={styles.separate}></View>
 
                 <Pressable
@@ -90,6 +78,7 @@ const HomeScreen = ({ route }) => {
             <View style={styles.featureFrame}>
               <View style={[styles.featureRow, { borderBottomWidth: 1 }]}>
                 <TouchableOpacity
+                  onPress={() => navigation.navigate("Specialty")}
                   style={[styles.featureButton, { borderRightWidth: 1 }]}>
                   <View style={styles.featureIcon}>
                     <Entypo name="calendar" size={24} color={COLORS.white} />
@@ -105,7 +94,11 @@ const HomeScreen = ({ route }) => {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.featureButton}>
                   <View style={styles.featureIcon}>
-                    <FontAwesome6 name="user-doctor" size={24} color={COLORS.white} />
+                    <FontAwesome6
+                      name="user-doctor"
+                      size={24}
+                      color={COLORS.white}
+                    />
                   </View>
                   <Text style={styles.featureText}>Bác sĩ</Text>
                 </TouchableOpacity>
@@ -114,7 +107,11 @@ const HomeScreen = ({ route }) => {
                 <TouchableOpacity
                   style={[styles.featureButton, { borderRightWidth: 1 }]}>
                   <View style={styles.featureIcon}>
-                    <FontAwesome5 name="search" size={24} color={COLORS.white} />
+                    <FontAwesome5
+                      name="search"
+                      size={24}
+                      color={COLORS.white}
+                    />
                   </View>
                   <Text style={styles.featureText}>Tra cứu kết quả</Text>
                 </TouchableOpacity>
@@ -143,7 +140,7 @@ const HomeScreen = ({ route }) => {
             </View>
 
             <View style={{ paddingHorizontal: 15 }}>
-              <Text style={{ fontSize: 16, fontWeight: "bold"}}>
+              <Text style={{ fontSize: 16, fontWeight: "bold" }}>
                 Tin tức mới nhất:
               </Text>
             </View>
@@ -154,7 +151,7 @@ const HomeScreen = ({ route }) => {
   );
 };
 
-export default HomeScreen;
+export default Home;
 
 const styles = StyleSheet.create({
   container: {
@@ -168,6 +165,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: COLORS.silver,
+  },
+  bookingFrame:{
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 15,
   },
   featureRow: {
     flexDirection: "row",

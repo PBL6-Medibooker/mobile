@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const UserInfo = ({ navigation }) => {
+const UserProfile = ({ navigation }) => {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Ionicons
@@ -17,4 +17,4 @@ const UserInfo = ({ navigation }) => {
   );
 };
 
-export default UserInfo;
+export default UserProfile;

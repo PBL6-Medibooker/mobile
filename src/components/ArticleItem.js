@@ -9,7 +9,7 @@ import {
 import { COLORS, images } from "../constants";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
-const Item = ({ data }) => (
+const ArticleItem = ({ data }) => (
   <View style={styles.itemContainer}>
     <TouchableOpacity>
       <Image source={images.poster} style={styles.image} />
@@ -29,7 +29,7 @@ const Item = ({ data }) => (
   </View>
 );
 
-export default Item;
+export default ArticleItem;
 
 const styles = StyleSheet.create({
   itemContainer: {

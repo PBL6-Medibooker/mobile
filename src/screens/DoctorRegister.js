@@ -9,12 +9,11 @@ import {
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import RadioButton from "../components/RadioButton";
 import { COLORS } from "../constants";
 import { useState } from "react";
-import Dropdown from "../components/Dropdown";
 import { specialities } from "../utils/specialities";
 import Entypo from "@expo/vector-icons/Entypo";
+import { Dropdown } from "../components";
 
 const dataSpecialities = specialities.map((s) => ({
   value: s.label,
@@ -29,7 +28,7 @@ const DoctorRegister = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
           <TouchableOpacity>
@@ -46,7 +45,7 @@ const DoctorRegister = ({ navigation }) => {
         </View>
 
         <Text style={styles.message}>{message}</Text>
-        <View style={{ flex: 1, margin: 20 }}>
+        <View style={styles.main}>
           <Text style={styles.label}>Chuyên khoa</Text>
           <Dropdown
             data={dataSpecialities}
@@ -63,18 +62,9 @@ const DoctorRegister = ({ navigation }) => {
             keyboardType="default"
           />
 
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={styles.import}>
             <Text style={styles.label}>Minh chứng (nếu có)</Text>
-            <TouchableOpacity
-              style={{
-                width: 30,
-                height: 30,
-                backgroundColor: COLORS.silver,
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 10,
-                marginLeft: 15,
-              }}>
+            <TouchableOpacity style={styles.buttonImport}>
               <Entypo name="upload" size={18} color={COLORS.gray} />
             </TouchableOpacity>
           </View>
@@ -89,15 +79,7 @@ const DoctorRegister = ({ navigation }) => {
               },
               styles.button,
             ]}>
-            <Text
-              style={{
-                color: COLORS.white,
-                textAlign: "center",
-                fontWeight: "bold",
-                fontSize: 15,
-              }}>
-              Hoàn thành
-            </Text>
+            <Text style={styles.buttonComplete}>Hoàn thành</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -108,6 +90,14 @@ const DoctorRegister = ({ navigation }) => {
 export default DoctorRegister;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+  main: {
+    flex: 1,
+    margin: 20,
+  },
   header: {
     paddingHorizontal: 10,
     paddingTop: 10,
@@ -140,9 +130,22 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlignVertical: "top",
   },
+  import: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   label: {
     color: COLORS.PersianGreen,
     marginVertical: 4,
+  },
+  buttonImport: {
+    width: 30,
+    height: 30,
+    backgroundColor: COLORS.silver,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    marginLeft: 15,
   },
   button: {
     marginTop: 12,
@@ -154,5 +157,11 @@ const styles = StyleSheet.create({
     color: COLORS.red,
     textAlign: "center",
     marginHorizontal: 35,
+  },
+  buttonComplete: {
+    color: COLORS.white,
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 15,
   },
 });

@@ -1,7 +1,6 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import { COLORS, images } from "../constants";
 
-const email = "lehue1802@gmail.com";
 const DrawerContent = ({ navigation }) => {
   const shouldShowText = false;
   return (
