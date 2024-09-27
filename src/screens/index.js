@@ -6,6 +6,8 @@ import UserRegister from "./UserRegister";
 import DoctorRegister from "./DoctorRegister";
 import Register from "./Register";
 import SpecialtyScreen from "./Specialty";
+import Booking from "./Booking";
+import VerifyBooking from "./VerifyBooking";
 
 export {
   Home,
@@ -16,4 +18,6 @@ export {
   DoctorRegister,
   Register,
   SpecialtyScreen,
+  Booking,
+  VerifyBooking
 };

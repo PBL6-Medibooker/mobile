@@ -5,7 +5,7 @@ import { COLORS } from "../constants";
 const HeaderBack = ({ navigation, title }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={{height: 48, width: 48 }}>
+      <TouchableOpacity style={{marginLeft: 5, height: 48, width: 48 }}>
         <Ionicons
           onPress={() => {
             navigation.goBack();
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     textAlign: 'center',
-    marginRight: 48,
+    marginRight: 53,
     color: COLORS.white,
     fontSize: 18,
     fontWeight: 'bold'

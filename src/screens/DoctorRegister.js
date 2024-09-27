@@ -17,7 +17,7 @@ import { Dropdown } from "../components";
 
 const dataSpecialities = specialities.map((s) => ({
   value: s.label,
-  id: `${s.flag} ${s.value}`, // Sử dụng dấu nháy ngược
+  id: `${s.flag} ${s.id}`, // Sử dụng dấu nháy ngược
 }));
 
 const DoctorRegister = ({ navigation }) => {

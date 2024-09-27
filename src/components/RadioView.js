@@ -11,13 +11,13 @@ const RadioView = ({ options, selectedOption, onSelect }) => {
           key={option.value}
           style={[
             styles.radioButton,
-            selectedOption === option.value && styles.selectedButton,
+            selectedOption === option.label && styles.selectedButton,
           ]}
-          onPress={() => onSelect(option.value)}>
+          onPress={() => onSelect(option.label)}>
           <Text
             style={[
               styles.text,
-              selectedOption === option.value && styles.selectedText,
+              selectedOption === option.label && styles.selectedText,
             ]}
             >
             {option.label}

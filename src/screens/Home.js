@@ -30,14 +30,6 @@ const Home = ({ route }) => {
 
   const { user } = route.params || {};
 
-  const handleLogin = () => {
-    if (!user) {
-      console.log("false");
-    } else {
-      console.log(user.email); // In ra email hoặc giá trị khác
-    }
-  };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
@@ -56,7 +48,7 @@ const Home = ({ route }) => {
                 <View style={styles.separate}></View>
 
                 <Pressable
-                  onPress={handleLogin}
+                  onPress={() => navigation.navigate("Booking")}
                   style={({ pressed }) => [
                     {
                       backgroundColor: pressed
