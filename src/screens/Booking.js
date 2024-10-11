@@ -1,16 +1,18 @@
 import {
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants";
 import { areas } from "../utils/areas";
 import { useState } from "react";
-import { Dropdown, HeaderBack, RadioView } from "../components";
+import { Dropdown, HeaderBack, RadioView, DatePicker } from "../components";
 import { specialities } from "../utils/specialities";
 import { doctors } from "../utils/doctors";
 
@@ -42,9 +44,18 @@ const Booking = ({ navigation }) => {
   const [doctor, setDoctor] = useState(null);
   const [medicalHistory, setMedicalHistory] = useState(null);
   const [healthStatus, setHealthStatus] = useState(null);
+  const [datePicker, setDatePicker] = useState(null);
 
   const handle = () => {
-    console.log(area, service, specialty, doctor, medicalHistory, healthStatus);
+    console.log(
+      area,
+      service,
+      specialty,
+      doctor,
+      medicalHistory,
+      healthStatus,
+      datePicker
+    );
   };
 
   return (
@@ -66,19 +77,58 @@ const Booking = ({ navigation }) => {
             onSelect={setService}
           />
           <Text style={styles.text}>Chọn chuyên khoa</Text>
-          <Dropdown
-            data={dataSpecialities}
-            placeholder="Chọn chuyên khoa"
-            onChange={setSpecialty}
-          />
+          {area !== null && service !== null ? (
+            <Dropdown
+              data={dataSpecialities}
+              placeholder="Chọn chuyên khoa"
+              onChange={setSpecialty}
+              disabled={false}
+            />
+          ) : (
+            <Dropdown
+              data={dataSpecialities}
+              placeholder="Chọn chuyên khoa"
+              onChange={setSpecialty}
+              disabled={true}
+            />
+          )}
+
           <Text style={styles.text}>Chọn bác sĩ</Text>
-          <Dropdown
-            data={dataDoctors}
-            placeholder="Chọn bác sĩ"
-            onChange={setDoctor}
-          />
+          {area !== null && service !== null && specialty !== null ? (
+            <Dropdown
+              data={dataDoctors}
+              placeholder="Chọn bác sĩ"
+              onChange={setDoctor}
+              disabled={false}
+            />
+          ) : (
+            <Dropdown
+              data={dataDoctors}
+              placeholder="Chọn bác sĩ"
+              onChange={setDoctor}
+              disabled={true}
+            />
+          )}
+
           <Text style={styles.text}>Chọn ngày - khung giờ khám</Text>
-          <Text style={styles.text}>TIểu sử bệnh lý</Text>
+          {area !== null &&
+          service !== null &&
+          specialty !== null &&
+          doctor !== null ? (
+            <DatePicker
+              onChange={setDatePicker}
+              placeholder="Chọn ngày - khung giờ khám"
+              disabled={false}
+            />
+          ) : (
+            <DatePicker
+              onChange={setDatePicker}
+              placeholder="Chọn ngày - khung giờ khám"
+              disabled={true}
+            />
+          )}
+
+          <Text style={styles.text}>Tiểu sử bệnh lý</Text>
           <TextInput
             style={styles.textInput}
             numberOfLines={3}
@@ -94,7 +144,6 @@ const Booking = ({ navigation }) => {
           />
           <Pressable
             onPress={() => {
-              // console.log(selectedOption);
               handle();
               navigation.navigate("VerifyBooking");
             }}
@@ -149,5 +198,26 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 15,
+  },
+  centeredView: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalView: {
+    margin: 5,
+    backgroundColor: COLORS.black,
+    borderRadius: 20,
+    padding: 10,
+    width: "90%",
+    // shadowColor: COLORS.black,
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 4,
+    // elevation: 5,
   },
 });

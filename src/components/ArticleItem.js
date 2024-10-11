@@ -35,7 +35,8 @@ const styles = StyleSheet.create({
   itemContainer: {
     borderBottomWidth: 1,
     borderColor: COLORS.silver,
-    margin: 10,
+    margin: 5,
+    marginHorizontal: 12,
     flexDirection: "row",
   },
   image: {
@@ -55,6 +56,7 @@ const styles = StyleSheet.create({
   dateContainer: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 5
   },
   title: {
     fontWeight: "bold",
@@ -66,7 +68,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1, // Let the content take up the available space
     marginTop: 5,
-    marginEnd: 5,
+    // marginEnd: 5,
     textAlign: 'justify'
   },
   date: {

@@ -5,9 +5,11 @@ import Login from "./Login";
 import UserRegister from "./UserRegister";
 import DoctorRegister from "./DoctorRegister";
 import Register from "./Register";
-import SpecialtyScreen from "./Specialty";
+import Specialties from "./Specialties";
 import Booking from "./Booking";
 import VerifyBooking from "./VerifyBooking";
+import SpecialtyDetail from "./SpecialtyDetail";
+import DoctorInfo from "./DoctorInfo";
 
 export {
   Home,
@@ -17,7 +19,9 @@ export {
   UserRegister,
   DoctorRegister,
   Register,
-  SpecialtyScreen,
+  Specialties,
   Booking,
-  VerifyBooking
+  VerifyBooking, 
+  SpecialtyDetail,
+  DoctorInfo
 };

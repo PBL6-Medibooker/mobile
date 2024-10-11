@@ -10,63 +10,56 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useCallback, useState } from "react";
 import { COLORS } from "../constants";
+import Entypo from '@expo/vector-icons/Entypo';
 
-const Dropdown = ({ data, onChange, placeholder }) => {
+const Dropdown = ({ data, onChange, placeholder, disabled }) => {
   const [expanded, setExpanded] = useState(false);
 
-  const toggleExpanded = useCallback(() => setExpanded(!expanded), [expanded]);
+  const toggleExpanded = useCallback(() => {
+    if (!disabled) {
+      setExpanded(!expanded);
+    }
+  }, [expanded, disabled]);
 
   const [value, setValue] = useState("");
   const onSelect = useCallback(
     (item) => {
-      onChange(item);
-      setValue(item.value);
-      setExpanded(false);
+      if (!disabled) {
+        onChange(item);
+        setValue(item.value);
+        setExpanded(false);
+      }
     },
-    [onChange]
+    [onChange, disabled]
   );
 
   return (
     <View style={{ alignItems: "flex-end" }}>
       <TouchableOpacity
-        style={styles.button}
-        activeOpacity={0.8}
+        style={[
+          styles.button,
+          disabled && styles.disabledButton, // Add a disabled style if the dropdown is disabled
+        ]}
+        activeOpacity={disabled ? 1 : 0.8} // Disable opacity effect if disabled
         onPress={toggleExpanded}>
-        {/* <MaterialIcons
-          name="medical-information"
-          size={20}
-          color={COLORS.gray}
-        /> */}
         <Text
-          style={{ flex: 1, paddingHorizontal: 0 }}
+          style={[
+            { flex: 1, paddingHorizontal: 0 },
+            disabled && { color: COLORS.gray }, // Change text color if disabled
+          ]}
           numberOfLines={1}
-          ellipsizeMode="tail"> {/* hiển thị "..." nếu văn bản vượt quá chiều rộng */}
+          ellipsizeMode="tail"> 
           {value || placeholder}
         </Text>
-        <AntDesign name={expanded ? "caretup" : "caretdown"} />
+        <Entypo name={expanded ? "chevron-up" : "chevron-down"} size={18} color={COLORS.gray} />
       </TouchableOpacity>
-      {/* {expanded ? (
-        <View style={styles.options}>
-          <FlatList
-            keyExtractor={(item) => item.value}
-            data={data}
-            renderItem={({ item }) => (
-              <TouchableOpacity activeOpacity={0.8} style={styles.optionItem}>
-                <Text>{item.value}</Text>
-              </TouchableOpacity>
-            )}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-          />
-        </View>
-      ) : null} */}
-      {expanded ? (
+
+      {expanded && !disabled ? (
         <View style={styles.options}>
           <ScrollView style={{ maxHeight: 200 }}>
             {data.map((item) => (
               <TouchableOpacity
-                onPress={() => {
-                  onSelect(item);
-                }}
+                onPress={() => onSelect(item)}
                 key={item.value}
                 activeOpacity={0.8}
                 style={styles.optionItem}>
