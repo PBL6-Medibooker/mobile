@@ -1,4 +1,5 @@
 import {
+    Button,
   FlatList,
   StyleSheet,
   Text,
@@ -6,9 +7,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants";
 import { DoctorItem, HeaderBack } from "../components";
+import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const data = [
@@ -98,17 +99,23 @@ const data = [
     },
   },
 ];
-const SpecialtyDetail = ({ route, navigation }) => {
-  const { specialty } = route.params || {};
+
+const Doctors = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderBack navigation={navigation} title={specialty.value} />
+      <HeaderBack navigation={navigation} title="Bác sĩ" />
       <View style={styles.searchContainer}>
         <View style={styles.searchButton}>
           <TextInput style={styles.textInput} placeholder="Search" />
           <TouchableOpacity style={styles.btnSearch}>
             <FontAwesome name="search" size={20} color={COLORS.PersianGreen} />
           </TouchableOpacity>
+        </View>
+      </View>
+      <View style={{flexDirection: 'row', margin: 8, alignItems: 'center'}}>
+        <Text>Sort by</Text>
+        <View style={{borderRadius: 20}}>
+            <Text>A→Z</Text>
         </View>
       </View>
       <FlatList
@@ -119,13 +126,11 @@ const SpecialtyDetail = ({ route, navigation }) => {
           return <DoctorItem item={item} navigation={navigation} />;
         }}
       />
-      {/* <DoctorItem item={item} /> */}
-      {/* <Text>specialty detail: {specialty.id}</Text> */}
     </SafeAreaView>
   );
 };
 
-export default SpecialtyDetail;
+export default Doctors;
 
 const styles = StyleSheet.create({
   container: {
@@ -135,7 +140,7 @@ const styles = StyleSheet.create({
   list: {
     // borderWidth: 1,
     marginHorizontal: 8,
-    marginTop: 8
+    marginTop: 8,
   },
   searchContainer: {
     backgroundColor: COLORS.PersianGreen,

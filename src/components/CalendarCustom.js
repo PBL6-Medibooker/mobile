@@ -81,9 +81,9 @@ const CalendarCustom = ({
           selectedDayTextColor: COLORS.black, // Màu văn bản cho ngày được chọn
           arrowColor: COLORS.PersianGreen, // Màu mũi tên điều hướng tháng
           monthTextColor: COLORS.white, // Màu văn bản tháng
-          // textDisabledColor: "#d9e1e8", // Màu văn bản cho ngày không khả dụng
-          // dotColor: COLORS.PersianGreen, // Màu của dấu chấm cho ngày có sự kiện
-          selectedDotColor: COLORS.black, // Màu của dấu chấm cho ngày đã chọn
+          // textDisabledColor: "#d9e1e8", 
+          // dotColor: COLORS.PersianGreen,
+          selectedDotColor: COLORS.black,
         }}
         onDayPress={(date) => {
           if (doctorDates[date.dateString]?.marked) {

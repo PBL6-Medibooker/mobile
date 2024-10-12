@@ -1,7 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DrawerNavigation from "./DrawerNavigation";
-import { Booking, DoctorInfo, DoctorRegister, Home, Login, Register, Specialties, SpecialtyDetail, UserRegister, VerifyBooking } from "../screens";
+import { Booking, DoctorInfo, DoctorRegister, Doctors, Home, Login, Register, Specialties, SpecialtyDetail, UserRegister, VerifyBooking } from "../screens";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +22,7 @@ const AppNavigation = () => {
             <Stack.Screen name="VerifyBooking" component={VerifyBooking} />
             <Stack.Screen name="SpecialtyDetail" component={SpecialtyDetail} />
             <Stack.Screen name="DoctorInfo" component={DoctorInfo} />
+            <Stack.Screen name="Doctor" component={Doctors} />
         </Stack.Navigator>
     </NavigationContainer>
   );

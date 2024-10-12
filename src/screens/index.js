@@ -10,7 +10,7 @@ import Booking from "./Booking";
 import VerifyBooking from "./VerifyBooking";
 import SpecialtyDetail from "./SpecialtyDetail";
 import DoctorInfo from "./DoctorInfo";
-
+import Doctors from "./Doctors";
 export {
   Home,
   BookingHistory,
@@ -21,7 +21,8 @@ export {
   Register,
   Specialties,
   Booking,
-  VerifyBooking, 
+  VerifyBooking,
   SpecialtyDetail,
-  DoctorInfo
+  DoctorInfo,
+  Doctors,
 };

@@ -43,8 +43,7 @@ const Home = ({ route }) => {
             <View style={styles.container}>
               <Image source={images.poster} style={styles.imgPoster} />
 
-              <View
-                style={styles.bookingFrame}>
+              <View style={styles.bookingFrame}>
                 <View style={styles.separate}></View>
 
                 <Pressable
@@ -84,7 +83,9 @@ const Home = ({ route }) => {
                   </View>
                   <Text style={styles.featureText}>Chuyên mục tư vấn</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.featureButton}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("Doctor")}
+                  style={styles.featureButton}>
                   <View style={styles.featureIcon}>
                     <FontAwesome6
                       name="user-doctor"
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.silver,
   },
-  bookingFrame:{
+  bookingFrame: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
