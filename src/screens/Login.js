@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Image,
   Pressable,
@@ -11,15 +12,64 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, images } from "../constants";
+import User from "../models/User_Model";
+import Account_API from "../API/Account_API";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth } from "../AuthProvider";
 
 const Login = ({ navigation }) => {
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [isVerified, setIsVerified] = useState(false);
+
+  const { storedToken, updateToken } = useAuth();
+
+  const isBlank = () => {
+    if (!email) {
+      setMessage("email");
+      return;
+    }
+    if (!password) {
+      setMessage("password");
+      return;
+    }
+
+    setMessage(null); // Nếu không có lỗi nào thì xóa thông báo
+  };
+
+  const handleLogin = async () => {
+    setIsVerified(true);
+    isBlank();
+    const user = new User(email, password);
+    const res = await Account_API.userLogin(user);
+
+    Alert.alert(
+      "Thông báo",
+      typeof res === "string" ? res : "Đăng nhập thành công.", //JSON.stringify(res)
+      [
+        {
+          text: "OK",
+          onPress: async () => {
+            if (typeof res !== "string")
+              if (res.token) {
+                updateToken(res.token);
+                navigation.navigate("Home");
+              }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.backButtonContainer}>
         <TouchableOpacity style={styles.backButton}>
           <Ionicons
             onPress={() => {
-              navigation.goBack();
+              navigation.navigate("Home");
             }}
             name="arrow-back-outline"
             size={48}
@@ -38,15 +88,22 @@ const Login = ({ navigation }) => {
             style={styles.textInput}
             placeholder="Nhập email."
             keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
           />
           <Text style={styles.label}>Mật khẩu</Text>
           <TextInput
             style={styles.textInput}
             placeholder="Nhập mật khẩu."
             secureTextEntry
+            value={password}
+            onChangeText={setPassword}
           />
-          {/* <Button color={COLORS.PersianGreen} title="Đăng nhập" style={styles.buttonLogin} /> */}
+          
           <Pressable
+            onPress={() => {
+              handleLogin();
+            }}
             style={({ pressed }) => [
               {
                 backgroundColor: pressed

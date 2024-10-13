@@ -1,34 +1,42 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS, images } from "../constants";
 
-const DrawerContent = ({ navigation }) => {
-  const shouldShowText = false;
+const DrawerContent = ({ navigation, token }) => {
+
+  const handleManagerAccount = () => {
+    if (!token) {
+      navigation.navigate("Login");
+    } else {
+      navigation.navigate("UserProfile");
+    }
+  };
+
+  const name = "Huệ Lê";
   return (
     <View style={styles.container}>
+    <Pressable onPress={() => handleManagerAccount()}>
       <Image source={images.user_default} style={styles.image} />
+    </Pressable>
       <Text
         style={{
           color: COLORS.PersianGreen,
           fontWeight: "bold",
           fontSize: 16,
         }}>
-        Khách
+        {name}
       </Text>
       <Text
         style={[
           { color: COLORS.black, fontSize: 12 },
-          !shouldShowText && { display: "none" },
+          !token && { display: "none" },
         ]}>
         email@gmail.com
       </Text>
       <Text
-        onPress={() => {
-          navigation.navigate("Login")
-        //   navigation.goBack();
-        }}
+        onPress={() => handleManagerAccount()}
         style={[
           { color: COLORS.black, fontSize: 12 },
-          shouldShowText && { display: "none" },
+          token && { display: "none" },
         ]}>
         Đăng nhập/đăng kí
       </Text>

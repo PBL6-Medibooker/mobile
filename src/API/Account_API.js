@@ -1,4 +1,5 @@
 import axios from "axios";
+// import Account_API from "../API/Account_API";
 
 class Account_API {
   userSignup = async (User) => {
@@ -23,15 +24,11 @@ class Account_API {
 
   userLogin = async (User) => {
     try {
-      let json;
-      if (User.__t === "user") json = User.toJSON_Client();
-      else if (User.__t === "doctor") json = User.toJSON_Doctor();
       const response = await axios.post(
-        "http://192.168.1.11:4000/acc/signup",
+        "http://192.168.1.11:4000/acc/login",
         User.toJSON_Login()
       );
 
-      // const { email, token, role } = response.data;
       console.log("response: ", response.data);
       return response.data;
     } catch (error) {

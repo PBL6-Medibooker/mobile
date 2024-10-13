@@ -10,33 +10,31 @@ import {
   Home,
   HomeScreen,
   Login,
-  UserInfo,
+  Logout,
+  UserProfile,
 } from "../screens";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { DrawerContent } from "../components";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../AuthProvider";
 
 const Drawer = createDrawerNavigator();
 
-const DrawerNavigation = ({ route }) => {
-  // const { user } = route.params || {};
-  // // console.log(user);
-  // if (!user) {
-  //   console.log("false");
-  // } else {
-  //   console.log(user.email); // In ra email hoặc giá trị khác
-  // }
-  const role = "user";
-  const status = false;
+const DrawerNavigation = () => {
+  // const navigation = useNavigation();
+  const { storedToken } = useAuth();
 
   return (
     <Drawer.Navigator
       drawerContent={(props) => {
         return (
           <SafeAreaView>
-            <DrawerContent navigation={props.navigation} />
+            <DrawerContent navigation={props.navigation} token={storedToken} />
             <DrawerItemList {...props} />
           </SafeAreaView>
         );
@@ -75,7 +73,7 @@ const DrawerNavigation = ({ route }) => {
           title: "BookingHistory",
           headerShadowVisible: false,
           drawerIcon: ({ color }) => (
-            <Entypo name="calendar" size={24} color={color} />
+            <MaterialIcons name="calendar-month" size={24} color={color} />
           ),
         }}
         component={BookingHistory}
@@ -88,10 +86,10 @@ const DrawerNavigation = ({ route }) => {
           title: "Noti",
           headerShadowVisible: false,
           drawerIcon: ({ color }) => (
-            <MaterialIcons name="account-circle" size={24} color={color} />
+            <MaterialIcons name="forum" size={24} color={color} />
           ),
         }}
-        component={UserInfo}
+        component={UserProfile}
       />
 
       <Drawer.Screen
@@ -101,25 +99,39 @@ const DrawerNavigation = ({ route }) => {
           title: "Noticed",
           headerShadowVisible: false,
           drawerIcon: ({ color }) => (
-            <MaterialIcons name="account-circle" size={24} color={color} />
+            <MaterialIcons name="circle-notifications" size={24} color={color} />
           ),
         }}
-        component={UserInfo}
+        component={UserProfile}
       />
 
-      {status === true ? (
-        <Drawer.Screen
-          name="UserInfo"
-          options={{
-            drawerLabel: "Tài khoản",
-            title: "UserInfo",
-            headerShadowVisible: false,
-            drawerIcon: ({ color }) => (
-              <MaterialIcons name="account-circle" size={24} color={color} />
-            ),
-          }}
-          component={UserInfo}
-        />
+      {storedToken ? (
+        <>
+          <Drawer.Screen
+            name="User"
+            options={{
+              drawerLabel: "Tài khoản",
+              title: "UserProfile",
+              headerShadowVisible: false,
+              drawerIcon: ({ color }) => (
+                <MaterialIcons name="account-circle" size={24} color={color} />
+              ),
+            }}
+            component={UserProfile}
+          />
+          <Drawer.Screen
+            name="Logout"
+            options={{
+              drawerLabel: "Đăng xuất",
+              title: "Logout",
+              headerShadowVisible: false,
+              drawerIcon: ({ color }) => (
+                <MaterialIcons name="logout" size={24} color={color} />
+              ),
+            }}
+            component={Logout} // Sử dụng component Logout vừa tạo
+          />
+        </>
       ) : (
         <Drawer.Screen
           name="Login"

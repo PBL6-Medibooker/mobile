@@ -1,6 +1,6 @@
 import BookingHistory from "./BookingHistory";
 import Home from "./Home";
-import UserInfo from "./UserProfile";
+import UserProfile from "./UserProfile";
 import Login from "./Login";
 import UserRegister from "./UserRegister";
 import DoctorRegister from "./DoctorRegister";
@@ -11,10 +11,12 @@ import VerifyBooking from "./VerifyBooking";
 import SpecialtyDetail from "./SpecialtyDetail";
 import DoctorInfo from "./DoctorInfo";
 import Doctors from "./Doctors";
+import Logout from "./Logout";
+
 export {
   Home,
   BookingHistory,
-  UserInfo,
+  UserProfile,
   Login,
   UserRegister,
   DoctorRegister,
@@ -25,4 +27,5 @@ export {
   SpecialtyDetail,
   DoctorInfo,
   Doctors,
+  Logout
 };

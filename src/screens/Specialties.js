@@ -8,22 +8,19 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, images } from "../constants";
-import { specialities } from "../utils/specialities";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HeaderBack } from "../components";
-
-// Dữ liệu chuyên khoa
-const dataSpecialities = specialities.map((s) => ({
-  value: s.label,
-  id: `${s.flag} ${s.id}`,
-  image: s.image,
-}));
+import Specialty_API from "../API/Specialty_API";
+import Specialty_Model from "../models/Specialty_Model";
 
 // Hàm thêm các item trống nếu không chia hết cho 3
 const formatData = (data, numColumns) => {
   const numberOfFullRows = Math.floor(data.length / numColumns);
-  let numberOfElementsLastRow = data.length - (numberOfFullRows * numColumns);
-  while (numberOfElementsLastRow !== 0 && numberOfElementsLastRow !== numColumns) {
+  let numberOfElementsLastRow = data.length - numberOfFullRows * numColumns;
+  while (
+    numberOfElementsLastRow !== 0 &&
+    numberOfElementsLastRow !== numColumns
+  ) {
     data.push({ empty: true }); // Thêm item trống
     numberOfElementsLastRow++;
   }
@@ -32,25 +29,52 @@ const formatData = (data, numColumns) => {
 
 const Specialty = ({ navigation }) => {
   const [specialty, setSpecialty] = useState({});
+  const [specialityList, setSpecialityList] = useState([]);
+
+  useEffect(() => {
+    const fetchSpecialties = async () => {
+      try {
+        const data = await Specialty_API.get_Speciality_List();
+        const specialties = data.map((specialty) =>  new Specialty_Model(
+            specialty._id,
+            specialty.name,
+            specialty.description,
+            specialty.speciality_image,
+            specialty.is_deleted
+          )
+        );
+
+        const dataToList = specialties.map((specialty) => specialty.toList());
+        setSpecialityList(dataToList); // Cập nhật danh sách chuyên môn
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách chuyên môn:", error); // Thông báo lỗi nếu xảy ra
+      }
+    };
+
+    fetchSpecialties();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         style={styles.list}
-        data={formatData(dataSpecialities, 3)} // Sử dụng hàm formatData
-        numColumns={3}
+        data={formatData(specialityList, 2)} // Sử dụng hàm formatData
+        numColumns={2}
         keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
         renderItem={({ item }) => {
           if (item.empty) {
-            return <View style={[styles.itemSpecialty, styles.invisibleItem]} />;
+            return (
+              <View style={[styles.itemSpecialty, styles.invisibleItem]} />
+            );
           }
           return (
-            <TouchableOpacity onPress={() => navigation.navigate("SpecialtyDetail", {specialty: item})} style={styles.itemSpecialty}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("SpecialtyDetail", { specialty: item })
+              }
+              style={styles.itemSpecialty}>
               {item.image ? (
-                <Image
-                  source={{ uri: item.image }}
-                  style={styles.imageSpecialty}
-                />
+                <Image source={images.logo} style={styles.imageSpecialty} />
               ) : (
                 <Image source={images.logo} style={styles.imageSpecialty} />
               )}
@@ -82,7 +106,7 @@ const styles = StyleSheet.create({
   },
   itemSpecialty: {
     flex: 1,
-    margin: 1,
+    margin: 2,
     aspectRatio: 1, // Chiều cao bằng chiều rộng để tạo khung vuông
     justifyContent: "center",
     alignItems: "center",
@@ -90,15 +114,15 @@ const styles = StyleSheet.create({
     borderColor: COLORS.silver,
     borderRadius: 5,
     overflow: "hidden",
-    padding: 2,
   },
   invisibleItem: {
     backgroundColor: "transparent", // Đảm bảo các item trống không hiển thị
     borderWidth: 0,
   },
   text: {
-    flex: 1,
+    // flex: 1,
+    height: "25%",
     fontSize: 12,
-    textAlign: 'center'
+    textAlign: "center",
   },
 });

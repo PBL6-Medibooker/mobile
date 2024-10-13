@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   FlatList,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, images } from "../constants";
@@ -17,6 +18,9 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { articles } from "../utils/articles";
 import { useNavigation } from "@react-navigation/native";
 import { ArticleItem, HeaderHome } from "../components";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
+import { useAuth } from "../AuthProvider";
 
 const dataArticles = articles.map((s) => ({
   title: s.title,
@@ -25,10 +29,32 @@ const dataArticles = articles.map((s) => ({
   date: s.date,
 }));
 
-const Home = ({ route }) => {
-  const navigation = useNavigation();
+const Home = ({ navigation }) => {
+  // const navigation = useNavigation();
+  const { storedToken } = useAuth();
 
-  const { user } = route.params || {};
+  const handleBooking = () => {
+    if (!storedToken) {
+      Alert.alert(
+        "Thông báo",
+        "Vui lòng đăng nhập để đăng kí lịch hẹn.", 
+        [
+          {
+            text: "để sau",
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: async () => {
+              navigation.navigate("Login");
+            },
+          },
+        ]
+      );
+    } else {
+      navigation.navigate("Booking");
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -38,7 +64,11 @@ const Home = ({ route }) => {
         renderItem={({ item }) => <ArticleItem data={item} />}
         ListHeaderComponent={() => (
           <>
-            <HeaderHome title="TRANG CHỦ" user={user} navigation={navigation} />
+            <HeaderHome
+              title="TRANG CHỦ"
+              token={storedToken}
+              navigation={navigation}
+            />
 
             <View style={styles.container}>
               <Image source={images.poster} style={styles.imgPoster} />
@@ -47,7 +77,7 @@ const Home = ({ route }) => {
                 <View style={styles.separate}></View>
 
                 <Pressable
-                  onPress={() => navigation.navigate("Booking")}
+                  onPress={() => handleBooking()}
                   style={({ pressed }) => [
                     {
                       backgroundColor: pressed
@@ -77,6 +107,7 @@ const Home = ({ route }) => {
                   <Text style={styles.featureText}>Chuyên khoa</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  onPress={() => {}}
                   style={[styles.featureButton, { borderRightWidth: 1 }]}>
                   <View style={styles.featureIcon}>
                     <FontAwesome5 name="blog" size={24} color={COLORS.white} />

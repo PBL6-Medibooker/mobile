@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, images } from "../constants";
 import { useCallback, useRef, useState } from "react";
 import { RadioButton } from "../components";
-import User from "../models/User";
+import User from "../models/User_Model";
 import Account_API from "../API/Account_API";
 
 const options = [
@@ -26,8 +26,8 @@ const options = [
 const Register = ({ navigation }) => {
   const [fullname, setFullname] = useState(null);
   const [email, setEmail] = useState(null);
-  const [phone, setPhone] = useState(null);
   const [password, setPassword] = useState(null);
+  const [phone, setPhone] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState(null);
   const [type, setType] = useState(null);
   const [message, setMessage] = useState(null);
@@ -69,30 +69,21 @@ const Register = ({ navigation }) => {
   const handleRegister = async () => {
     setIsVerified(true);
     isBlank();
-    const user = new User(
-      email,
-      password,
-      phone,
-      null,
-      fullname,
-      null,
-      null,
-      false,
-      type
-    );
-    // console.log(user.toJSON_Client());
+    const user = new User(email, password, phone, fullname, type);
+    
     const res = await Account_API.userSignup(user);
     console.log(res);
     Alert.alert(
       "Thông báo",
       typeof res === "string" ? res : "Đăng ký tài khoản thành công.", //JSON.stringify(res)
-      [{
-        text: "OK",
-        onPress: () => {
-          if (typeof res !== "string")
-            navigation.navigate("Login")
-        }
-      }]
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            if (typeof res !== "string") navigation.navigate("Login");
+          },
+        },
+      ]
     );
     // navigation.navigate("Login")
   };

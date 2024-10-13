@@ -5,26 +5,17 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants";
-import { areas } from "../utils/areas";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown, HeaderBack, RadioView, DatePicker } from "../components";
-import { specialities } from "../utils/specialities";
 import { doctors } from "../utils/doctors";
-
-const dataAreas = areas.map((s) => ({
-  id: s.id,
-  value: s.name,
-}));
-
-const dataSpecialities = specialities.map((s) => ({
-  value: s.label,
-  id: `${s.flag} ${s.id}`, // Sử dụng dấu nháy ngược
-}));
+import Specialty_API from "../API/Specialty_API";
+import Specialty from "../models/Specialty_Model";
+import Area_Model from "../models/Area_Model";
+import Area_API from "../API/Area_API";
 
 const dataDoctors = doctors.map((s) => ({
   id: s.id,
@@ -45,6 +36,45 @@ const Booking = ({ navigation }) => {
   const [medicalHistory, setMedicalHistory] = useState(null);
   const [healthStatus, setHealthStatus] = useState(null);
   const [datePicker, setDatePicker] = useState(null);
+
+  const [dataSpecialities, setDataSpecialities] = useState([]);
+  const [dataAreas, setDataAreas] = useState([]);
+
+  useEffect(() => {
+    const fetchSpecialties = async () => {
+      try {
+        const data = await Specialty_API.get_Speciality_List();
+        const specialties = data.map(Specialty.fromJson);
+
+        const dropdownData = specialties.map((specialty) =>
+          specialty.toListDropdown()
+        );
+        setDataSpecialities(dropdownData);
+        console.log(dropdownData);
+      } catch (error) {
+        console.error("Error fetching specialties:", error);
+        // You can also set an error state here if needed
+      }
+    };
+
+    const fetchAreas = async () => {
+      try {
+        const data = await Area_API.get_Region_List();
+        const areas = data.map(
+          (region) => new Area_Model(region._id, region.name, region.is_deleted)
+        );
+
+        const dropdownData = areas.map((region) => region.toListDropdown());
+        setDataAreas(dropdownData);
+        console.log(dropdownData);
+      } catch (error) {
+        console.error("Error fetching areas:", error);
+      }
+    };
+
+    fetchSpecialties();
+    fetchAreas();
+  }, []);
 
   const handle = () => {
     console.log(

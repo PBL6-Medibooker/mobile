@@ -1,6 +1,7 @@
 import {
-    Button,
+  Button,
   FlatList,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -8,9 +9,13 @@ import {
   View,
 } from "react-native";
 import { COLORS } from "../constants";
-import { DoctorItem, HeaderBack } from "../components";
+import { DoctorItem, Dropdown, HeaderBack } from "../components";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+
+import Specialty_API from "../API/Specialty_API";
+import { useEffect, useState } from "react";
+import Specialty_Model from "../models/Specialty_Model";
 
 const data = [
   {
@@ -101,6 +106,36 @@ const data = [
 ];
 
 const Doctors = ({ navigation }) => {
+  const [dataSpecialities, setDataSpecialities] = useState([]);
+  const [specialty, setSpecialty] = useState(null);
+
+  const handleSpecialityChange = (item) => {
+    setSpecialty(item);
+    console.log("Selected country:", item);
+  };
+
+  useEffect(() => {
+    const fetchSpecialties = async () => {
+      try {
+        const data = await Specialty_API.get_Speciality_List();
+        const specialties = data.map((specialty) => new Specialty_Model(
+          specialty._id,
+          specialty.name,
+          specialty.description,
+          specialty.speciality_image,
+          specialty.is_deleted
+        ));
+
+        const dataToList = specialties.map((specialty) => specialty.toList());
+        setDataSpecialities(dataToList); // Cập nhật danh sách chuyên môn
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách chuyên môn:", error); // Thông báo lỗi nếu xảy ra
+      }
+    };
+
+    fetchSpecialties();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack navigation={navigation} title="Bác sĩ" />
@@ -112,11 +147,27 @@ const Doctors = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={{flexDirection: 'row', margin: 8, alignItems: 'center'}}>
-        <Text>Sort by</Text>
-        <View style={{borderRadius: 20}}>
-            <Text>A→Z</Text>
+
+      <View style={{ paddingHorizontal: 8, paddingTop: 14 }}>
+        <Dropdown
+          data={dataSpecialities}
+          onChange={handleSpecialityChange}
+          placeholder="Chọn chuyên khoa"
+        />
+      </View>
+
+      <View style={{ flexDirection: "row", margin: 8, alignItems: "center" }}>
+        <Text style={{ marginEnd: 6 }}>Sort by</Text>
+        <View
+          style={{ borderRadius: 999, backgroundColor: COLORS.PersianGreen }}>
+          <Text style={{ paddingHorizontal: 8 }}>A→Z</Text>
         </View>
+        <View style={{ flex: 1 }} />
+        <TouchableOpacity>
+          <Text style={{ textDecorationLine: "underline", color: COLORS.blue }}>
+            See all
+          </Text>
+        </TouchableOpacity>
       </View>
       <FlatList
         style={styles.list}
@@ -139,7 +190,7 @@ const styles = StyleSheet.create({
   },
   list: {
     // borderWidth: 1,
-    marginHorizontal: 8,
+    paddingHorizontal: 8,
     marginTop: 8,
   },
   searchContainer: {

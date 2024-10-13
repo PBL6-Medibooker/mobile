@@ -5,12 +5,12 @@ class User {
     email,
     password,
     phone,
-    token,
     username,
+    __t,
     profile_image,
     underlying_condition,
     is_deleted,
-    __t
+    token
   ) {
     this.email = email;
     this.password = password;
@@ -29,14 +29,14 @@ class User {
       email: this.email,
       phone: this.phone,
       username: this.username,
-      is_doc: this.__t === "doctor" ? 1 : 0 
+      is_doc: this.__t === "doctor" ? 1 : 0,
     };
   }
 
   toJSON_Login() {
     return {
       password: this.password,
-      email: this.email
+      email: this.email,
     };
   }
 
@@ -68,24 +68,6 @@ class User {
     };
   }
 
-  toFormData_Client() {
-    const formData = new FormData();
-
-    // Thêm các thuộc tính vào formData
-    formData.append("email", this.email);
-    formData.append("password", this.password);
-    formData.append("phone", this.phone);
-    formData.append("username", this.username);
-    formData.append("is_doc", 0);
-
-    // Nếu có file (ví dụ avatar) thì thêm vào
-    // if (this.avatar) {
-    //   formData.append('avatar', this.avatar); // 'avatar' là tên field bên server
-    // }
-
-    return formData;
-  }
-
   toJSON_Doctor() {
     return {
       password: this.password,
@@ -98,24 +80,6 @@ class User {
       // is_deleted: this.is_deleted,
       is_doc: 1,
     };
-  }
-
-  toFormData_Doctor() {
-    const formData = new FormData();
-
-    // Thêm các thuộc tính vào formData
-    formData.append("email", this.email);
-    formData.append("password", this.password);
-    formData.append("phone", this.phone);
-    formData.append("username", this.username);
-    formData.append("is_doc", 1);
-
-    // Nếu có file (ví dụ avatar) thì thêm vào
-    // if (this.avatar) {
-    //   formData.append('avatar', this.avatar); // 'avatar' là tên field bên server
-    // }
-
-    return formData;
   }
 
   // Phương thức để kiểm tra xem người dùng đã đăng nhập chưa

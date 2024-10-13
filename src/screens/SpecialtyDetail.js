@@ -100,6 +100,8 @@ const data = [
 ];
 const SpecialtyDetail = ({ route, navigation }) => {
   const { specialty } = route.params || {};
+  console.log(specialty.value);
+  
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack navigation={navigation} title={specialty.value} />

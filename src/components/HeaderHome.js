@@ -8,15 +8,15 @@ const HeaderHome = ({ title, navigation }) => {
 
   return (
     <View style={styles.container}>
-        <TouchableOpacity
-          onPress={() => navigation.toggleDrawer()}
-          style={styles.iconContainer}>
-          <Ionicons name="menu" size={48} color={COLORS.white} />
-        </TouchableOpacity>
-        <Text style={styles.text}>{title}</Text>
-        <TouchableOpacity>
-          <Image source={images.user_default} style={styles.image} />
-        </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.toggleDrawer()}
+        style={styles.iconContainer}>
+        <Ionicons name="menu" size={48} color={COLORS.white} />
+      </TouchableOpacity>
+      <Text style={styles.text}>{title}</Text>
+      <TouchableOpacity>
+        <Image source={images.user_default} style={styles.image} />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -45,11 +45,11 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 2,
     borderColor: COLORS.Light50PersianGreen,
-    backgroundColor: COLORS.silver
+    backgroundColor: COLORS.silver,
   },
   text: {
     color: COLORS.white,
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
 });

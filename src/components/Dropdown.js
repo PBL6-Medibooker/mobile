@@ -6,14 +6,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { useCallback, useState } from "react";
 import { COLORS } from "../constants";
-import Entypo from '@expo/vector-icons/Entypo';
+import Entypo from "@expo/vector-icons/Entypo";
 
 const Dropdown = ({ data, onChange, placeholder, disabled }) => {
   const [expanded, setExpanded] = useState(false);
+  const [value, setValue] = useState("");
 
   const toggleExpanded = useCallback(() => {
     if (!disabled) {
@@ -21,7 +20,6 @@ const Dropdown = ({ data, onChange, placeholder, disabled }) => {
     }
   }, [expanded, disabled]);
 
-  const [value, setValue] = useState("");
   const onSelect = useCallback(
     (item) => {
       if (!disabled) {
@@ -36,34 +34,46 @@ const Dropdown = ({ data, onChange, placeholder, disabled }) => {
   return (
     <View style={{ alignItems: "flex-end" }}>
       <TouchableOpacity
-        style={[
-          styles.button,
-          disabled && styles.disabledButton, // Add a disabled style if the dropdown is disabled
-        ]}
-        activeOpacity={disabled ? 1 : 0.8} // Disable opacity effect if disabled
+        style={[styles.button, disabled && styles.disabledButton]}
+        activeOpacity={disabled ? 1 : 0.8}
         onPress={toggleExpanded}>
         <Text
           style={[
             { flex: 1, paddingHorizontal: 0 },
-            disabled && { color: COLORS.gray }, // Change text color if disabled
+            disabled && { color: COLORS.gray },
           ]}
           numberOfLines={1}
-          ellipsizeMode="tail"> 
+          ellipsizeMode="tail">
           {value || placeholder}
         </Text>
-        <Entypo name={expanded ? "chevron-up" : "chevron-down"} size={18} color={COLORS.gray} />
+        <Entypo
+          name={expanded && data.length > 0 ? "chevron-up" : "chevron-down"}
+          size={18}
+          color={COLORS.gray}
+        />
       </TouchableOpacity>
 
-      {expanded && !disabled ? (
+      {expanded && !disabled && data ? (
         <View style={styles.options}>
           <ScrollView style={{ maxHeight: 200 }}>
-            {data.map((item) => (
+            {data.map((item, index) => (
               <TouchableOpacity
                 onPress={() => onSelect(item)}
-                key={item.value}
+                key={item.id}
                 activeOpacity={0.8}
-                style={styles.optionItem}>
-                <Text>{item.value}</Text>
+                style={[
+                  styles.optionItem,
+                  index === data.length - 1 && { borderBottomWidth: 0 },
+                  // value === item.value && styles.selectedOption, // Thay đổi màu cho item được chọn
+                ]}>
+                <View style={value === item.value && styles.selectedOption}>
+                  <Text
+                    style={
+                      value === item.value ? styles.selectedText : styles.text
+                    }>
+                    {item.value}
+                  </Text>
+                </View>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -91,7 +101,8 @@ const styles = StyleSheet.create({
   options: {
     position: "absolute",
     top: 43,
-    paddingHorizontal: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 2,
     width: "85%",
     backgroundColor: COLORS.Light20PersianGreen,
     borderRadius: 10,
@@ -102,8 +113,24 @@ const styles = StyleSheet.create({
   },
   optionItem: {
     justifyContent: "center",
-    paddingVertical: 5,
+    marginHorizontal: 8,
     borderBottomWidth: 1,
     borderColor: COLORS.PersianGreen,
+    paddingVertical: 2,
+  },
+  selectedOption: {
+    backgroundColor: COLORS.PersianGreen, // Màu nền cho item được chọn
+    borderRadius: 4,
+    marginVertical: 2,
+  },
+  selectedText: {
+    color: COLORS.white, // Màu chữ cho item được chọn
+    marginHorizontal: 5,
+    marginVertical: 4,
+    paddingVertical: 2,
+  },
+  text: {
+    marginVertical: 2,
+    paddingVertical: 2,
   },
 });
