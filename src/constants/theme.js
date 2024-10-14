@@ -8,6 +8,9 @@ const COLORS = {
   silver: "#cdcdcd",
   red: "red",
   gray: "#969696",
+  MonteCarlo: "#89D5C9",
+  Sinbad: "#9cd5cc",
+  Turquoise: "#43dcc1",
 };
 
 const FONTS = {

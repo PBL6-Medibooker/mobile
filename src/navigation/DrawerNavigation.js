@@ -27,7 +27,33 @@ const Drawer = createDrawerNavigator();
 
 const DrawerNavigation = () => {
   // const navigation = useNavigation();
-  const { storedToken } = useAuth();
+  const { storedToken, clearToken } = useAuth();
+
+  const handleLogout = async (navigation) => {
+    Alert.alert(
+      "Xác nhận",
+      "Bạn có chắc chắn muốn đăng xuất?",
+      [
+        {
+          text: "Hủy",
+          style: "cancel",
+        },
+        {
+          text: "Đồng ý",
+          onPress: async () => {
+            try {
+              clearToken();
+              console.log("Đã đăng xuất");
+              navigation.navigate("Login");
+            } catch (error) {
+              console.error("Lỗi khi đăng xuất:", error);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   return (
     <Drawer.Navigator
@@ -66,18 +92,20 @@ const DrawerNavigation = () => {
         }}
         component={Home}
       />
-      <Drawer.Screen
-        name="BookingHistory"
-        options={{
-          drawerLabel: "Lịch khám bệnh",
-          title: "BookingHistory",
-          headerShadowVisible: false,
-          drawerIcon: ({ color }) => (
-            <MaterialIcons name="calendar-month" size={24} color={color} />
-          ),
-        }}
-        component={BookingHistory}
-      />
+      {storedToken && (
+        <Drawer.Screen
+          name="BookingHistory"
+          options={{
+            drawerLabel: "Lịch khám bệnh",
+            title: "BookingHistory",
+            headerShadowVisible: false,
+            drawerIcon: ({ color }) => (
+              <MaterialIcons name="calendar-month" size={24} color={color} />
+            ),
+          }}
+          component={BookingHistory}
+        />
+      )}
 
       <Drawer.Screen
         name="Noti"
@@ -99,7 +127,11 @@ const DrawerNavigation = () => {
           title: "Noticed",
           headerShadowVisible: false,
           drawerIcon: ({ color }) => (
-            <MaterialIcons name="circle-notifications" size={24} color={color} />
+            <MaterialIcons
+              name="circle-notifications"
+              size={24}
+              color={color}
+            />
           ),
         }}
         component={UserProfile}
@@ -128,6 +160,7 @@ const DrawerNavigation = () => {
               drawerIcon: ({ color }) => (
                 <MaterialIcons name="logout" size={24} color={color} />
               ),
+              // drawerLabelPress: ({ navigation }) => handleLogout(navigation),
             }}
             component={Logout} // Sử dụng component Logout vừa tạo
           />

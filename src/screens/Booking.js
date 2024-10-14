@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 import { Dropdown, HeaderBack, RadioView, DatePicker } from "../components";
 import { doctors } from "../utils/doctors";
 import Specialty_API from "../API/Specialty_API";
-import Specialty from "../models/Specialty_Model";
 import Area_Model from "../models/Area_Model";
 import Area_API from "../API/Area_API";
 
@@ -43,9 +42,7 @@ const Booking = ({ navigation }) => {
   useEffect(() => {
     const fetchSpecialties = async () => {
       try {
-        const data = await Specialty_API.get_Speciality_List();
-        const specialties = data.map(Specialty.fromJson);
-
+        const specialties = await Specialty_API.get_Speciality_List();
         const dropdownData = specialties.map((specialty) =>
           specialty.toListDropdown()
         );
@@ -59,10 +56,7 @@ const Booking = ({ navigation }) => {
 
     const fetchAreas = async () => {
       try {
-        const data = await Area_API.get_Region_List();
-        const areas = data.map(
-          (region) => new Area_Model(region._id, region.name, region.is_deleted)
-        );
+        const areas = await Area_API.get_Region_List();
 
         const dropdownData = areas.map((region) => region.toListDropdown());
         setDataAreas(dropdownData);
@@ -241,13 +235,5 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     width: "90%",
-    // shadowColor: COLORS.black,
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 2,
-    // },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 4,
-    // elevation: 5,
   },
 });

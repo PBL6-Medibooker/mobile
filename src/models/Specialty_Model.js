@@ -27,37 +27,37 @@ class Specialty {
 
 
   
-  static fromJson(json) {
-    // const specialityImage =
-    //   json.speciality_image && json.speciality_image.data
-    //     ? json.speciality_image.data
-    //     : null;
+  // static fromJson(json) {
+  //   // const specialityImage =
+  //   //   json.speciality_image && json.speciality_image.data
+  //   //     ? json.speciality_image.data
+  //   //     : null;
 
-    // let imageUri = null;
+  //   // let imageUri = null;
 
-    // if (specialityImage) {
-    //   const buffer = Buffer.from(specialityImage);
+  //   // if (specialityImage) {
+  //   //   const buffer = Buffer.from(specialityImage);
 
-    //   const base64Image = buffer.toString("base64");
+  //   //   const base64Image = buffer.toString("base64");
 
-    //   imageUri = `data:image/png;base64,${base64Image}`;
-    // }
+  //   //   imageUri = `data:image/png;base64,${base64Image}`;
+  //   // }
 
-    if (json.speciality_image && json.speciality_image.data) {
-      // Chuyển buffer sang base64
-      const base64Image = Buffer.from(json.speciality_image.data).toString(
-        "base64"
-      );
-      json.speciality_image = `data:image/png;base64,${base64Image}`;
-    }
-    return new Specialty(
-      json._id,
-      json.name,
-      json.description,
-      json.speciality_image,
-      json.is_deleted
-    );
-  }
+  //   if (json.speciality_image && json.speciality_image.data) {
+  //     // Chuyển buffer sang base64
+  //     const base64Image = Buffer.from(json.speciality_image.data).toString(
+  //       "base64"
+  //     );
+  //     json.speciality_image = `data:image/png;base64,${base64Image}`;
+  //   }
+  //   return new Specialty(
+  //     json._id,
+  //     json.name,
+  //     json.description,
+  //     json.speciality_image,
+  //     json.is_deleted
+  //   );
+  // }
 }
 
 export default Specialty;

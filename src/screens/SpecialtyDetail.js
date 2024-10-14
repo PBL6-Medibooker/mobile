@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   list: {
     // borderWidth: 1,
-    marginHorizontal: 8,
+    paddingHorizontal: 8,
     marginTop: 8
   },
   searchContainer: {

@@ -8,6 +8,7 @@ import RadioView from "./RadioView";
 import DoctorItem from "./DoctorItem";
 import DatePicker from "./DatePicker";
 import CalendarCustom from "./CalendarCustom";
+import InputPassword from "./InputPassword";
 
 export {
   ArticleItem,
@@ -20,4 +21,5 @@ export {
   DoctorItem,
   DatePicker,
   CalendarCustom,
+  InputPassword,
 };

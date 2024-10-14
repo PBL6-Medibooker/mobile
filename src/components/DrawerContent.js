@@ -11,7 +11,7 @@ const DrawerContent = ({ navigation, token }) => {
     }
   };
 
-  const name = "Huệ Lê";
+  // const name = "Huệ Lê";
   return (
     <View style={styles.container}>
     <Pressable onPress={() => handleManagerAccount()}>
@@ -23,7 +23,7 @@ const DrawerContent = ({ navigation, token }) => {
           fontWeight: "bold",
           fontSize: 16,
         }}>
-        {name}
+        {token ? "Huệ Lê" : "Khách"}
       </Text>
       <Text
         style={[

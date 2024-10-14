@@ -3599,6 +3599,11 @@ expo-constants@~16.0.0:
     "@expo/config" "~9.0.0"
     "@expo/env" "~0.3.0"
 
+expo-document-picker@12.0.2:
+  version "12.0.2"
+  resolved "https://registry.npmjs.org/expo-document-picker/-/expo-document-picker-12.0.2.tgz"
+  integrity sha512-tmwuRWoCPv6SmNDSMEWcttMBJ95k8/g5sMWnHdmvOx0UKp0pFXP8FI+55HKtQpo6k2+118MkdDDhQSwKqASVAw==
+
 expo-file-system@~17.0.1:
   version "17.0.1"
   resolved "https://registry.npmjs.org/expo-file-system/-/expo-file-system-17.0.1.tgz"
@@ -5997,7 +6002,7 @@ react-native-calendars@^1.1307.0:
     invariant "^2.2.4"
     prop-types "^15.7.2"
 
-"react-native-reanimated@>= 1.0.0", react-native-reanimated@3.10.1:
+"react-native-reanimated@>= 1.0.0":
   version "3.10.1"
   resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-3.10.1.tgz"
   integrity sha512-sfxg6vYphrDc/g4jf/7iJ7NRi+26z2+BszPmvmk0Vnrz6FL7HYljJqTf531F1x6tFmsf+FEAmuCtTUIXFLVo9w==

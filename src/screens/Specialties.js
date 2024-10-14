@@ -34,16 +34,7 @@ const Specialty = ({ navigation }) => {
   useEffect(() => {
     const fetchSpecialties = async () => {
       try {
-        const data = await Specialty_API.get_Speciality_List();
-        const specialties = data.map((specialty) =>  new Specialty_Model(
-            specialty._id,
-            specialty.name,
-            specialty.description,
-            specialty.speciality_image,
-            specialty.is_deleted
-          )
-        );
-
+        const specialties = await Specialty_API.get_Speciality_List();
         const dataToList = specialties.map((specialty) => specialty.toList());
         setSpecialityList(dataToList); // Cập nhật danh sách chuyên môn
       } catch (error) {

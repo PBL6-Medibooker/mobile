@@ -2,9 +2,18 @@ import { useNavigation } from "@react-navigation/native";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { COLORS, images } from "../constants";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useAuth } from "../AuthProvider";
 
 const HeaderHome = ({ title, navigation }) => {
   // const navigation = useNavigation();
+  const { storedToken } = useAuth();
+  const handle = () => {
+    if (!storedToken) {
+      navigation.navigate("Login");
+    } else {
+      navigation.navigate("UserProfile");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -14,7 +23,7 @@ const HeaderHome = ({ title, navigation }) => {
         <Ionicons name="menu" size={48} color={COLORS.white} />
       </TouchableOpacity>
       <Text style={styles.text}>{title}</Text>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => handle()} activeOpacity={0.7}>
         <Image source={images.user_default} style={styles.image} />
       </TouchableOpacity>
     </View>

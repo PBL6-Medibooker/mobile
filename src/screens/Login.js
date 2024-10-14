@@ -17,31 +17,41 @@ import Account_API from "../API/Account_API";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../AuthProvider";
+import { InputPassword } from "../components";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
-  const [message, setMessage] = useState(null);
-  const [isVerified, setIsVerified] = useState(false);
+  // const [message, setMessage] = useState(null);
+  // const [isVerified, setIsVerified] = useState(false);
 
   const { storedToken, updateToken } = useAuth();
+  // const [storedEmail, setStoredEmail] = useState(null);
 
-  const isBlank = () => {
-    if (!email) {
-      setMessage("email");
-      return;
-    }
-    if (!password) {
-      setMessage("password");
-      return;
-    }
+  useEffect(() => {
+    const getLoginHistory = async () => {
+      const mail = await AsyncStorage.getItem("myEmail");
+      setEmail(mail);
+    };
+    getLoginHistory();
+  }, []);
 
-    setMessage(null); // Nếu không có lỗi nào thì xóa thông báo
-  };
+  // const isBlank = () => {
+  //   if (!email) {
+  //     setMessage("email");
+  //     return;
+  //   }
+  //   if (!password) {
+  //     setMessage("password");
+  //     return;
+  //   }
+
+  //   setMessage(null); // Nếu không có lỗi nào thì xóa thông báo
+  // };
 
   const handleLogin = async () => {
-    setIsVerified(true);
-    isBlank();
+    // setIsVerified(true);
+    // isBlank();
     const user = new User(email, password);
     const res = await Account_API.userLogin(user);
 
@@ -55,6 +65,7 @@ const Login = ({ navigation }) => {
             if (typeof res !== "string")
               if (res.token) {
                 updateToken(res.token);
+                await AsyncStorage.setItem("myEmail", email);
                 navigation.navigate("Home");
               }
           },
@@ -92,14 +103,11 @@ const Login = ({ navigation }) => {
             onChangeText={setEmail}
           />
           <Text style={styles.label}>Mật khẩu</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Nhập mật khẩu."
-            secureTextEntry
+          <InputPassword
             value={password}
             onChangeText={setPassword}
           />
-          
+
           <Pressable
             onPress={() => {
               handleLogin();

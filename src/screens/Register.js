@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   Button,
   Image,
@@ -12,11 +13,14 @@ import {
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS, images } from "../constants";
-import { useCallback, useRef, useState } from "react";
-import { RadioButton } from "../components";
+import { COLORS } from "../constants";
+import { useEffect, useState } from "react";
+import { Dropdown, InputPassword, RadioButton } from "../components";
 import User from "../models/User_Model";
 import Account_API from "../API/Account_API";
+import Entypo from "@expo/vector-icons/Entypo";
+import Specialty_API from "../API/Specialty_API";
+import { UploadPDF } from "../utils/Upload";
 
 const options = [
   { label: "Bác sĩ", value: "doctor" },
@@ -29,11 +33,32 @@ const Register = ({ navigation }) => {
   const [password, setPassword] = useState(null);
   const [phone, setPhone] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState(null);
-  const [type, setType] = useState(null);
+  const [accountType, setAccountType] = useState(null);
   const [message, setMessage] = useState(null);
   const [isVerified, setIsVerified] = useState(false);
 
-  const isBlank = () => {
+  const [specialtyDoctor, setSpecialtyDoctor] = useState(null);
+  const [proofDoctor, setProofDoctor] = useState(null);
+
+  const [dataSpecialities, setDataSpecialities] = useState([]);
+
+  useEffect(() => {
+    const fetchSpecialties = async () => {
+      try {
+        const specialties = await Specialty_API.get_Speciality_List();
+
+        const dataToList = specialties.map((specialty) => specialty.toList());
+        setDataSpecialities(dataToList); // Cập nhật danh sách chuyên môn
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách chuyên môn:", error); // Thông báo lỗi nếu xảy ra
+      }
+    };
+
+    fetchSpecialties();
+  }, []);
+
+  const handleRegister = () => {
+    setIsVerified(true);
     if (!fullname) {
       setMessage("fullname");
       return;
@@ -58,21 +83,28 @@ const Register = ({ navigation }) => {
       setMessage("notMatch");
       return;
     }
-    if (!type) {
+    if (!accountType) {
       setMessage("type");
       return;
     }
-
-    setMessage(null); // Nếu không có lỗi nào thì xóa thông báo
+    setIsVerified(false);
+    reqLogin();
   };
 
-  const handleRegister = async () => {
-    setIsVerified(true);
-    isBlank();
-    const user = new User(email, password, phone, fullname, type);
-    
+  const handleFocus = (field) => {
+    if (message === field) {
+      setIsVerified(false);
+    }
+  };
+
+  const reqLogin = async () => {
+    console.log("spec:", specialtyDoctor.value);
+
+    const user = new User(email, password, phone, fullname, accountType);
+
     const res = await Account_API.userSignup(user);
     console.log(res);
+    // if (res !== "Email and password is required!") {
     Alert.alert(
       "Thông báo",
       typeof res === "string" ? res : "Đăng ký tài khoản thành công.", //JSON.stringify(res)
@@ -85,7 +117,24 @@ const Register = ({ navigation }) => {
         },
       ]
     );
-    // navigation.navigate("Login")
+    // }
+  };
+
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [isLoading, setLoading] = useState(false);
+  const handleUploadFile = async () => {
+    setLoading(true);
+    const pdf = await UploadPDF();
+    // setLoading(false);
+    console.log("pdf", pdf);
+
+    if (pdf && pdf !== "isLoading") {
+      setLoading(false);
+      setUploadedFiles((prevFiles) => [...prevFiles, pdf]);
+    }
+  };
+  const handleRemoveFile = (index) => {
+    setUploadedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   return (
@@ -115,7 +164,8 @@ const Register = ({ navigation }) => {
               setFullname(value);
             }}
             onFocus={() => {
-              if (message === "fullname") setMessage(null);
+              // if (message === "fullname") setMessage(null);
+              handleFocus("fullname");
             }}
           />
           {isVerified && message === "fullname" ? (
@@ -133,7 +183,7 @@ const Register = ({ navigation }) => {
               setEmail(value);
             }}
             onFocus={() => {
-              if (message === "email") setMessage(null);
+              handleFocus("email");
             }}
           />
           {isVerified && message === "email" ? (
@@ -148,7 +198,8 @@ const Register = ({ navigation }) => {
             value={phone}
             onChangeText={setPhone}
             onFocus={() => {
-              if (message === "phone") setMessage(null);
+              // if (message === "phone") setMessage(null);
+              handleFocus("phone");
             }}
           />
           {isVerified && message === "phone" ? (
@@ -156,14 +207,11 @@ const Register = ({ navigation }) => {
           ) : null}
 
           <Text style={styles.label}>Mật khẩu</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Password"
-            secureTextEntry
+          <InputPassword
             value={password}
             onChangeText={setPassword}
             onFocus={() => {
-              if (message === "password") setMessage(null);
+              handleFocus("password");
             }}
           />
           {isVerified && message === "password" ? (
@@ -171,15 +219,12 @@ const Register = ({ navigation }) => {
           ) : null}
 
           <Text style={styles.label}>Xác nhận lại mật khẩu</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Confirm password"
-            secureTextEntry
+          <InputPassword
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             onFocus={() => {
-              if (message === ("confirmPassword" || "notMatch"))
-                setMessage(null);
+              handleFocus("confirmPassword");
+              handleFocus("notMatch");
             }}
           />
           {isVerified && message === "confirmPassword" ? (
@@ -192,15 +237,49 @@ const Register = ({ navigation }) => {
           <Text style={styles.label}>Loại tài khoản</Text>
           <RadioButton
             options={options}
-            selectedOption={type}
-            onSelect={setType}
+            selectedOption={accountType}
+            onSelect={setAccountType}
             onFocus={() => {
-              if (message === "type") setMessage(null);
+              // if (message === "type") setMessage(null);
+              handleFocus("type");
             }}
           />
           {isVerified && message === "type" ? (
             <Text style={styles.message}>* Chưa nhập loại tài khoản</Text>
           ) : null}
+
+          {accountType === "doctor" && (
+            <View>
+              <Text style={styles.label}>Chuyên khoa</Text>
+              <Dropdown
+                data={dataSpecialities}
+                onChange={setSpecialtyDoctor}
+                placeholder="Chọn chuyên khoa"
+              />
+
+              <View style={styles.import}>
+                <Text style={styles.label}>Minh chứng (nếu có)</Text>
+                <TouchableOpacity
+                  onPress={() => handleUploadFile()}
+                  style={styles.buttonImport}>
+                  <Entypo name="upload" size={18} color={COLORS.gray} />
+                </TouchableOpacity>
+                {isLoading ? (
+                  <ActivityIndicator size="large" color="#0000ff" />
+                ) : null}
+              </View>
+
+              {uploadedFiles.map((file, index) => (
+                <View key={index} style={{ flexDirection: "row", alignItems: 'center' }}>
+                <Text style={{ fontSize: 20 }}>•  </Text>
+                  <Text  style={{ textDecorationLine: 'underline', color: COLORS.blue, marginEnd: 10 }}>{file.name}</Text>
+                  <TouchableOpacity onPress={() => handleRemoveFile(index)}>
+                    <Ionicons name="close" size={24} color={COLORS.gray} />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          )}
 
           <Pressable
             onPress={() => {
@@ -268,5 +347,23 @@ const styles = StyleSheet.create({
   message: {
     color: COLORS.red,
     fontSize: 12,
+  },
+  import: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  label: {
+    color: COLORS.PersianGreen,
+    marginVertical: 4,
+  },
+  buttonImport: {
+    width: 30,
+    height: 30,
+    backgroundColor: COLORS.silver,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    marginLeft: 15,
   },
 });
