@@ -48,12 +48,38 @@ LocaleConfig.locales["vn"] = {
 // Set the default locale to Vietnamese
 LocaleConfig.defaultLocale = "vn";
 
+const darkTheme = {
+  calendarBackground: COLORS.black, // Màu nền cho lịch
+  // textSectionTitleColor: COLORS.gray, // Màu văn bản tiêu đề (ngày trong tuần)
+  dayTextColor: COLORS.white, // Màu văn bản cho ngày
+  todayTextColor: COLORS.PersianGreen, // Màu văn bản cho ngày hiện tại
+  selectedDayBackgroundColor: COLORS.PersianGreen, // Màu nền cho ngày được chọn
+  selectedDayTextColor: COLORS.black, // Màu văn bản cho ngày được chọn
+  arrowColor: COLORS.PersianGreen, // Màu mũi tên điều hướng tháng
+  monthTextColor: COLORS.white, // Màu văn bản tháng
+  // textDisabledColor: "#d9e1e8",
+  // dotColor: COLORS.PersianGreen,
+  selectedDotColor: COLORS.black,
+};
+
+const lightTheme = {
+  calendarBackground: COLORS.Light20PersianGreen,
+  dayTextColor: COLORS.black,
+  todayTextColor: COLORS.PersianGreen,
+  selectedDayBackgroundColor: COLORS.PersianGreen,
+  selectedDayTextColor: COLORS.white,
+  arrowColor: COLORS.PersianGreen,
+  monthTextColor: COLORS.black,
+  selectedDotColor: COLORS.white,
+};
+
 const CalendarCustom = ({
   selectedDate,
   setSelectedDate,
   selectedHour,
   setSelectedHour,
   setMessage,
+  theme,
 }) => {
   const doctorDates = {
     "2024-10-09": { marked: true, dotColor: COLORS.PersianGreen },
@@ -72,24 +98,12 @@ const CalendarCustom = ({
   return (
     <View>
       <Calendar
-        theme={{
-          calendarBackground: COLORS.black, // Màu nền cho lịch
-          // textSectionTitleColor: COLORS.gray, // Màu văn bản tiêu đề (ngày trong tuần)
-          dayTextColor: COLORS.white, // Màu văn bản cho ngày
-          todayTextColor: COLORS.PersianGreen, // Màu văn bản cho ngày hiện tại
-          selectedDayBackgroundColor: COLORS.PersianGreen, // Màu nền cho ngày được chọn
-          selectedDayTextColor: COLORS.black, // Màu văn bản cho ngày được chọn
-          arrowColor: COLORS.PersianGreen, // Màu mũi tên điều hướng tháng
-          monthTextColor: COLORS.white, // Màu văn bản tháng
-          // textDisabledColor: "#d9e1e8", 
-          // dotColor: COLORS.PersianGreen,
-          selectedDotColor: COLORS.black,
-        }}
+        theme={theme === "light" ? lightTheme : darkTheme}
+        style={{borderRadius: 10}}
         onDayPress={(date) => {
           if (doctorDates[date.dateString]?.marked) {
             setSelectedDate(date.dateString);
-            if (setMessage) 
-              setMessage(null);
+            if (setMessage) setMessage(null);
           }
         }}
         markedDates={{
@@ -102,18 +116,29 @@ const CalendarCustom = ({
             : null,
         }}
       />
-      <View style={{ marginHorizontal: 14, marginBottom: 5 }}>
+      <View style={[{ marginBottom: 5 }, theme !== "light" && {marginHorizontal: 14}]}>
         <View style={styles.noteContainer}>
           <View style={[styles.circle, { backgroundColor: COLORS.gray }]} />
-          <Text style={styles.text}>Ngày bác sĩ có lịch làm việc</Text>
+          <Text
+            style={[styles.text, theme === "light" && { color: COLORS.black }]}>
+            Ngày bác sĩ có lịch làm việc
+          </Text>
         </View>
         <View style={styles.noteContainer}>
           <View
             style={[styles.circle, { backgroundColor: COLORS.PersianGreen }]}
           />
-          <Text style={styles.text}>Ngày bác sĩ có lịch khám</Text>
+          <Text
+            style={[styles.text, theme === "light" && { color: COLORS.black }]}>
+            Ngày bác sĩ có lịch khám
+          </Text>
         </View>
-        <Text style={[styles.text, { marginBottom: 5 }]}>
+        <Text
+          style={[
+            styles.text,
+            { marginBottom: 5 },
+            theme === "light" && { color: COLORS.black },
+          ]}>
           Chọn khung giờ khám
         </Text>
         {selectedDate !== null ? (
@@ -121,7 +146,7 @@ const CalendarCustom = ({
             options={hourOptions}
             selectedOption={selectedHour}
             onSelect={setSelectedHour}
-            textColor={COLORS.white}
+            textColor={theme === "light" ? COLORS.black : COLORS.white}
             setMessage={setMessage}
           />
         ) : (

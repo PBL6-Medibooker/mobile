@@ -2,13 +2,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { COLORS } from "../constants";
 
-const HeaderBack = ({ navigation, title }) => {
+const HeaderBack = ({ navigation, title, screenName }) => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={{marginLeft: 5, height: 48, width: 48 }}>
+      <TouchableOpacity style={{ marginLeft: 5, height: 48, width: 48 }}>
         <Ionicons
           onPress={() => {
-            navigation.goBack();
+            if (!screenName) navigation.goBack();
+            else navigation.navigate(screenName);
           }}
           name="arrow-back-outline"
           size={48}
@@ -27,14 +28,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: COLORS.PersianGreen,
-    paddingVertical: 5
+    paddingVertical: 5,
   },
   title: {
     flex: 1,
-    textAlign: 'center',
+    textAlign: "center",
     marginRight: 53,
     color: COLORS.white,
     fontSize: 18,
-    fontWeight: 'bold'
-  }
+    fontWeight: "bold",
+  },
 });

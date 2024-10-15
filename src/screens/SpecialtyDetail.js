@@ -98,13 +98,10 @@ const data = [
     },
   },
 ];
-const SpecialtyDetail = ({ route, navigation }) => {
-  const { specialty } = route.params || {};
-  console.log(specialty.value);
-  
+const SpecialtyDetail = ({ specialty, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderBack navigation={navigation} title={specialty.value} />
+      <HeaderBack navigation={navigation} title={specialty.value} screenName="Specialty" />
       <View style={styles.searchContainer}>
         <View style={styles.searchButton}>
           <TextInput style={styles.textInput} placeholder="Search" />
@@ -137,7 +134,7 @@ const styles = StyleSheet.create({
   list: {
     // borderWidth: 1,
     paddingHorizontal: 8,
-    marginTop: 8
+    marginTop: 8,
   },
   searchContainer: {
     backgroundColor: COLORS.PersianGreen,

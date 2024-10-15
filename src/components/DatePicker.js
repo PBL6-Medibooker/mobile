@@ -21,6 +21,7 @@ const DatePicker = ({ onChange, placeholder, disabled }) => {
   const handleClose = useCallback(() => {
     setSelectedDate(null);
     setSelectedHour(null);
+    setMessage(null);
     setOpenStartDatePicker(false); // Close the modal
   }, []);
 
@@ -65,13 +66,16 @@ const DatePicker = ({ onChange, placeholder, disabled }) => {
               selectedHour={selectedHour}
               setSelectedHour={setSelectedHour}
               setMessage={setMessage}
+              theme="dark"
             />
 
+            {message && (
             <View style={{ flexDirection: "row", justifyContent: "center" }}>
               <Text style={{ color: "red", textAlign: "center" }}>
                 {message}
               </Text>
             </View>
+            )}
 
             <View
               style={{

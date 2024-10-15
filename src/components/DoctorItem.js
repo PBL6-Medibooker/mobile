@@ -13,7 +13,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 const DoctorItem = ({ item, navigation }) => {
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => {navigation.navigate("DoctorInfo")}} style={styles.doctorContainer}>
+      <Pressable onPress={() => {navigation.navigate("DoctorInfo", {doctor_id: item.id})}} style={styles.doctorContainer}>
         <Image source={images.avatar} style={styles.image} />
         <View style={styles.infoContainer}>
           <Text style={styles.name}>{item.name}</Text>
@@ -25,7 +25,7 @@ const DoctorItem = ({ item, navigation }) => {
           </Text>
         </View>
       </Pressable>
-      <TouchableOpacity onPress={() => {navigation.navigate("Booking")}} style={styles.makeAppointment}>
+      <TouchableOpacity onPress={() => {navigation.navigate("Booking", {doctor_id: item.id})}} style={styles.makeAppointment}>
         <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
       </TouchableOpacity>
     </View>

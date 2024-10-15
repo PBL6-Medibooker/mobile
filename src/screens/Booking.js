@@ -27,7 +27,7 @@ const ServiceOptions = [
   { label: "Khám online", value: "online" },
 ];
 
-const Booking = ({ navigation }) => {
+const Booking = ({ navigation, route }) => {
   const [area, setArea] = useState(null);
   const [specialty, setSpecialty] = useState(null);
   const [service, setService] = useState(null);
@@ -39,7 +39,11 @@ const Booking = ({ navigation }) => {
   const [dataSpecialities, setDataSpecialities] = useState([]);
   const [dataAreas, setDataAreas] = useState([]);
 
+  const { doctor_id } = route.params || {};
+  if (doctor_id) console.log(doctor_id);
+
   useEffect(() => {
+    // setDoctor(route.params || null)
     const fetchSpecialties = async () => {
       try {
         const specialties = await Specialty_API.get_Speciality_List();
@@ -47,7 +51,7 @@ const Booking = ({ navigation }) => {
           specialty.toListDropdown()
         );
         setDataSpecialities(dropdownData);
-        console.log(dropdownData);
+        // console.log(dropdownData);
       } catch (error) {
         console.error("Error fetching specialties:", error);
         // You can also set an error state here if needed
@@ -60,7 +64,7 @@ const Booking = ({ navigation }) => {
 
         const dropdownData = areas.map((region) => region.toListDropdown());
         setDataAreas(dropdownData);
-        console.log(dropdownData);
+        // console.log(dropdownData);
       } catch (error) {
         console.error("Error fetching areas:", error);
       }

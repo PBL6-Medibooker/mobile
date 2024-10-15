@@ -36,7 +36,7 @@ const UserProfile = ({ navigation }) => {
           <TouchableOpacity activeOpacity={0.85} onPress={() => {}}>
             <Image
               source={uriAvatar ? { uri: uriAvatar } : images.user_default}
-              style={styles.myAvatar}
+              style={styles.image}
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -143,12 +143,17 @@ const styles = StyleSheet.create({
     paddingStart: 25,
   },
   myAvatar: {
-    height: 120,
     width: 120,
+    aspectRatio: 1,
     resizeMode: "cover",
     borderRadius: 40,
     marginRight: 12,
     backgroundColor: COLORS.silver,
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 40,
   },
   uploadAvatar: {
     position: "absolute",

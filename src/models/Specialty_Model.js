@@ -1,4 +1,5 @@
 import { Buffer } from "buffer";
+import { bufferToBase64 } from "../utils/BufferToBase64";
 
 class Specialty {
   constructor(id, name, description, specialty_image, is_deleted) {
@@ -17,6 +18,13 @@ class Specialty {
   }
 
   toList() {
+    if (this.specialty_image && this.specialty_image.data) {
+      const base64String = Buffer.from(this.specialty_image.data).toString(
+        "base64"
+      );
+      this.specialty_image = `data:image/png;base64,${base64String}`;
+    }
+
     return {
       id: this._id,
       value: this.name,
@@ -24,9 +32,6 @@ class Specialty {
     };
   }
 
-
-
-  
   // static fromJson(json) {
   //   // const specialityImage =
   //   //   json.speciality_image && json.speciality_image.data

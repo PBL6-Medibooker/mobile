@@ -11,7 +11,6 @@ import { COLORS, images } from "../constants";
 import { useEffect, useState } from "react";
 import { HeaderBack } from "../components";
 import Specialty_API from "../API/Specialty_API";
-import Specialty_Model from "../models/Specialty_Model";
 
 // Hàm thêm các item trống nếu không chia hết cho 3
 const formatData = (data, numColumns) => {
@@ -36,6 +35,8 @@ const Specialty = ({ navigation }) => {
       try {
         const specialties = await Specialty_API.get_Speciality_List();
         const dataToList = specialties.map((specialty) => specialty.toList());
+        console.log(dataToList[0].image);
+        
         setSpecialityList(dataToList); // Cập nhật danh sách chuyên môn
       } catch (error) {
         console.error("Lỗi khi lấy danh sách chuyên môn:", error); // Thông báo lỗi nếu xảy ra
@@ -61,11 +62,11 @@ const Specialty = ({ navigation }) => {
           return (
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate("SpecialtyDetail", { specialty: item })
+                navigation.navigate("BottomTabNavigation", { specialty: item })
               }
               style={styles.itemSpecialty}>
               {item.image ? (
-                <Image source={images.logo} style={styles.imageSpecialty} />
+                <Image source={{uri: item.image}} style={styles.imageSpecialty} />
               ) : (
                 <Image source={images.logo} style={styles.imageSpecialty} />
               )}
@@ -86,7 +87,7 @@ export default Specialty;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    // backgroundColor: COLORS.white,
   },
   list: {
     // borderWidth: 1,
@@ -101,10 +102,11 @@ const styles = StyleSheet.create({
     aspectRatio: 1, // Chiều cao bằng chiều rộng để tạo khung vuông
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: COLORS.silver,
     borderRadius: 5,
     overflow: "hidden",
+    backgroundColor: COLORS.white,
   },
   invisibleItem: {
     backgroundColor: "transparent", // Đảm bảo các item trống không hiển thị
