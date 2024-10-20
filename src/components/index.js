@@ -9,6 +9,7 @@ import DoctorItem from "./DoctorItem";
 import DatePicker from "./DatePicker";
 import CalendarCustom from "./CalendarCustom";
 import InputPassword from "./InputPassword";
+import BottomSheet from "./BottomSheet";
 
 export {
   ArticleItem,
@@ -22,4 +23,5 @@ export {
   DatePicker,
   CalendarCustom,
   InputPassword,
+  BottomSheet
 };

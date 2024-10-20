@@ -10,9 +10,8 @@ import { useCallback, useState } from "react";
 import { COLORS } from "../constants";
 import Entypo from "@expo/vector-icons/Entypo";
 
-const Dropdown = ({ data, onChange, placeholder, disabled }) => {
+const Dropdown = ({ data, onChange, placeholder, disabled, value }) => {
   const [expanded, setExpanded] = useState(false);
-  const [value, setValue] = useState("");
 
   const toggleExpanded = useCallback(() => {
     if (!disabled) {
@@ -24,7 +23,6 @@ const Dropdown = ({ data, onChange, placeholder, disabled }) => {
     (item) => {
       if (!disabled) {
         onChange(item);
-        setValue(item.value);
         setExpanded(false);
       }
     },
@@ -44,7 +42,7 @@ const Dropdown = ({ data, onChange, placeholder, disabled }) => {
           ]}
           numberOfLines={1}
           ellipsizeMode="tail">
-          {value || placeholder}
+          {value ? value.value : placeholder} {/* Hiển thị giá trị hiện tại */}
         </Text>
         <Entypo
           name={expanded && data.length > 0 ? "chevron-up" : "chevron-down"}
@@ -55,7 +53,7 @@ const Dropdown = ({ data, onChange, placeholder, disabled }) => {
 
       {expanded && !disabled && data ? (
         <View style={styles.options}>
-          <ScrollView style={{ maxHeight: 200 }}>
+          <ScrollView style={{ maxHeight: 150 }}>
             {data.map((item, index) => (
               <TouchableOpacity
                 onPress={() => onSelect(item)}
@@ -64,12 +62,16 @@ const Dropdown = ({ data, onChange, placeholder, disabled }) => {
                 style={[
                   styles.optionItem,
                   index === data.length - 1 && { borderBottomWidth: 0 },
-                  // value === item.value && styles.selectedOption, // Thay đổi màu cho item được chọn
                 ]}>
-                <View style={value === item.value && styles.selectedOption}>
+                <View
+                  style={
+                    value && value.id === item.id ? styles.selectedOption : {}
+                  }>
                   <Text
                     style={
-                      value === item.value ? styles.selectedText : styles.text
+                      value && value.id === item.id
+                        ? styles.selectedText
+                        : styles.text
                     }>
                     {item.value}
                   </Text>

@@ -114,6 +114,7 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
         style={styles.list}
         data={data}
         keyExtractor={(item) => item.id}
+        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
         renderItem={({ item }) => {
           return <DoctorItem item={item} navigation={navigation} />;
         }}
@@ -129,12 +130,12 @@ export default SpecialtyDetail;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    // backgroundColor: COLORS.white,
   },
   list: {
     // borderWidth: 1,
-    paddingHorizontal: 8,
-    marginTop: 8,
+    paddingHorizontal: 10,
+    marginTop: 10,
   },
   searchContainer: {
     backgroundColor: COLORS.PersianGreen,

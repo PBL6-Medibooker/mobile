@@ -17,17 +17,20 @@ const DoctorItem = ({ item, navigation }) => {
         <Image source={images.avatar} style={styles.image} />
         <View style={styles.infoContainer}>
           <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.position} numberOfLines={3} ellipsizeMode="tail">
+          <Text style={styles.position} numberOfLines={2} ellipsizeMode="tail">
             {item.bio.position}
           </Text>
-          <Text style={styles.intro} numberOfLines={3} ellipsizeMode="tail">
+          {/* <Text style={styles.intro} numberOfLines={3} ellipsizeMode="tail">
             {item.bio.introduction}
-          </Text>
-        </View>
-      </Pressable>
-      <TouchableOpacity onPress={() => {navigation.navigate("Booking", {doctor_id: item.id})}} style={styles.makeAppointment}>
+          </Text> */}
+          <TouchableOpacity onPress={() => {navigation.navigate("Booking", {doctor_id: item.id})}} style={styles.makeAppointment}>
         <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
       </TouchableOpacity>
+        </View>
+      </Pressable>
+      {/* <TouchableOpacity onPress={() => {navigation.navigate("Booking", {doctor_id: item.id})}} style={styles.makeAppointment}>
+        <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
+      </TouchableOpacity> */}
     </View>
   );
 };
@@ -36,9 +39,12 @@ export default DoctorItem;
 
 const styles = StyleSheet.create({
   container: {
-    borderBottomWidth: 2,
-    paddingVertical: 5,
-    borderColor: COLORS.silver,
+    // borderBottomWidth: 2,
+    // paddingVertical: 5,
+    // borderColor: COLORS.silver,
+    padding: 15,
+    backgroundColor: COLORS.white,
+    borderRadius: 10
   },
   doctorContainer: {
     flex: 1,
@@ -48,8 +54,10 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     resizeMode: "cover",
-    borderRadius: 10,
-    marginEnd: 5,
+    borderRadius: 15,
+    // borderBottomRightRadius: 30,
+    // borderTopLeftRadius: 30,
+    marginEnd: 10,
   },
   name: {
     fontSize: 16,
@@ -69,6 +77,6 @@ const styles = StyleSheet.create({
   },
   makeAppointment: {
     alignItems: "flex-end",
-    marginEnd: 5,
+    // marginEnd: 5,
   },
 });

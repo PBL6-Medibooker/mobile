@@ -98,7 +98,8 @@ const Register = ({ navigation }) => {
   };
 
   const reqLogin = async () => {
-    console.log("spec:", specialtyDoctor.value);
+    if (specialtyDoctor) 
+      console.log("spec:", specialtyDoctor.value);
 
     const user = new User(email, password, phone, fullname, accountType);
 
