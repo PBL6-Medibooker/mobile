@@ -13,21 +13,36 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 const DoctorItem = ({ item, navigation }) => {
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => {navigation.navigate("DoctorInfo", {doctor_id: item.id})}} style={styles.doctorContainer}>
-        <Image source={images.avatar} style={styles.image} />
+      <View style={styles.doctorContainer}>
+        <Pressable
+          style={styles.imageContainer}
+          onPress={() => {
+            navigation.navigate("DoctorInfo", { doctor_id: item.id });
+          }}>
+          <Image source={images.avatar} style={styles.image} />
+        </Pressable>
         <View style={styles.infoContainer}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.position} numberOfLines={2} ellipsizeMode="tail">
-            {item.bio.position}
-          </Text>
-          {/* <Text style={styles.intro} numberOfLines={3} ellipsizeMode="tail">
-            {item.bio.introduction}
-          </Text> */}
-          <TouchableOpacity onPress={() => {navigation.navigate("Booking", {doctor_id: item.id})}} style={styles.makeAppointment}>
-        <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
-      </TouchableOpacity>
+          <Pressable
+            onPress={() => {
+              navigation.navigate("DoctorInfo", { doctor_id: item.id });
+            }}>
+            <Text style={styles.name}>{item.name}</Text>
+            <Text
+              style={styles.position}
+              numberOfLines={2}
+              ellipsizeMode="tail">
+              {item.bio.position}
+            </Text>
+          </Pressable>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Booking", { doctor_id: item.id });
+            }}
+            style={styles.makeAppointment}>
+            <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
+          </TouchableOpacity>
         </View>
-      </Pressable>
+      </View>
       {/* <TouchableOpacity onPress={() => {navigation.navigate("Booking", {doctor_id: item.id})}} style={styles.makeAppointment}>
         <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
       </TouchableOpacity> */}
@@ -44,19 +59,22 @@ const styles = StyleSheet.create({
     // borderColor: COLORS.silver,
     padding: 15,
     backgroundColor: COLORS.white,
-    borderRadius: 10
+    borderRadius: 10,
   },
   doctorContainer: {
     flex: 1,
     flexDirection: "row",
+  },
+  imageContainer: {
+    width: 80,
+    height: 80,
+    marginEnd: 10,
   },
   image: {
     width: 80,
     height: 80,
     resizeMode: "cover",
     borderRadius: 15,
-    // borderBottomRightRadius: 30,
-    // borderTopLeftRadius: 30,
     marginEnd: 10,
   },
   name: {
@@ -77,6 +95,7 @@ const styles = StyleSheet.create({
   },
   makeAppointment: {
     alignItems: "flex-end",
+    alignSelf: "flex-end",
     // marginEnd: 5,
   },
 });

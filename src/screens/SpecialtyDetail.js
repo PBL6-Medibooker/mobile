@@ -101,7 +101,7 @@ const data = [
 const SpecialtyDetail = ({ specialty, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderBack navigation={navigation} title={specialty.value} screenName="Specialty" />
+      <HeaderBack navigation={navigation} title={specialty.name} screenName="Specialty" />
       <View style={styles.searchContainer}>
         <View style={styles.searchButton}>
           <TextInput style={styles.textInput} placeholder="Search" />

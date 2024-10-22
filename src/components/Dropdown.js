@@ -42,7 +42,7 @@ const Dropdown = ({ data, onChange, placeholder, disabled, value }) => {
           ]}
           numberOfLines={1}
           ellipsizeMode="tail">
-          {value ? value.value : placeholder} {/* Hiển thị giá trị hiện tại */}
+          {value ? value.name : placeholder} {/* Hiển thị giá trị hiện tại */}
         </Text>
         <Entypo
           name={expanded && data.length > 0 ? "chevron-up" : "chevron-down"}
@@ -53,11 +53,14 @@ const Dropdown = ({ data, onChange, placeholder, disabled, value }) => {
 
       {expanded && !disabled && data ? (
         <View style={styles.options}>
-          <ScrollView style={{ maxHeight: 150 }}>
+          <ScrollView
+            style={{ maxHeight: 150 }}
+            nestedScrollEnabled={true}
+            showsVerticalScrollIndicator={false}>
             {data.map((item, index) => (
               <TouchableOpacity
                 onPress={() => onSelect(item)}
-                key={item.id}
+                key={item._id}
                 activeOpacity={0.8}
                 style={[
                   styles.optionItem,
@@ -65,15 +68,15 @@ const Dropdown = ({ data, onChange, placeholder, disabled, value }) => {
                 ]}>
                 <View
                   style={
-                    value && value.id === item.id ? styles.selectedOption : {}
+                    value && value._id === item._id ? styles.selectedOption : {}
                   }>
                   <Text
                     style={
-                      value && value.id === item.id
+                      value && value._id === item._id
                         ? styles.selectedText
                         : styles.text
                     }>
-                    {item.value}
+                    {item.name}
                   </Text>
                 </View>
               </TouchableOpacity>

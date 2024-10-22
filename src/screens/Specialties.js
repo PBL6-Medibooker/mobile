@@ -10,9 +10,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, images } from "../constants";
 import { useEffect, useState } from "react";
 import { HeaderBack } from "../components";
-import Specialty_API from "../API/Specialty_API";
+import useSpecialities from "../hooks/useSpecialities";
 
-// Hàm thêm các item trống nếu không chia hết cho 3
+// Hàm thêm các item trống nếu không chia hết cho numColumns
 const formatData = (data, numColumns) => {
   const numberOfFullRows = Math.floor(data.length / numColumns);
   let numberOfElementsLastRow = data.length - numberOfFullRows * numColumns;
@@ -28,31 +28,16 @@ const formatData = (data, numColumns) => {
 
 const Specialty = ({ navigation }) => {
   const [specialty, setSpecialty] = useState({});
-  const [specialityList, setSpecialityList] = useState([]);
-
-  useEffect(() => {
-    const fetchSpecialties = async () => {
-      try {
-        const specialties = await Specialty_API.get_Speciality_List();
-        const dataToList = specialties.map((specialty) => specialty.toList());
-        console.log(dataToList[0].image);
-        
-        setSpecialityList(dataToList); // Cập nhật danh sách chuyên môn
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách chuyên môn:", error); // Thông báo lỗi nếu xảy ra
-      }
-    };
-
-    fetchSpecialties();
-  }, []);
-
+  
+  const [specialities] = useSpecialities();
+  
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         style={styles.list}
-        data={formatData(specialityList, 2)} // Sử dụng hàm formatData
+        data={formatData(specialities, 2)} // Sử dụng hàm formatData
         numColumns={2}
-        keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
+        keyExtractor={(item) => item._id?.toString()}
         renderItem={({ item }) => {
           if (item.empty) {
             return (
@@ -65,12 +50,15 @@ const Specialty = ({ navigation }) => {
                 navigation.navigate("BottomTabNavigation", { specialty: item })
               }
               style={styles.itemSpecialty}>
-              {item.image ? (
-                <Image source={{uri: item.image}} style={styles.imageSpecialty} />
+              {item.speciality_image ? (
+                <Image
+                  source={{ uri: item.speciality_image }}
+                  style={styles.imageSpecialty}
+                />
               ) : (
                 <Image source={images.logo} style={styles.imageSpecialty} />
               )}
-              <Text style={styles.text}>{item.value}</Text>
+              <Text style={styles.text}>{item.name}</Text>
             </TouchableOpacity>
           );
         }}

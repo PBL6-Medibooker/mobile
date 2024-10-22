@@ -7,6 +7,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   BookingHistory,
   BookingHistoryScreen,
+  Forum,
   Home,
   HomeScreen,
   Login,
@@ -108,16 +109,16 @@ const DrawerNavigation = () => {
       )}
 
       <Drawer.Screen
-        name="Noti"
+        name="Forum"
         options={{
           drawerLabel: "Diễn đàn",
-          title: "Noti",
+          title: "Forum",
           headerShadowVisible: false,
           drawerIcon: ({ color }) => (
             <MaterialIcons name="forum" size={24} color={color} />
           ),
         }}
-        component={UserProfile}
+        component={Forum}
       />
 
       <Drawer.Screen

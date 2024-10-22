@@ -11,6 +11,7 @@ const COLORS = {
   MonteCarlo: "#89D5C9",
   Sinbad: "#9cd5cc",
   Turquoise: "#43dcc1",
+  Concrete: "#f2f2f2",
 };
 
 const FONTS = {

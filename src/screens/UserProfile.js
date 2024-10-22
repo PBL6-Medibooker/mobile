@@ -57,7 +57,7 @@ const UserProfile = ({ navigation }) => {
       </View>
 
       <View style={styles.mainContainer}>
-        <View style={styles.item}>
+        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate("UpdateUser")}>
           <Ionicons name="person-outline" size={28} style={styles.iconItem} />
           <Text style={styles.textItem}>Chỉnh Sửa Hồ Sơ</Text>
           <Ionicons
@@ -65,7 +65,7 @@ const UserProfile = ({ navigation }) => {
             size={28}
             color={COLORS.PersianGreen}
           />
-        </View>
+        </TouchableOpacity>
 
         <View style={styles.item}>
           <Ionicons name="wallet-outline" size={28} style={styles.iconItem} />

@@ -1,7 +1,5 @@
 import {
-  FlatList,
   Modal,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,

@@ -12,13 +12,12 @@ import { COLORS } from "../constants";
 import { useEffect, useState } from "react";
 import { Dropdown, HeaderBack, RadioView, DatePicker } from "../components";
 import { doctors } from "../utils/doctors";
-import Specialty_API from "../API/Specialty_API";
-import Area_Model from "../models/Area_Model";
-import Area_API from "../API/Area_API";
+import useSpecialities from "../hooks/useSpecialities";
+import useRegions from "../hooks/useRegions";
 
 const dataDoctors = doctors.map((s) => ({
-  id: s.id,
-  value: s.name,
+  _id: s.id,
+  name: s.name,
 }));
 
 const ServiceOptions = [
@@ -36,43 +35,11 @@ const Booking = ({ navigation, route }) => {
   const [healthStatus, setHealthStatus] = useState(null);
   const [datePicker, setDatePicker] = useState(null);
 
-  const [dataSpecialities, setDataSpecialities] = useState([]);
-  const [dataAreas, setDataAreas] = useState([]);
+  const [sortSpecialities] = useSpecialities();
+  const [regions] = useRegions();
 
   const { doctor_id } = route.params || {};
   if (doctor_id) console.log(doctor_id);
-
-  useEffect(() => {
-    // setDoctor(route.params || null)
-    const fetchSpecialties = async () => {
-      try {
-        const specialties = await Specialty_API.get_Speciality_List();
-        const dropdownData = specialties.map((specialty) =>
-          specialty.toListDropdown()
-        );
-        setDataSpecialities(dropdownData);
-        // console.log(dropdownData);
-      } catch (error) {
-        console.error("Error fetching specialties:", error);
-        // You can also set an error state here if needed
-      }
-    };
-
-    const fetchAreas = async () => {
-      try {
-        const areas = await Area_API.get_Region_List();
-
-        const dropdownData = areas.map((region) => region.toListDropdown());
-        setDataAreas(dropdownData);
-        // console.log(dropdownData);
-      } catch (error) {
-        console.error("Error fetching areas:", error);
-      }
-    };
-
-    fetchSpecialties();
-    fetchAreas();
-  }, []);
 
   const handle = () => {
     console.log(
@@ -88,15 +55,18 @@ const Booking = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView
+        nestedScrollEnabled={true}
+        showsVerticalScrollIndicator={false}>
         <HeaderBack navigation={navigation} title="ĐĂNG KÝ LỊCH HẸN" />
 
         <View style={styles.main}>
           <Text style={styles.text}>Chọn khu vực</Text>
           <Dropdown
-            data={dataAreas}
+            data={[...regions].reverse()}
             placeholder="Chọn khu vực"
             onChange={setArea}
+            value={area}
           />
           <Text style={styles.text}>Chọn dịch vụ khám</Text>
           <RadioView
@@ -107,17 +77,19 @@ const Booking = ({ navigation, route }) => {
           <Text style={styles.text}>Chọn chuyên khoa</Text>
           {area !== null && service !== null ? (
             <Dropdown
-              data={dataSpecialities}
+              data={[...sortSpecialities].reverse()}
               placeholder="Chọn chuyên khoa"
               onChange={setSpecialty}
               disabled={false}
+              value={specialty}
             />
           ) : (
             <Dropdown
-              data={dataSpecialities}
+              data={[...sortSpecialities].reverse()}
               placeholder="Chọn chuyên khoa"
               onChange={setSpecialty}
               disabled={true}
+              value={specialty}
             />
           )}
 
@@ -128,6 +100,7 @@ const Booking = ({ navigation, route }) => {
               placeholder="Chọn bác sĩ"
               onChange={setDoctor}
               disabled={false}
+              value={doctor}
             />
           ) : (
             <Dropdown
@@ -135,6 +108,7 @@ const Booking = ({ navigation, route }) => {
               placeholder="Chọn bác sĩ"
               onChange={setDoctor}
               disabled={true}
+              value={doctor}
             />
           )}
 

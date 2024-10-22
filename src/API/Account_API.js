@@ -1,13 +1,9 @@
-import axios from "axios";
-// import Account_API from "../API/Account_API";
+import client from "./client";
 
 class Account_API {
   userSignup = async (User) => {
     try {
-      const response = await axios.post(
-        "http://192.168.1.11:4000/acc/signup",
-        User.toJSON_Signup()
-      );
+      const response = await client.post("/acc/signup", User.toJSON_Signup());
 
       console.log("response: ", response.data);
       return response.data;
@@ -24,10 +20,7 @@ class Account_API {
 
   userLogin = async (User) => {
     try {
-      const response = await axios.post(
-        "http://192.168.1.11:4000/acc/login",
-        User.toJSON_Login()
-      );
+      const response = await client.post("/acc/login", User.toJSON_Login());
 
       console.log("response: ", response.data);
       return response.data;
@@ -43,5 +36,4 @@ class Account_API {
   };
 }
 
-// export default Account_API;
 module.exports = new Account_API();

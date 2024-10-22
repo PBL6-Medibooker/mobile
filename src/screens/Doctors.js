@@ -13,9 +13,8 @@ import { BottomSheet, DoctorItem, Dropdown, HeaderBack } from "../components";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
-import Specialty_API from "../API/Specialty_API";
 import { useEffect, useRef, useState } from "react";
-import Specialty_Model from "../models/Specialty_Model";
+import useSpecialities from "../hooks/useSpecialities";
 
 const data = [
   {
@@ -157,33 +156,22 @@ const data = [
 ];
 
 const Doctors = ({ navigation }) => {
-  const [dataSpecialities, setDataSpecialities] = useState([]);
   const [specialty, setSpecialty] = useState(null);
   const [sortBy, setSortBy] = useState(null);
+
+  const [sortSpecialities] = useSpecialities();
 
   const refRBSheet = useRef();
 
   const handleSpecialityChange = (specialty, sortBy) => {
-    if (specialty) setSpecialty(specialty);
+    if (specialty) {
+      setSpecialty(specialty);
+      console.log(specialty.name);
+    }
     if (sortBy) setSortBy(sortBy);
 
-    console.log(specialty, sortBy);
+    console.log(sortBy);
   };
-
-  useEffect(() => {
-    const fetchSpecialties = async () => {
-      try {
-        const specialties = await Specialty_API.get_Speciality_List();
-
-        const dataToList = specialties.map((specialty) => specialty.toList());
-        setDataSpecialities(dataToList); // Cập nhật danh sách chuyên môn
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách chuyên môn:", error); // Thông báo lỗi nếu xảy ra
-      }
-    };
-
-    fetchSpecialties();
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -256,7 +244,7 @@ const Doctors = ({ navigation }) => {
       <BottomSheet
         bottomSheetRef={refRBSheet}
         onSelected={handleSpecialityChange}
-        specialtyList={dataSpecialities}
+        specialtyList={[...sortSpecialities].reverse()}
       />
     </SafeAreaView>
   );
@@ -270,14 +258,18 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingHorizontal: 12,
-    marginTop: 8,
+    // marginTop: 8,
   },
   searchContainer: {
     paddingTop: 10,
-    paddingHorizontal: 12,
+    paddingHorizontal: 15,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: COLORS.PersianGreen,
+    paddingBottom: 25,
+    borderBottomStartRadius: 18,
+    borderBottomEndRadius: 18,
   },
   searchButton: {
     flex: 1,
@@ -296,7 +288,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   btnFilter: {
-    backgroundColor: COLORS.PersianGreen,
+    backgroundColor: COLORS.Light50PersianGreen,
     borderRadius: 8,
     marginStart: 5,
     height: 35,

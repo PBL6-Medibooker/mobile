@@ -11,7 +11,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 const ArticleItem = ({ data }) => (
   <View style={styles.itemContainer}>
-    <TouchableOpacity>
+    <TouchableOpacity  style={styles.imageButton}>
       <Image source={images.poster} style={styles.image} />
     </TouchableOpacity>
     <View style={styles.item}>
@@ -39,41 +39,45 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     flexDirection: "row",
   },
-  image: {
+  imageButton: {
     height: 70,
     width: 90,
+    overflow: "hidden",
+  },
+  image: {
+    height: '100%',
+    width: '100%',
     resizeMode: "cover",
-    borderRadius: 10,
     borderColor: COLORS.black,
-    padding: 10,
     borderWidth: 1,
+    borderRadius: 10,
     backgroundColor: COLORS.silver,
   },
   item: {
-    flex: 1, // This allows the content to fill the remaining space
+    flex: 1,
     marginLeft: 10,
   },
   dateContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 5
+    marginBottom: 5,
   },
   title: {
     fontWeight: "bold",
     fontSize: 14,
     textDecorationLine: "underline",
     color: COLORS.blue,
-    textAlign: 'justify'
+    textAlign: "justify",
   },
   content: {
     flex: 1, // Let the content take up the available space
     marginTop: 5,
     // marginEnd: 5,
-    textAlign: 'justify'
+    textAlign: "justify",
   },
   date: {
     fontSize: 12,
     color: COLORS.gray,
-    marginLeft: 5
+    marginLeft: 5,
   },
 });

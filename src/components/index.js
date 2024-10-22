@@ -10,6 +10,7 @@ import DatePicker from "./DatePicker";
 import CalendarCustom from "./CalendarCustom";
 import InputPassword from "./InputPassword";
 import BottomSheet from "./BottomSheet";
+import QandAItem from "./QandAItem";
 
 export {
   ArticleItem,
@@ -23,5 +24,6 @@ export {
   DatePicker,
   CalendarCustom,
   InputPassword,
-  BottomSheet
+  BottomSheet,
+  QandAItem,
 };

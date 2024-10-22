@@ -8,7 +8,7 @@ const VerifyBooking = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <HeaderBack navigation={navigation} title="XÁC THỰC THÔNG TIN" />
 
-      <ScrollView style={styles.main}>
+      <ScrollView style={styles.main} showsVerticalScrollIndicator={false}>
         <View style={styles.rowInfo}>
           <Text style={styles.text}>Họ tên:</Text>
           <Text style={styles.textInfo}>Lê Thị Huệ</Text>

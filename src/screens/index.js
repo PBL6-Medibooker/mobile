@@ -10,6 +10,9 @@ import SpecialtyDetail from "./SpecialtyDetail";
 import DoctorInfo from "./DoctorInfo";
 import Doctors from "./Doctors";
 import Logout from "./Logout";
+import Forum from "./Forum";
+import QADetail from "./QADetail";
+import UpdateUser from "./UpdateUser";
 
 export {
   Home,
@@ -23,5 +26,8 @@ export {
   SpecialtyDetail,
   DoctorInfo,
   Doctors,
-  Logout
+  Logout,
+  Forum,
+  QADetail,
+  UpdateUser,
 };

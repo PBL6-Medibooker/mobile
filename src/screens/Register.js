@@ -19,8 +19,8 @@ import { Dropdown, InputPassword, RadioButton } from "../components";
 import User from "../models/User_Model";
 import Account_API from "../API/Account_API";
 import Entypo from "@expo/vector-icons/Entypo";
-import Specialty_API from "../API/Specialty_API";
 import { UploadPDF } from "../utils/Upload";
+import useSpecialities from "../hooks/useSpecialities";
 
 const options = [
   { label: "Bác sĩ", value: "doctor" },
@@ -40,22 +40,7 @@ const Register = ({ navigation }) => {
   const [specialtyDoctor, setSpecialtyDoctor] = useState(null);
   const [proofDoctor, setProofDoctor] = useState(null);
 
-  const [dataSpecialities, setDataSpecialities] = useState([]);
-
-  useEffect(() => {
-    const fetchSpecialties = async () => {
-      try {
-        const specialties = await Specialty_API.get_Speciality_List();
-
-        const dataToList = specialties.map((specialty) => specialty.toList());
-        setDataSpecialities(dataToList); // Cập nhật danh sách chuyên môn
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách chuyên môn:", error); // Thông báo lỗi nếu xảy ra
-      }
-    };
-
-    fetchSpecialties();
-  }, []);
+  const [sortSpecialities] = useSpecialities();
 
   const handleRegister = () => {
     setIsVerified(true);
@@ -98,8 +83,7 @@ const Register = ({ navigation }) => {
   };
 
   const reqLogin = async () => {
-    if (specialtyDoctor) 
-      console.log("spec:", specialtyDoctor.value);
+    if (specialtyDoctor) console.log("spec:", specialtyDoctor.value);
 
     const user = new User(email, password, phone, fullname, accountType);
 
@@ -140,7 +124,9 @@ const Register = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <ScrollView>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled={true}>
         <View style={styles.header}>
           <TouchableOpacity>
             <Ionicons
@@ -253,9 +239,10 @@ const Register = ({ navigation }) => {
             <View>
               <Text style={styles.label}>Chuyên khoa</Text>
               <Dropdown
-                data={dataSpecialities}
+                data={[...sortSpecialities].reverse()}
                 onChange={setSpecialtyDoctor}
                 placeholder="Chọn chuyên khoa"
+                value={specialtyDoctor}
               />
 
               <View style={styles.import}>
@@ -271,14 +258,24 @@ const Register = ({ navigation }) => {
               </View>
 
               {uploadedFiles.map((file, index) => (
-                <View key={index} style={{ flexDirection: "row", alignItems: 'center' }}>
-                <Text style={{ fontSize: 20 }}>•  </Text>
-                  <Text  style={{ textDecorationLine: 'underline', color: COLORS.blue, marginEnd: 10 }}>{file.name}</Text>
+                <View
+                  key={index}
+                  style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text style={{ fontSize: 20 }}>• </Text>
+                  <Text
+                    style={{
+                      textDecorationLine: "underline",
+                      color: COLORS.blue,
+                      marginEnd: 10,
+                    }}>
+                    {file.name}
+                  </Text>
                   <TouchableOpacity onPress={() => handleRemoveFile(index)}>
                     <Ionicons name="close" size={24} color={COLORS.gray} />
                   </TouchableOpacity>
                 </View>
               ))}
+              {/* <View style={{height: 20}} /> */}
             </View>
           )}
 
@@ -304,6 +301,8 @@ const Register = ({ navigation }) => {
               Đăng ký
             </Text>
           </Pressable>
+
+          {accountType === "doctor" && <View style={{ height: 100 }} />}
         </View>
       </ScrollView>
     </SafeAreaView>
