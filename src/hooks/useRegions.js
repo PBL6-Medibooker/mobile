@@ -2,19 +2,13 @@ import { useEffect, useState } from "react";
 import Region_API from "../API/Region_API";
 
 const useRegions = () => {
-  const [regions, setRegions] = useState([]);
-  const [sortRegions, setSortRegions] = useState([]);
-
-  const filterSort = (data) => {
-    return [...data].sort((a, b) => a.name.localeCompare(b.name));
-  };
+  const [regionsHook, setRegionsHook] = useState([]);
 
   const filterRegions = async () => {
     try {
       const allRegions = await Region_API.get_Region_List();
 
-      setRegions(allRegions);
-      setSortRegions(filterSort(allRegions));
+      setRegionsHook(allRegions.sort((a, b) => a.name.localeCompare(b.name)));
     } catch (error) {
       console.error("Failed to fetch specialities:", error);
     }
@@ -24,7 +18,7 @@ const useRegions = () => {
     filterRegions();
   }, []);
 
-  return [regions, sortRegions];
+  return [regionsHook];
 };
 
 export default useRegions;

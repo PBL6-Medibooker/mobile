@@ -1,39 +1,30 @@
-import {
-  Modal,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useCallback, useState } from "react";
 import { COLORS } from "../constants";
 import CalendarCustom from "./CalendarCustom";
 
-const DatePicker = ({ onChange, placeholder, disabled }) => {
+const DatePicker = ({ onChange, placeholder, disabled, schedule, value }) => {
   const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedHour, setSelectedHour] = useState(null);
   const [message, setMessage] = useState(null);
 
-  const handleClose = useCallback(() => {
-    setSelectedDate(null);
-    setSelectedHour(null);
+  const handleClose = () => {
+    onChange({
+      date: null,
+      dayOfWeek: null,
+      time: null
+    });
     setMessage(null);
     setOpenStartDatePicker(false); // Close the modal
-  }, []);
+  };
 
-  const handleSetDate = useCallback(() => {
-    if (selectedDate !== null && selectedHour !== null) {
-      onChange({
-        day: selectedDate,
-        hour: selectedHour,
-      });
+  const handleSetDate = () => {
+    if (value.time !== null) {
       setOpenStartDatePicker(false);
     } else {
       setMessage("* Chưa chọn ngày - khung giờ");
     }
-  }, [selectedDate, selectedHour, onChange]);
+  };
 
   return (
     <View>
@@ -49,8 +40,10 @@ const DatePicker = ({ onChange, placeholder, disabled }) => {
           ]}
           numberOfLines={1}
           ellipsizeMode="tail">
-          {selectedDate && selectedHour
-            ? selectedHour + ", Ngày " + selectedDate
+          {value.date !== null &&
+          value.dayOfWeek !== null &&
+          value.time !== null
+            ? value.time.label + ", " + value.dayOfWeek + " " + value.date
             : placeholder}
         </Text>
         <AntDesign name="calendar" size={18} color={COLORS.gray} />
@@ -59,20 +52,22 @@ const DatePicker = ({ onChange, placeholder, disabled }) => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <CalendarCustom
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              selectedHour={selectedHour}
-              setSelectedHour={setSelectedHour}
+              schedule={schedule}
               setMessage={setMessage}
+              setSelectedDay={(val) => {
+                onChange(val);
+                console.log("dp: ", val);
+              }}
+              selectedDay={value}
               theme="dark"
             />
 
             {message && (
-            <View style={{ flexDirection: "row", justifyContent: "center" }}>
-              <Text style={{ color: "red", textAlign: "center" }}>
-                {message}
-              </Text>
-            </View>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                <Text style={{ color: "red", textAlign: "center" }}>
+                  {message}
+                </Text>
+              </View>
             )}
 
             <View

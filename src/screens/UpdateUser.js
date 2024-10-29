@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HeaderBack } from "../components";
 import { COLORS } from "../constants";
@@ -9,17 +9,41 @@ const UpdateUser = ({ navigation }) => {
       <HeaderBack navigation={navigation} title="Chỉnh Sửa Hồ Sơ" />
 
       <View style={styles.body}>
-        <Text style={styles.text}>Họ và tên:</Text>
-        <TextInput style={styles.textInput} />
-
-        <Text style={styles.text}>Họ và</Text>
-        <TextInput style={styles.textInput} />
+        <Text style={styles.text}>Email</Text>
+        <TextInput style={styles.textInput} placeholder="example@axample.com" />
 
         <Text style={styles.text}>Họ và tên</Text>
-        <TextInput style={styles.textInput} />
+        <TextInput style={styles.textInput} placeholder="Fullname" />
 
-        <Text style={styles.text}>Họ và tên dgydhdikd</Text>
-        <TextInput style={styles.textInput} />
+        <Text style={styles.text}>Số điện thoại</Text>
+        <TextInput style={styles.textInput} placeholder="0123456789" />
+
+        <Text style={styles.text}>Tình trạng sức khoẻ</Text>
+        <TextInput
+          style={[
+            styles.textInput,
+            {
+              textAlignVertical: "top",
+              height: 100,
+            },
+          ]}
+          placeholder="Underlying Condition"
+          numberOfLines={3}
+          multiline
+        />
+
+        <Pressable
+          onPress={() => {}}
+          style={({ pressed }) => [
+            {
+              backgroundColor: pressed
+                ? COLORS.Light50PersianGreen
+                : COLORS.PersianGreen,
+            },
+            styles.button,
+          ]}>
+          <Text style={styles.buttonText}>Chỉnh sửa</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -32,7 +56,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   body: {
-    padding: 20,
+    marginHorizontal: 20,
+    marginTop: 15,
   },
   field: {
     flexDirection: "row",
@@ -41,13 +66,28 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   textInput: {
-    borderBottomWidth: 1,
-    borderColor: COLORS.gray,
-    fontSize: 16,
-    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: COLORS.silver,
+    marginBottom: 8,
+    backgroundColor: COLORS.white,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 5,
   },
   text: {
     fontSize: 16,
-    // marginBottom: 10,
+    marginBottom: 2,
+  },
+  button: {
+    marginTop: 12,
+    borderRadius: 5,
+    color: COLORS.PersianGreen,
+    padding: 8,
+  },
+  buttonText: {
+    color: COLORS.white,
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 15,
   },
 });

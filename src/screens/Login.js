@@ -1,6 +1,5 @@
 import {
   Alert,
-  Button,
   Image,
   Pressable,
   StyleSheet,
@@ -12,66 +11,52 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, images } from "../constants";
-import User from "../models/User_Model";
-import Account_API from "../API/Account_API";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../AuthProvider";
 import { InputPassword } from "../components";
+import Account_API from "../API/Account_API";
 
 const Login = ({ navigation }) => {
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
   // const [message, setMessage] = useState(null);
   // const [isVerified, setIsVerified] = useState(false);
+  const [account, setAccount] = useState({
+    email: "",
+    password: "",
+  });
 
-  const { storedToken, updateToken } = useAuth();
-  // const [storedEmail, setStoredEmail] = useState(null);
+  const { login } = useAuth();
 
   useEffect(() => {
     const getLoginHistory = async () => {
       const mail = await AsyncStorage.getItem("myEmail");
-      setEmail(mail);
+      setAccount({ ...account, email: mail });
     };
     getLoginHistory();
   }, []);
 
-  // const isBlank = () => {
-  //   if (!email) {
-  //     setMessage("email");
-  //     return;
-  //   }
-  //   if (!password) {
-  //     setMessage("password");
-  //     return;
-  //   }
-
-  //   setMessage(null); // Nếu không có lỗi nào thì xóa thông báo
-  // };
-
   const handleLogin = async () => {
-    // setIsVerified(true);
-    // isBlank();
-    const user = new User(email, password);
-    const res = await Account_API.userLogin(user);
+    try {
+      const res = await Account_API.userLogin(account);
+      if (typeof res === "object" && res.token && res.role === "user") {
+        Alert.alert("Thông báo", "Đăng nhập thành công.", [
+          {
+            text: "OK",
+            onPress: async () => {
+              login(res.token);
+              await AsyncStorage.setItem("myEmail", res.email);
+              console.log(res);
 
-    Alert.alert(
-      "Thông báo",
-      typeof res === "string" ? res : "Đăng nhập thành công.", //JSON.stringify(res)
-      [
-        {
-          text: "OK",
-          onPress: async () => {
-            if (typeof res !== "string")
-              if (res.token) {
-                updateToken(res.token);
-                await AsyncStorage.setItem("myEmail", email);
-                navigation.navigate("Home");
-              }
+              navigation.navigate("Home");
+            },
           },
-        },
-      ]
-    );
+        ]);
+      } else {
+        Alert.alert("Lỗi", res, [{ text: "OK" }]);
+      }
+    } catch (error) {
+      console.error("Error during signup:", error);
+    }
   };
 
   return (
@@ -99,13 +84,17 @@ const Login = ({ navigation }) => {
             style={styles.textInput}
             placeholder="Nhập email."
             keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
+            value={account.email}
+            onChangeText={(value) => {
+              setAccount({ ...account, email: value });
+            }}
           />
           <Text style={styles.label}>Mật khẩu</Text>
           <InputPassword
-            value={password}
-            onChangeText={setPassword}
+            value={account.password}
+            onChangeText={(value) => {
+              setAccount({ ...account, password: value });
+            }}
           />
 
           <Pressable

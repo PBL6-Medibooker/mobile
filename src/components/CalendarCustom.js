@@ -2,63 +2,17 @@ import { StyleSheet, Text, View } from "react-native";
 import { LocaleConfig, Calendar } from "react-native-calendars";
 import { COLORS } from "../constants";
 import RadioView from "./RadioView";
-import { useState } from "react";
-
-LocaleConfig.locales["vn"] = {
-  monthNames: [
-    "Tháng 1",
-    "Tháng 2",
-    "Tháng 3",
-    "Tháng 4",
-    "Tháng 5",
-    "Tháng 6",
-    "Tháng 7",
-    "Tháng 8",
-    "Tháng 9",
-    "Tháng 10",
-    "Tháng 11",
-    "Tháng 12",
-  ],
-  monthNamesShort: [
-    "Th1",
-    "Th2",
-    "Th3",
-    "Th4",
-    "Th5",
-    "Th6",
-    "Th7",
-    "Th8",
-    "Th9",
-    "Th10",
-    "Th11",
-    "Th12",
-  ],
-  dayNames: [
-    "Chủ Nhật",
-    "Thứ Hai",
-    "Thứ Ba",
-    "Thứ Tư",
-    "Thứ Năm",
-    "Thứ Sáu",
-    "Thứ Bảy",
-  ],
-  dayNamesShort: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
-  today: "Hôm nay",
-};
-// Set the default locale to Vietnamese
-LocaleConfig.defaultLocale = "vn";
+import { useEffect, useState } from "react";
+import moment from "moment";
 
 const darkTheme = {
-  calendarBackground: COLORS.black, // Màu nền cho lịch
-  // textSectionTitleColor: COLORS.gray, // Màu văn bản tiêu đề (ngày trong tuần)
-  dayTextColor: COLORS.white, // Màu văn bản cho ngày
-  todayTextColor: COLORS.PersianGreen, // Màu văn bản cho ngày hiện tại
-  selectedDayBackgroundColor: COLORS.PersianGreen, // Màu nền cho ngày được chọn
-  selectedDayTextColor: COLORS.black, // Màu văn bản cho ngày được chọn
-  arrowColor: COLORS.PersianGreen, // Màu mũi tên điều hướng tháng
-  monthTextColor: COLORS.white, // Màu văn bản tháng
-  // textDisabledColor: "#d9e1e8",
-  // dotColor: COLORS.PersianGreen,
+  calendarBackground: COLORS.black,
+  dayTextColor: COLORS.white,
+  todayTextColor: COLORS.PersianGreen,
+  selectedDayBackgroundColor: COLORS.PersianGreen,
+  selectedDayTextColor: COLORS.black,
+  arrowColor: COLORS.PersianGreen,
+  monthTextColor: COLORS.white,
   selectedDotColor: COLORS.black,
 };
 
@@ -74,41 +28,78 @@ const lightTheme = {
 };
 
 const CalendarCustom = ({
-  selectedDate,
-  setSelectedDate,
-  selectedHour,
-  setSelectedHour,
   setMessage,
   theme,
+  schedule,
+  selectedDay,
+  setSelectedDay,
 }) => {
-  const doctorDates = {
-    "2024-10-09": { marked: true, dotColor: COLORS.PersianGreen },
-    "2024-10-10": { marked: true, dotColor: COLORS.PersianGreen },
-    "2024-10-16": { marked: true, dotColor: COLORS.PersianGreen },
-    "2024-10-17": { marked: true, dotColor: COLORS.PersianGreen },
-    "2024-10-23": { marked: true, dotColor: COLORS.PersianGreen },
-    "2024-11-07": { marked: true, dotColor: COLORS.PersianGreen },
+  const [markedDates, setMarkedDates] = useState({});
+
+  const getMarkedDatesForMonth = () => {
+    let marked = {};
+    const currentDate = moment();
+    const endOfMonth = moment().add(1, "month");
+
+    while (currentDate.isBefore(endOfMonth)) {
+      const currentDayOfWeek = currentDate.format("dddd");
+
+      schedule.forEach((appointment) => {
+        if (appointment.day === currentDayOfWeek) {
+          marked[currentDate.format("YYYY-MM-DD")] = {
+            marked: true,
+            dotColor: COLORS.PersianGreen,
+          };
+        }
+      });
+
+      currentDate.add(1, "day");
+    }
+
+    setMarkedDates(marked);
   };
 
-  const hourOptions = [
-    { label: "Buổi Sáng", value: "morning" },
-    { label: "Buổi Chiều", value: "afternoon" },
-    { label: "Buổi Tối", value: "evening" },
-  ];
+  useEffect(() => {
+    getMarkedDatesForMonth();
+  }, []);
+
+  const activeHours = () => {
+    return schedule
+      .filter((item) => item.hour_type === "appointment" && item.day === selectedDay.dayOfWeek)
+      .map((item) => ({
+        value: item._id,
+        label: `${item.start_time} - ${item.end_time}`,
+        start_time: item.start_time,
+        end_time: item.end_time,
+      }));
+  };
+
   return (
     <View>
       <Calendar
         theme={theme === "light" ? lightTheme : darkTheme}
-        style={{borderRadius: 10}}
+        style={{ borderRadius: 10 }}
         onDayPress={(date) => {
-          if (doctorDates[date.dateString]?.marked) {
-            setSelectedDate(date.dateString);
+          if (markedDates[date.dateString]?.marked) {
+            const dayOfWeek = new Date(date.dateString).toLocaleDateString(
+              "en-US",
+              {
+                weekday: "long",
+              }
+            );
+            setSelectedDay({
+              ...selectedDay,
+              dayOfWeek: dayOfWeek,
+              date: date.dateString,
+            });
             if (setMessage) setMessage(null);
+          } else {
+            setMessage("* Không có lịch khám bệnh cho ngày này");
           }
         }}
         markedDates={{
-          ...doctorDates,
-          [selectedDate]: selectedDate
+          ...markedDates,
+          [selectedDay.date]: selectedDay.date
             ? {
                 selected: true,
                 marked: true,
@@ -116,7 +107,11 @@ const CalendarCustom = ({
             : null,
         }}
       />
-      <View style={[{ marginBottom: 5 }, theme !== "light" && {marginHorizontal: 14}]}>
+      <View
+        style={[
+          { marginBottom: 5 },
+          theme !== "light" && { marginHorizontal: 14 },
+        ]}>
         <View style={styles.noteContainer}>
           <View style={[styles.circle, { backgroundColor: COLORS.gray }]} />
           <Text
@@ -141,11 +136,13 @@ const CalendarCustom = ({
           ]}>
           Chọn khung giờ khám
         </Text>
-        {selectedDate !== null ? (
+        {selectedDay.date !== null ? (
           <RadioView
-            options={hourOptions}
-            selectedOption={selectedHour}
-            onSelect={setSelectedHour}
+            options={activeHours()} // Gọi hàm activeHours
+            selectedOption={selectedDay.time}
+            onSelect={(val) => {
+              setSelectedDay({ ...selectedDay, time: val });
+            }}
             textColor={theme === "light" ? COLORS.black : COLORS.white}
             setMessage={setMessage}
           />

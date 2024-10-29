@@ -1,4 +1,3 @@
-import { View } from "react-native";
 import {
   createDrawerNavigator,
   DrawerItemList,
@@ -6,62 +5,32 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   BookingHistory,
-  BookingHistoryScreen,
   Forum,
   Home,
-  HomeScreen,
   Login,
   Logout,
   UserProfile,
 } from "../screens";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants";
-import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { DrawerContent } from "../components";
-import { useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../AuthProvider";
 
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigation = () => {
-  // const navigation = useNavigation();
-  const { storedToken, clearToken } = useAuth();
-
-  const handleLogout = async (navigation) => {
-    Alert.alert(
-      "Xác nhận",
-      "Bạn có chắc chắn muốn đăng xuất?",
-      [
-        {
-          text: "Hủy",
-          style: "cancel",
-        },
-        {
-          text: "Đồng ý",
-          onPress: async () => {
-            try {
-              clearToken();
-              console.log("Đã đăng xuất");
-              navigation.navigate("Login");
-            } catch (error) {
-              console.error("Lỗi khi đăng xuất:", error);
-            }
-          },
-        },
-      ],
-      { cancelable: true }
-    );
-  };
+  const { isLoggedIn } = useAuth();
 
   return (
     <Drawer.Navigator
       drawerContent={(props) => {
         return (
           <SafeAreaView>
-            <DrawerContent navigation={props.navigation} token={storedToken} />
+            <DrawerContent
+              navigation={props.navigation}
+              isLoggedIn={isLoggedIn}
+            />
             <DrawerItemList {...props} />
           </SafeAreaView>
         );
@@ -93,7 +62,7 @@ const DrawerNavigation = () => {
         }}
         component={Home}
       />
-      {storedToken && (
+      {isLoggedIn && (
         <Drawer.Screen
           name="BookingHistory"
           options={{
@@ -138,7 +107,7 @@ const DrawerNavigation = () => {
         component={UserProfile}
       />
 
-      {storedToken ? (
+      {isLoggedIn ? (
         <>
           <Drawer.Screen
             name="User"

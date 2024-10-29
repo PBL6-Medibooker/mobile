@@ -11,14 +11,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants";
 import { useEffect, useState } from "react";
 import { Dropdown, HeaderBack, RadioView, DatePicker } from "../components";
-import { doctors } from "../utils/doctors";
 import useSpecialities from "../hooks/useSpecialities";
 import useRegions from "../hooks/useRegions";
-
-const dataDoctors = doctors.map((s) => ({
-  _id: s.id,
-  name: s.name,
-}));
+import useAccount from "../hooks/useAccount";
 
 const ServiceOptions = [
   { label: "Khám trong giờ", value: "intime" },
@@ -27,19 +22,98 @@ const ServiceOptions = [
 ];
 
 const Booking = ({ navigation, route }) => {
+  const { doctorSelected } = route.params || {};
+
   const [area, setArea] = useState(null);
   const [specialty, setSpecialty] = useState(null);
   const [service, setService] = useState(null);
   const [doctor, setDoctor] = useState(null);
   const [medicalHistory, setMedicalHistory] = useState(null);
   const [healthStatus, setHealthStatus] = useState(null);
-  const [datePicker, setDatePicker] = useState(null);
+  const [datePicker, setDatePicker] = useState({
+    date: null,
+    dayOfWeek: null,
+    time: null,
+  });
 
-  const [sortSpecialities] = useSpecialities();
-  const [regions] = useRegions();
+  const [specialitiesHook] = useSpecialities();
+  const [regionsHook] = useRegions();
+  const [doctorsHook, getDoctorsBySpecialty] = useAccount();
+  const [doctors, setDoctors] = useState(null);
 
-  const { doctor_id } = route.params || {};
-  if (doctor_id) console.log(doctor_id);
+  // useEffect(() => {
+  //   const getDoctorBySpecialty = () => {
+  //     setDoctor(null);
+  //     setDatePicker({
+  //       date: null,
+  //       dayOfWeek: null,
+  //       time: null,
+  //     });
+
+  //     const doctorsBySpecialtyAndRegion = getDoctorsBySpecialty(
+  //       doctorsHook,
+  //       specialty,
+  //       area
+  //     );
+  //     console.log(doctorsBySpecialtyAndRegion);
+      
+  //     setDoctors(doctorsBySpecialtyAndRegion);
+  //   };
+
+  //   getDoctorBySpecialty();
+  // }, [specialty, area, doctorsHook]);
+
+  // useEffect(() => {
+  //   if (doctorSelected) {
+  //     setArea(regionsHook.find((item) => item._id === doctorSelected.region_id));
+  //     setSpecialty(specialitiesHook.find((item) => item._id === doctorSelected.speciality_id));
+  //     setDoctor(doctorSelected)
+  //   }
+  // }, [doctorSelected, regionsHook, specialitiesHook]);
+  
+  useEffect(() => {
+    const getDoctorBySpecialty = () => {
+      // Chỉ thiết lập lại doctor và datePicker khi doctorSelected không tồn tại
+      if (!doctorSelected) {
+        setDoctor(null);
+        setDatePicker({
+          date: null,
+          dayOfWeek: null,
+          time: null,
+        });
+      }
+  
+      if (specialty && area) { // Chỉ gọi khi specialty và area đã có giá trị
+        const doctorsBySpecialtyAndRegion = getDoctorsBySpecialty(
+          doctorsHook,
+          specialty,
+          area
+        );
+        console.log(doctorsBySpecialtyAndRegion);
+        setDoctors(doctorsBySpecialtyAndRegion);
+      }
+    };
+  
+    getDoctorBySpecialty();
+  }, [specialty, area, doctorsHook, doctorSelected]);  
+  
+  useEffect(() => {
+    if (doctorSelected && regionsHook.length > 0 && specialitiesHook.length > 0) { 
+      // Đảm bảo dữ liệu đã tải xong
+      const selectedRegion = regionsHook.find(
+        (item) => item._id === doctorSelected.region_id
+      );
+      const selectedSpecialty = specialitiesHook.find(
+        (item) => item._id === doctorSelected.speciality_id
+      );
+  
+      if (selectedRegion && selectedSpecialty) {
+        setArea(selectedRegion);
+        setSpecialty(selectedSpecialty);
+        setDoctor(doctorSelected);
+      }
+    }
+  }, [doctorSelected, regionsHook, specialitiesHook]);
 
   const handle = () => {
     console.log(
@@ -63,84 +137,51 @@ const Booking = ({ navigation, route }) => {
         <View style={styles.main}>
           <Text style={styles.text}>Chọn khu vực</Text>
           <Dropdown
-            data={[...regions].reverse()}
+            data={regionsHook}
             placeholder="Chọn khu vực"
             onChange={setArea}
             value={area}
           />
-          <Text style={styles.text}>Chọn dịch vụ khám</Text>
-          <RadioView
-            options={ServiceOptions}
-            selectedOption={service}
-            onSelect={setService}
-          />
+
           <Text style={styles.text}>Chọn chuyên khoa</Text>
-          {area !== null && service !== null ? (
-            <Dropdown
-              data={[...sortSpecialities].reverse()}
-              placeholder="Chọn chuyên khoa"
-              onChange={setSpecialty}
-              disabled={false}
-              value={specialty}
-            />
-          ) : (
-            <Dropdown
-              data={[...sortSpecialities].reverse()}
-              placeholder="Chọn chuyên khoa"
-              onChange={setSpecialty}
-              disabled={true}
-              value={specialty}
-            />
-          )}
+          <Dropdown
+            data={specialitiesHook}
+            placeholder="Chọn chuyên khoa"
+            onChange={setSpecialty}
+            value={specialty}
+          />
 
           <Text style={styles.text}>Chọn bác sĩ</Text>
-          {area !== null && service !== null && specialty !== null ? (
-            <Dropdown
-              data={dataDoctors}
-              placeholder="Chọn bác sĩ"
-              onChange={setDoctor}
-              disabled={false}
-              value={doctor}
-            />
-          ) : (
-            <Dropdown
-              data={dataDoctors}
-              placeholder="Chọn bác sĩ"
-              onChange={setDoctor}
-              disabled={true}
-              value={doctor}
-            />
-          )}
+          <Dropdown
+            data={doctors}
+            placeholder="Chọn bác sĩ"
+            onChange={setDoctor}
+            disabled={!(area && specialty)}
+            value={doctor}
+          />
 
           <Text style={styles.text}>Chọn ngày - khung giờ khám</Text>
-          {area !== null &&
-          service !== null &&
-          specialty !== null &&
-          doctor !== null ? (
-            <DatePicker
-              onChange={setDatePicker}
-              placeholder="Chọn ngày - khung giờ khám"
-              disabled={false}
-            />
-          ) : (
-            <DatePicker
-              onChange={setDatePicker}
-              placeholder="Chọn ngày - khung giờ khám"
-              disabled={true}
-            />
-          )}
+          <DatePicker
+            value={datePicker}
+            schedule={doctor ? doctor.active_hours : null}
+            onChange={setDatePicker}
+            placeholder="Chọn ngày - khung giờ khám"
+            disabled={!(area && specialty && doctor)}
+          />
 
           <Text style={styles.text}>Tiểu sử bệnh lý</Text>
           <TextInput
-            style={styles.textInput}
+            style={[styles.textInput, { height: 100 }]}
             numberOfLines={3}
             value={medicalHistory}
+            multiline
             onChangeText={setMedicalHistory}
           />
           <Text style={styles.text}>Tình trạng sức khoẻ</Text>
           <TextInput
-            style={styles.textInput}
+            style={[styles.textInput, { height: 100 }]}
             numberOfLines={3}
+            multiline
             value={healthStatus}
             onChangeText={setHealthStatus}
           />

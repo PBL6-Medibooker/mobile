@@ -3,67 +3,63 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { COLORS, images } from "../constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { useEffect } from "react";
 
 const DoctorItem = ({ item, navigation }) => {
+  // useEffect(() => console.log(item));
   return (
-    <View style={styles.container}>
-      <View style={styles.doctorContainer}>
+      <View style={styles.doctorContainer} key={item._id}>
         <Pressable
           style={styles.imageContainer}
           onPress={() => {
-            navigation.navigate("DoctorInfo", { doctor_id: item.id });
+            navigation.navigate("DoctorInfo", { doctorSelected: item });
           }}>
-          <Image source={images.avatar} style={styles.image} />
+          <Image
+            source={
+              item.profile_image ? { uri: item.profile_image } : images.avatar
+            }
+            style={styles.image}
+          />
         </Pressable>
         <View style={styles.infoContainer}>
           <Pressable
             onPress={() => {
-              navigation.navigate("DoctorInfo", { doctor_id: item.id });
+              navigation.navigate("DoctorInfo", { doctorSelected: item });
             }}>
             <Text style={styles.name}>{item.name}</Text>
             <Text
               style={styles.position}
               numberOfLines={2}
               ellipsizeMode="tail">
-              {item.bio.position}
+              {item.bio}
             </Text>
           </Pressable>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate("Booking", { doctor_id: item.id });
+              navigation.navigate("Booking", { doctorSelected: item });
             }}
             style={styles.makeAppointment}>
             <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
           </TouchableOpacity>
         </View>
       </View>
-      {/* <TouchableOpacity onPress={() => {navigation.navigate("Booking", {doctor_id: item.id})}} style={styles.makeAppointment}>
-        <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
-      </TouchableOpacity> */}
-    </View>
   );
 };
 
 export default DoctorItem;
 
 const styles = StyleSheet.create({
-  container: {
-    // borderBottomWidth: 2,
-    // paddingVertical: 5,
-    // borderColor: COLORS.silver,
-    padding: 15,
-    backgroundColor: COLORS.white,
-    borderRadius: 10,
-  },
   doctorContainer: {
     flex: 1,
     flexDirection: "row",
+    padding: 15,
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
   },
   imageContainer: {
     width: 80,
@@ -82,6 +78,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   position: {
+    height: 40,
     fontSize: 13,
     textAlign: "justify",
     color: COLORS.PersianGreen,

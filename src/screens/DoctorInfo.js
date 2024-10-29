@@ -2,6 +2,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { CalendarCustom, HeaderBack } from "../components";
 import { useCallback, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Pressable,
   ScrollView,
@@ -11,53 +12,48 @@ import {
   View,
 } from "react-native";
 import { COLORS, images } from "../constants";
-
-const doctor = {
-  id: "ggd",
-  name: "PGS.TS.BS Le Hoang ssj",
-  area: "Chi nhanh TP Ho Chi Minh",
-  specialty: "Trung tâm kiểm soát cân nặng và điều trị béo phì",
-  working_hours: [
-    "8:00 a.m - 11:00 a.m, 20/9/2024",
-    "6:30 a.m - 10:30 a.m, 21/9/2024",
-  ],
-  bio: {
-    position:
-      "Giám đốc phòng Lab Trung tâm kiểm soát cân nặng và điều trị béo phì.Giám đốc phòng Lab Trung tâm kiểm soát cân nặng và điều trị béo phì.",
-    introduction:
-      "BS.CKI Châu Hoàng Phương Thảo hiện đang nắm giữ chức vụ Phó đơn vị Hỗ trợ Sinh sản, Bệnh viện Đa khoa Tâm Anh TP.HCM. Với trình độ chuyên môn cao cùng gần 20 năm kinh nghiệm trong lĩnh vực hỗ trợ sinh sản, bác sĩ Châu Hoàng Phương Thảo không chỉ được chuyên gia đầu ngành đánh giá cao, sự kính nể của các đồng nghiệp mà còn nhận được sự yêu mến, tin tưởng của nhiều cặp vợ chồng đang trên hành trình tìm con. \n" +
-      "Bên cạnh công tác khám, chẩn đoán và điều trị vô sinh – hiếm muộn, tư vấn phương pháp điều trị hiệu quả các bệnh lý phụ khoa, tử cung… bác sĩ Châu Hoàng Phương Thảo còn tham gia biên soạn tài liệu, giảng dạy chương trình đào tạo liên tục về kiến thức và kỹ năng hỗ trợ sinh sản cơ bản trên lâm sàng cho các thế hệ bác sĩ trẻ tương lai. \n" +
-      "Chính nhờ kinh nghiệm thực tiễn cùng y đức và tâm huyết dành cho nghề, BS.CKI Châu Hoàng Phương Thảo là một trong những bác sĩ khám, điều trị vô sinh – hiếm muộn được đánh giá cao tại TP.HCM.",
-  },
-};
+import useSpecialities from "../hooks/useSpecialities";
 
 const DoctorInfo = ({ navigation, route }) => {
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedHour, setSelectedHour] = useState(null);
+  const { doctorSelected } = route.params || {};
+
+  const [selectedDay, setSelectedDay] = useState({
+    date: null,
+    dayOfWeek: null,
+    time: null,
+  });
+
   const [message, setMessage] = useState(null);
 
-  const { doctor_id } = route.params || {};
-  if (doctor_id) {
-    console.log(doctor_id);
+  const [specialitiesHook, get_Specialty_By_ID, loading, error] =
+    useSpecialities();
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+      </SafeAreaView>
+    );
   }
 
-  const handleSetDate = useCallback(() => {
-    if (selectedDate !== null && selectedHour !== null) {
-      //   onChange({
-      //     day: selectedDate,
-      //     hour: selectedHour,
-      //   });
-      console.log(selectedDate, selectedHour);
+  const specialtyName = get_Specialty_By_ID(
+    specialitiesHook,
+    doctorSelected.speciality_id
+  );
+
+  const handleSetDate = () => {
+    if (selectedDay.time !== null) {
+      console.log(selectedDay);
       navigation.navigate("VerifyBooking");
     } else {
       setMessage("* Chưa chọn ngày - khung giờ");
     }
-  }, [selectedDate, selectedHour]);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <HeaderBack navigation={navigation} title={doctor_id} />
+        <HeaderBack navigation={navigation} />
         <View style={styles.contentTitle}>
           <TouchableOpacity
             activeOpacity={0.85}
@@ -68,15 +64,15 @@ const DoctorInfo = ({ navigation, route }) => {
 
           <View style={styles.myBasicInformation}>
             <Text style={[styles.text, { fontWeight: "bold", fontSize: 16 }]}>
-              {doctor.name}
+              {doctorSelected.name}
             </Text>
-            <Text style={styles.text}>{doctor.specialty}</Text>
+            <Text style={styles.text}>{specialtyName}</Text>
           </View>
         </View>
 
         <View style={styles.mainContainer}>
           <Text style={styles.titleText}>Giới thiệu</Text>
-          <Text style={styles.contentText}>{doctor.bio.introduction}</Text>
+          <Text style={styles.contentText}>{doctorSelected.bio}</Text>
 
           <Text style={styles.titleText}>Lĩnh vực chuyên môn</Text>
           <Text style={styles.contentText}>doctor.bio.introduction</Text>
@@ -85,11 +81,13 @@ const DoctorInfo = ({ navigation, route }) => {
           <Text style={styles.contentText}>doctor.bio.introduction</Text>
 
           <CalendarCustom
-            selectedDate={selectedDate}
-            selectedHour={selectedHour}
-            setSelectedDate={setSelectedDate}
-            setSelectedHour={setSelectedHour}
+            schedule={doctorSelected.active_hours}
             setMessage={setMessage}
+            setSelectedDay={(val) => {
+              setSelectedDay(val);
+              console.log("dp: ", val);
+            }}
+            selectedDay={selectedDay}
             theme="light"
           />
 

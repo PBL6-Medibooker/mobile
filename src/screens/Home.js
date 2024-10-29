@@ -31,10 +31,10 @@ const dataArticles = articles.map((s) => ({
 
 const Home = ({ navigation }) => {
   // const navigation = useNavigation();
-  const { storedToken } = useAuth();
+  const { storedToken, isLoggedIn } = useAuth();
 
   const handleBooking = () => {
-    if (!storedToken) {
+    if (!isLoggedIn) {
       Alert.alert(
         "Thông báo",
         "Vui lòng đăng nhập để đăng kí lịch hẹn.", 
@@ -66,7 +66,7 @@ const Home = ({ navigation }) => {
           <>
             <HeaderHome
               title="TRANG CHỦ"
-              token={storedToken}
+              isLoggedIn={isLoggedIn}
               navigation={navigation}
             />
 

@@ -6,9 +6,9 @@ import { useAuth } from "../AuthProvider";
 
 const HeaderHome = ({ title, navigation }) => {
   // const navigation = useNavigation();
-  const { storedToken } = useAuth();
+  const { storedToken, isLoggedIn } = useAuth();
   const handle = () => {
-    if (!storedToken) {
+    if (!isLoggedIn) {
       navigation.navigate("Login");
     } else {
       navigation.navigate("UserProfile");

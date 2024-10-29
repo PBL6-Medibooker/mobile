@@ -1,11 +1,4 @@
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, images } from "../constants";
 import { useEffect, useState } from "react";
@@ -16,10 +9,7 @@ import useSpecialities from "../hooks/useSpecialities";
 const formatData = (data, numColumns) => {
   const numberOfFullRows = Math.floor(data.length / numColumns);
   let numberOfElementsLastRow = data.length - numberOfFullRows * numColumns;
-  while (
-    numberOfElementsLastRow !== 0 &&
-    numberOfElementsLastRow !== numColumns
-  ) {
+  while (numberOfElementsLastRow !== 0 && numberOfElementsLastRow !== numColumns) {
     data.push({ empty: true }); // Thêm item trống
     numberOfElementsLastRow++;
   }
@@ -27,36 +17,41 @@ const formatData = (data, numColumns) => {
 };
 
 const Specialty = ({ navigation }) => {
-  const [specialty, setSpecialty] = useState({});
-  
-  const [specialities] = useSpecialities();
-  
+  const [specialties, setSpecialties] = useState({});
+  const [specialitiesHook, , loading] = useSpecialities(); // Loading từ hook
+
+  // Xử lý hiển thị nếu đang tải
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         style={styles.list}
-        data={formatData(specialities, 2)} // Sử dụng hàm formatData
+        data={formatData(specialitiesHook, 2)} // Sử dụng hàm formatData
         numColumns={2}
         keyExtractor={(item) => item._id?.toString()}
         renderItem={({ item }) => {
           if (item.empty) {
-            return (
-              <View style={[styles.itemSpecialty, styles.invisibleItem]} />
-            );
+            return <View style={[styles.itemSpecialty, styles.invisibleItem]} />;
           }
           return (
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("BottomTabNavigation", { specialty: item })
-              }
+              onPress={() => navigation.navigate("BottomTabNavigation", { specialty: item })}
               style={styles.itemSpecialty}>
               {item.speciality_image ? (
                 <Image
-                  source={{ uri: item.speciality_image }}
+                  source={{ uri: `data:image/png;base64,${item.speciality_image}` }}
                   style={styles.imageSpecialty}
+                  resizeMode="cover"
                 />
               ) : (
-                <Image source={images.logo} style={styles.imageSpecialty} />
+                <Image source={images.logo} style={styles.imageSpecialty} resizeMode="contain" />
               )}
               <Text style={styles.text}>{item.name}</Text>
             </TouchableOpacity>
@@ -77,8 +72,13 @@ const styles = StyleSheet.create({
     flex: 1,
     // backgroundColor: COLORS.white,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   list: {
-    // borderWidth: 1,
+    // paddingHorizontal: 10,
   },
   imageSpecialty: {
     width: "50%",
@@ -101,9 +101,9 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   text: {
-    // flex: 1,
-    height: "25%",
-    fontSize: 12,
+    marginTop: 10,
+    fontSize: 14,
     textAlign: "center",
+    color: COLORS.black,
   },
 });

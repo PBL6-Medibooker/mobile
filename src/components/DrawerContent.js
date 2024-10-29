@@ -1,45 +1,50 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS, images } from "../constants";
+import { useEffect, useState } from "react";
+import { useAuth } from "../AuthProvider";
 
-const DrawerContent = ({ navigation, token }) => {
+const DrawerContent = ({ navigation, isLoggedIn }) => {
+  const [myAccount, setMyAccount] = useState(null);
+  const { accountInfo } = useAuth();
+  // const [, , accountInfo] = useAccount();
 
   const handleManagerAccount = () => {
-    if (!token) {
+    if (!isLoggedIn) {
       navigation.navigate("Login");
     } else {
       navigation.navigate("UserProfile");
     }
   };
 
-  // const name = "Huệ Lê";
   return (
     <View style={styles.container}>
-    <Pressable onPress={() => handleManagerAccount()}>
-      <Image source={images.user_default} style={styles.image} />
-    </Pressable>
+      <Pressable onPress={() => handleManagerAccount()}>
+        <Image source={images.user_default} style={styles.image} />
+      </Pressable>
       <Text
         style={{
           color: COLORS.PersianGreen,
           fontWeight: "bold",
           fontSize: 16,
         }}>
-        {token ? "Huệ Lê" : "Khách"}
+        {isLoggedIn && accountInfo ? accountInfo.username : "Khách"}
       </Text>
-      <Text
-        style={[
-          { color: COLORS.black, fontSize: 12 },
-          !token && { display: "none" },
-        ]}>
-        email@gmail.com
-      </Text>
-      <Text
-        onPress={() => handleManagerAccount()}
-        style={[
-          { color: COLORS.black, fontSize: 12 },
-          token && { display: "none" },
-        ]}>
-        Đăng nhập/đăng kí
-      </Text>
+      {isLoggedIn && accountInfo && (
+        <Text style={{ color: COLORS.black, fontSize: 12 }}>
+          {accountInfo.email}
+        </Text>
+      )}
+
+      {isLoggedIn && accountInfo?.__t && (
+        <Text style={{ color: COLORS.black, fontSize: 12 }}>(Bác sĩ)</Text>
+      )}
+      {!isLoggedIn && (
+        <Text
+          onPress={() => handleManagerAccount()}
+          style={{ color: COLORS.black, fontSize: 12 }}>
+          Đăng nhập/đăng kí
+        </Text>
+      )}
       <View style={styles.separate}></View>
     </View>
   );

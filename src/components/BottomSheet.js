@@ -3,10 +3,27 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import { COLORS } from "../constants";
 import Dropdown from "./Dropdown";
 import { useState } from "react";
+import useSpecialities from "../hooks/useSpecialities";
+import useRegions from "../hooks/useRegions";
 
-const BottomSheet = ({ bottomSheetRef, specialtyList, onSelected }) => {
+const BottomSheet = ({
+  bottomSheetRef,
+  specialtyList,
+  regionList,
+  onSelected,
+  selectedSpecialty,
+  onSelectedSpecialty,
+  selectedRegion,
+  setSelectedRegion,
+  selectedSortBy,
+  setSelectedSortBy
+}) => {
   const [specialty, setSpecialty] = useState(null);
+  const [region, setRegion] = useState(null);
   const [sortBy, setSortBy] = useState(null);
+
+  const [specialitiesHook] = useSpecialities();
+  const [regionsHook] = useRegions();
 
   const handleSortSelection = (type) => {
     setSortBy(type);
@@ -14,7 +31,7 @@ const BottomSheet = ({ bottomSheetRef, specialtyList, onSelected }) => {
 
   const handleOkPress = () => {
     if (onSelected) {
-      onSelected(specialty, sortBy); // Truyền chuyên khoa và sortBy về component cha
+      onSelected(region, specialty, sortBy); // Truyền chuyên khoa và sortBy về component cha
     }
     bottomSheetRef.current.close(); // Đóng BottomSheet
   };
@@ -27,7 +44,7 @@ const BottomSheet = ({ bottomSheetRef, specialtyList, onSelected }) => {
   return (
     <RBSheet
       ref={bottomSheetRef}
-      height={290}
+      height={370}
       openDuration={true}
       closeOnPressBack={true}
       closeOnPressMask={true}
@@ -54,6 +71,18 @@ const BottomSheet = ({ bottomSheetRef, specialtyList, onSelected }) => {
           }}>
           Filter
         </Text>
+
+        {regionList ? (
+          <>
+            <Text style={{ marginBottom: 5 }}>Khu vực: </Text>
+            <Dropdown
+              data={regionsHook}
+              onChange={setRegion}
+              placeholder="Chọn khu vực"
+              value={region}
+            />
+          </>
+        ) : null}
 
         {specialtyList ? (
           <>

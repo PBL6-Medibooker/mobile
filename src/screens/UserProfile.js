@@ -14,9 +14,10 @@ import { COLORS, images } from "../constants";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { UploadImage } from "../utils/Upload";
 import { useState } from "react";
+import useAccount from "../hooks/useAccount";
 
 const UserProfile = ({ navigation }) => {
-  const { storedToken } = useAuth();
+  const { storedToken, isLoggedIn, accountInfo } = useAuth();
 
   const [uriAvatar, setUriAvatar] = useState(null);
 
@@ -49,15 +50,26 @@ const UserProfile = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.myBasicInformation}>
-          <Text style={styles.text}>Huệ Lê</Text>
-          <Text style={styles.text}>0343403432</Text>
-          <Text style={styles.text}>lehue@gmail.com</Text>
+        <View
+          style={[
+            styles.myBasicInformation,
+            !accountInfo.__t && { paddingVertical: 5 },
+          ]}>
+          <Text style={styles.text}>{accountInfo.username}</Text>
+          <Text style={styles.text}>{accountInfo.phone}</Text>
+          <Text style={styles.text}>{accountInfo.email}</Text>
+          {accountInfo.__t && (
+            <View style={styles.accountType}>
+              <Text style={{ fontSize: 12 }}>Bác sĩ</Text>
+            </View>
+          )}
         </View>
       </View>
 
       <View style={styles.mainContainer}>
-        <TouchableOpacity style={styles.item} onPress={() => navigation.navigate("UpdateUser")}>
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() => navigation.navigate("UpdateUser")}>
           <Ionicons name="person-outline" size={28} style={styles.iconItem} />
           <Text style={styles.textItem}>Chỉnh Sửa Hồ Sơ</Text>
           <Ionicons
@@ -140,14 +152,14 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.PersianGreen,
     flexDirection: "row",
     paddingVertical: 20,
-    paddingStart: 25,
+    justifyContent: "center",
   },
   myAvatar: {
     width: 120,
     aspectRatio: 1,
     resizeMode: "cover",
     borderRadius: 40,
-    marginRight: 12,
+    marginRight: 5,
     backgroundColor: COLORS.silver,
   },
   image: {
@@ -165,10 +177,10 @@ const styles = StyleSheet.create({
   },
   myBasicInformation: {
     justifyContent: "space-between",
-    marginVertical: 15,
+    marginVertical: 8,
   },
   text: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
     color: COLORS.white,
   },
@@ -192,5 +204,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 10,
     paddingStart: 5,
+  },
+  accountType: {
+    backgroundColor: COLORS.white,
+    fontSize: 12,
+    alignSelf: "flex-start",
+    paddingHorizontal: 8,
+    borderRadius: 5,
+    borderWidth: 0.5,
+    borderColor: COLORS.Sinbad,
   },
 });

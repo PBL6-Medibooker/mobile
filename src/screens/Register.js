@@ -1,8 +1,6 @@
 import {
   ActivityIndicator,
   Alert,
-  Button,
-  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,13 +12,12 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Dropdown, InputPassword, RadioButton } from "../components";
-import User from "../models/User_Model";
-import Account_API from "../API/Account_API";
 import Entypo from "@expo/vector-icons/Entypo";
 import { UploadPDF } from "../utils/Upload";
 import useSpecialities from "../hooks/useSpecialities";
+import Account_API from "../API/Account_API";
 
 const options = [
   { label: "Bác sĩ", value: "doctor" },
@@ -28,35 +25,38 @@ const options = [
 ];
 
 const Register = ({ navigation }) => {
-  const [fullname, setFullname] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
-  const [phone, setPhone] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState(null);
-  const [accountType, setAccountType] = useState(null);
   const [message, setMessage] = useState(null);
   const [isVerified, setIsVerified] = useState(false);
+
+  const [account, setAccount] = useState({
+    username: "",
+    email: "",
+    phone: "",
+    password: "",
+    is_doc: null,
+  });
 
   const [specialtyDoctor, setSpecialtyDoctor] = useState(null);
   const [proofDoctor, setProofDoctor] = useState(null);
 
-  const [sortSpecialities] = useSpecialities();
+  const [specialities, sortSpecialities] = useSpecialities();
 
   const handleRegister = () => {
     setIsVerified(true);
-    if (!fullname) {
+    if (!account.username) {
       setMessage("fullname");
       return;
     }
-    if (!email) {
+    if (!account.email) {
       setMessage("email");
       return;
     }
-    if (!phone) {
+    if (!account.phone) {
       setMessage("phone");
       return;
     }
-    if (!password) {
+    if (!account.password) {
       setMessage("password");
       return;
     }
@@ -64,16 +64,16 @@ const Register = ({ navigation }) => {
       setMessage("confirmPassword");
       return;
     }
-    if (password !== confirmPassword) {
+    if (account.password !== confirmPassword) {
       setMessage("notMatch");
       return;
     }
-    if (!accountType) {
+    if (account.is_doc === null) {
       setMessage("type");
       return;
     }
     setIsVerified(false);
-    reqLogin();
+    reqSignup();
   };
 
   const handleFocus = (field) => {
@@ -82,27 +82,29 @@ const Register = ({ navigation }) => {
     }
   };
 
-  const reqLogin = async () => {
-    if (specialtyDoctor) console.log("spec:", specialtyDoctor.value);
+  const reqSignup = async () => {
+    try {
+      if (specialtyDoctor) console.log("spec:", specialtyDoctor.value);
 
-    const user = new User(email, password, phone, fullname, accountType);
+      console.log(account);
 
-    const res = await Account_API.userSignup(user);
-    console.log(res);
-    // if (res !== "Email and password is required!") {
-    Alert.alert(
-      "Thông báo",
-      typeof res === "string" ? res : "Đăng ký tài khoản thành công.", //JSON.stringify(res)
-      [
-        {
-          text: "OK",
-          onPress: () => {
-            if (typeof res !== "string") navigation.navigate("Login");
+      const res = await Account_API.userSignup(account);
+
+      if (typeof res === "object" && res.token) {
+        Alert.alert("Thông báo", "Đăng ký tài khoản thành công.", [
+          {
+            text: "OK",
+            onPress: () => {
+              navigation.navigate("Login");
+            },
           },
-        },
-      ]
-    );
-    // }
+        ]);
+      } else {
+        Alert.alert("Lỗi", res, [{ text: "OK" }]);
+      }
+    } catch (error) {
+      console.error("Error during signup:", error);
+    }
   };
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -146,12 +148,12 @@ const Register = ({ navigation }) => {
           <TextInput
             style={styles.textInput}
             placeholder="Fullname"
-            value={fullname}
+            value={account.username}
             onChangeText={(value) => {
-              setFullname(value);
+              // setFullname(value);
+              setAccount({ ...account, username: value });
             }}
             onFocus={() => {
-              // if (message === "fullname") setMessage(null);
               handleFocus("fullname");
             }}
           />
@@ -165,9 +167,10 @@ const Register = ({ navigation }) => {
             placeholder="Email"
             inputMode="email"
             keyboardType="email-address"
-            value={email}
+            value={account.email}
             onChangeText={(value) => {
-              setEmail(value);
+              // setEmail(value);
+              setAccount({ ...account, email: value });
             }}
             onFocus={() => {
               handleFocus("email");
@@ -182,10 +185,12 @@ const Register = ({ navigation }) => {
             style={styles.textInput}
             placeholder="Phone number"
             keyboardType="phone-pad"
-            value={phone}
-            onChangeText={setPhone}
+            value={account.phone}
+            onChangeText={(value) => {
+              // setPhone(value);
+              setAccount({ ...account, phone: value });
+            }}
             onFocus={() => {
-              // if (message === "phone") setMessage(null);
               handleFocus("phone");
             }}
           />
@@ -195,8 +200,11 @@ const Register = ({ navigation }) => {
 
           <Text style={styles.label}>Mật khẩu</Text>
           <InputPassword
-            value={password}
-            onChangeText={setPassword}
+            value={account.password}
+            onChangeText={(value) => {
+              // setPassword(value);
+              setAccount({ ...account, password: value });
+            }}
             onFocus={() => {
               handleFocus("password");
             }}
@@ -224,10 +232,18 @@ const Register = ({ navigation }) => {
           <Text style={styles.label}>Loại tài khoản</Text>
           <RadioButton
             options={options}
-            selectedOption={accountType}
-            onSelect={setAccountType}
+            selectedOption={
+              account.is_doc === 0
+                ? "user"
+                : account.is_doc === 1
+                ? "doctor"
+                : null
+            }
+            onSelect={(value) => {
+              // setAccountType(value);
+              setAccount({ ...account, is_doc: value === "doctor" ? 1 : 0 });
+            }}
             onFocus={() => {
-              // if (message === "type") setMessage(null);
               handleFocus("type");
             }}
           />
@@ -235,11 +251,11 @@ const Register = ({ navigation }) => {
             <Text style={styles.message}>* Chưa nhập loại tài khoản</Text>
           ) : null}
 
-          {accountType === "doctor" && (
+          {account.is_doc === 1 && (
             <View>
               <Text style={styles.label}>Chuyên khoa</Text>
               <Dropdown
-                data={[...sortSpecialities].reverse()}
+                data={sortSpecialities}
                 onChange={setSpecialtyDoctor}
                 placeholder="Chọn chuyên khoa"
                 value={specialtyDoctor}
@@ -275,7 +291,6 @@ const Register = ({ navigation }) => {
                   </TouchableOpacity>
                 </View>
               ))}
-              {/* <View style={{height: 20}} /> */}
             </View>
           )}
 
@@ -302,7 +317,7 @@ const Register = ({ navigation }) => {
             </Text>
           </Pressable>
 
-          {accountType === "doctor" && <View style={{ height: 100 }} />}
+          {account.is_doc === 1 && <View style={{ height: 100 }} />}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -92,8 +92,7 @@ const list = [
       "Thưa bác sĩ, vàng da sinh lý có cần chiếu đèn không ạ? Con em được 3 ngày tuổi, có biểu hiện vàng da  ở vùng mặt và cổ. Bác sĩ bảo con bị vàng da sinh lý nên không cần điều trị, tình trạng này sẽ tự khỏi sau ít ngày. Tuy nhiên, đến nay đã gần 1 tuần em thấy da bé vẫn vàng nên lo lắng quá. Mong bác sĩ tư vấn ạ.",
     answer: {
       doctor: "BS.CKI NGUYỄN VĂN TOẢN",
-      content:
-        "Không phải tất cả trẻ sơ sinh vàng da đều cần phải chiếu đèn.",
+      content: "Không phải tất cả trẻ sơ sinh vàng da đều cần phải chiếu đèn.",
     },
   },
 ];
@@ -102,7 +101,7 @@ const Forum = ({ navigation }) => {
   const [specialty, setSpecialty] = useState(null);
   const [sortBy, setSortBy] = useState(null);
 
-  const [sortSpecialities] = useSpecialities();
+  const [specialities, sortSpecialities] = useSpecialities();
 
   const refRBSheet = useRef();
 
@@ -157,7 +156,7 @@ const Forum = ({ navigation }) => {
       <BottomSheet
         bottomSheetRef={refRBSheet}
         onSelected={handleSpecialityChange}
-        specialtyList={[...sortSpecialities].reverse()}
+        specialtyList={sortSpecialities}
       />
     </SafeAreaView>
   );
