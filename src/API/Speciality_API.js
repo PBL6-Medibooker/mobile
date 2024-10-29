@@ -2,7 +2,7 @@ import client from "./client";
 
 const get_Speciality_List = async () => {
   try {
-    const response = await client.get("/special/get-speciality-list");
+    const response = await client.post("/special/get-speciality-list", {hidden_state: "false"});
     return response.data;
   } catch (error) {
     if (error.response) {

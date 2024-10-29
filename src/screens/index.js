@@ -13,6 +13,12 @@ import Logout from "./Logout";
 import Forum from "./Forum";
 import QADetail from "./QADetail";
 import UpdateUser from "./UpdateUser";
+import Myappointment from "./Myappointment";
+import Privacy from "./Privacy";
+import AppointmentDetail from "./AppointmentDetail";
+import SettingNotification from "./SettingNotification";
+import SettingAccount from "./SettingAccount";
+import PasswordManage from "./PasswordManage";
 
 export {
   Home,
@@ -30,4 +36,10 @@ export {
   Forum,
   QADetail,
   UpdateUser,
+  Myappointment,
+  Privacy,
+  AppointmentDetail,
+  SettingNotification,
+  SettingAccount,
+  PasswordManage,
 };

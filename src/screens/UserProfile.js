@@ -67,26 +67,28 @@ const UserProfile = ({ navigation }) => {
       </View>
 
       <View style={styles.mainContainer}>
-        <TouchableOpacity
-          style={styles.item}
-          onPress={() => navigation.navigate("UpdateUser")}>
+        <View style={styles.item}>
           <Ionicons name="person-outline" size={28} style={styles.iconItem} />
           <Text style={styles.textItem}>Chỉnh Sửa Hồ Sơ</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('UpdateUser')}>
           <Ionicons
             name="chevron-forward"
             size={28}
             color={COLORS.PersianGreen}
           />
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.item}>
           <Ionicons name="wallet-outline" size={28} style={styles.iconItem} />
           <Text style={styles.textItem}>Cuộc Hẹn Của Tôi</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Myappointment')}>
           <Ionicons
             name="chevron-forward"
             size={28}
             color={COLORS.PersianGreen}
           />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.item}>
@@ -96,21 +98,25 @@ const UserProfile = ({ navigation }) => {
             style={styles.iconItem}
           />
           <Text style={styles.textItem}>Chính Sách Riêng Tư</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Privacy')}>
           <Ionicons
             name="chevron-forward"
             size={28}
             color={COLORS.PersianGreen}
           />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.item}>
           <Ionicons name="settings-outline" size={28} style={styles.iconItem} />
           <Text style={styles.textItem}>Cài Đặt</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('SettingAccount')}>
           <Ionicons
             name="chevron-forward"
             size={28}
             color={COLORS.PersianGreen}
           />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.item}>
@@ -130,11 +136,13 @@ const UserProfile = ({ navigation }) => {
         <View style={styles.item}>
           <Ionicons name="log-out-outline" size={28} style={styles.iconItem} />
           <Text style={styles.textItem}>Đăng Xuất</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Ionicons
             name="chevron-forward"
             size={28}
             color={COLORS.PersianGreen}
           />
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>

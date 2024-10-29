@@ -9,6 +9,7 @@ import {
   Home,
   Login,
   Logout,
+  Myappointment,
   UserProfile,
 } from "../screens";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -66,14 +67,14 @@ const DrawerNavigation = () => {
         <Drawer.Screen
           name="BookingHistory"
           options={{
-            drawerLabel: "Lịch khám bệnh",
-            title: "BookingHistory",
+            drawerLabel: "Hồ sơ khám bệnh",
+            title: "Myappointment",
             headerShadowVisible: false,
             drawerIcon: ({ color }) => (
               <MaterialIcons name="calendar-month" size={24} color={color} />
             ),
           }}
-          component={BookingHistory}
+          component={Myappointment}
         />
       )}
 
