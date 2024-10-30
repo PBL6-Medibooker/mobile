@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { COLORS, images } from "../constants";
 import HeaderBack from '../components/HeaderBack';
 import { AntDesign } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const AppointmentDetail = ({ navigation }) => {
     return (
@@ -72,7 +73,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.white,
-        marginTop: 22,
     },
     doctorInfoContainer: {
         alignItems: 'center',

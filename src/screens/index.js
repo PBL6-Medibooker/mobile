@@ -19,6 +19,8 @@ import AppointmentDetail from "./AppointmentDetail";
 import SettingNotification from "./SettingNotification";
 import SettingAccount from "./SettingAccount";
 import PasswordManage from "./PasswordManage";
+import ViewArticle from "./ViewArticle";
+import { Articles } from "./Articles";
 
 export {
   Home,
@@ -42,4 +44,6 @@ export {
   SettingNotification,
   SettingAccount,
   PasswordManage,
+  ViewArticle,
+  Articles,
 };

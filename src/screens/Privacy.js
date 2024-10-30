@@ -1,11 +1,11 @@
 import {
     StyleSheet,
     Text,
-    SafeAreaView,
     ScrollView,
   } from "react-native";
   import { HeaderBack } from "../components";
   import { COLORS} from "../constants";
+import { SafeAreaView } from "react-native-safe-area-context";
 
   const Privacy = ({ navigation }) => {
     return (
@@ -38,8 +38,6 @@ import {
     container: {
         flex: 1,
         backgroundColor: COLORS.white,
-        paddingTop: 20, 
-        
     },
     mainContainer: {
         flex: 1,

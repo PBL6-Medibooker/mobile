@@ -7,7 +7,6 @@ import {
     TouchableOpacity
   } from "react-native";
   import React, { useState } from 'react';
-  import { useAuth } from "../AuthProvider";
   import { SafeAreaView } from "react-native-safe-area-context";
   import { HeaderBack } from "../components";
   import { COLORS} from "../constants";

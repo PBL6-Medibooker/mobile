@@ -1,7 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DrawerNavigation from "./DrawerNavigation";
-import { Booking, DoctorInfo, Doctors, Home, Login, QADetail, Register, Specialties, SpecialtyDetail, UpdateUser, UserProfile, VerifyBooking, Myappointment, Privacy, AppointmentDetail, SettingAccount, SettingNotification, PasswordManage } from "../screens";
+import { Booking, DoctorInfo, Doctors, Home, Login, QADetail, Register, Specialties, SpecialtyDetail, UpdateUser, UserProfile, VerifyBooking, Myappointment, Privacy, AppointmentDetail, SettingAccount, SettingNotification, PasswordManage, ViewArticle, Articles } from "../screens";
 import BottomTabNavigation from "./BottomTabNavigation";
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +30,8 @@ const AppNavigation = () => {
             <Stack.Screen name="SettingAccount" component={SettingAccount} />
             <Stack.Screen name="SettingNotification" component={SettingNotification} />
             <Stack.Screen name="PasswordManage" component={PasswordManage} />
+            <Stack.Screen name="ViewArticle" component={ViewArticle} />
+            <Stack.Screen name="Articles" component={Articles} />
         </Stack.Navigator>
     </NavigationContainer>
   );

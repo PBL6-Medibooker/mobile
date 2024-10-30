@@ -33,6 +33,7 @@ const Specialty = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <FlatList
         style={styles.list}
+        showsVerticalScrollIndicator={false}
         data={formatData(specialitiesHook, 2)} // Sử dụng hàm formatData
         numColumns={2}
         keyExtractor={(item) => item._id?.toString()}

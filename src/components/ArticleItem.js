@@ -11,19 +11,19 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 const ArticleItem = ({ data }) => (
   <View style={styles.itemContainer}>
-    <TouchableOpacity  style={styles.imageButton}>
+    <View style={styles.imageButton}>
       <Image source={images.poster} style={styles.image} />
-    </TouchableOpacity>
+    </View>
     <View style={styles.item}>
-      <TouchableOpacity>
-        <Text style={styles.title}>{data.title}</Text>
-      </TouchableOpacity>
+      <View>
+        <Text style={styles.title}>{data.post_title}</Text>
+      </View>
       <Text style={styles.content} numberOfLines={2} ellipsizeMode="tail">
-        {data.content}
+        {data.post_content}
       </Text>
       <View style={styles.dateContainer}>
         <FontAwesome5 name="calendar-alt" size={15} color={COLORS.gray} />
-        <Text style={styles.date}>{data.date}</Text>
+        <Text style={styles.date}>{data.createdAt}</Text>
       </View>
     </View>
   </View>
@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     margin: 5,
     marginHorizontal: 12,
     flexDirection: "row",
+    padding: 10
   },
   imageButton: {
     height: 70,
@@ -45,8 +46,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   image: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
     resizeMode: "cover",
     borderColor: COLORS.black,
     borderWidth: 1,

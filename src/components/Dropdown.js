@@ -10,7 +10,14 @@ import { useCallback, useState } from "react";
 import { COLORS } from "../constants";
 import Entypo from "@expo/vector-icons/Entypo";
 
-const Dropdown = ({ data, onChange, placeholder, disabled, value }) => {
+const Dropdown = ({
+  data,
+  onChange,
+  onFocus,
+  placeholder,
+  disabled,
+  value,
+}) => {
   const [expanded, setExpanded] = useState(false);
 
   const toggleExpanded = useCallback(() => {
@@ -34,7 +41,10 @@ const Dropdown = ({ data, onChange, placeholder, disabled, value }) => {
       <TouchableOpacity
         style={[styles.button, disabled && styles.disabledButton]}
         activeOpacity={disabled ? 1 : 0.8}
-        onPress={toggleExpanded}>
+        onPress={() => {
+          toggleExpanded();
+          if (onFocus) onFocus();
+        }}>
         <Text
           style={[
             { flex: 1, paddingHorizontal: 0 },

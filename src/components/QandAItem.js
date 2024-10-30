@@ -78,10 +78,10 @@ const styles = StyleSheet.create({
     borderColor: COLORS.gray,
     backgroundColor: COLORS.white,
     zIndex: 1,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 5,
+    // },
     // shadowColor: COLORS.Concrete,
     // shadowOpacity: 0.5,
     elevation: 2,

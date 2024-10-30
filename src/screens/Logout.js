@@ -29,7 +29,7 @@ const Logout = () => {
         <TouchableOpacity style={styles.backButton}>
           <Ionicons
             onPress={() => {
-              navigation.navigate("Home");
+              navigation.goBack();
             }}
             name="arrow-back-outline"
             size={48}
