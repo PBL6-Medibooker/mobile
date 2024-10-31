@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   ScrollView,
@@ -13,22 +14,77 @@ import { BottomSheet, HeaderBack } from "../components";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { COLORS, images } from "../constants";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import useSpecialities from "../hooks/useSpecialities";
-import usePosts from "../hooks/usePosts";
+import useArticles from "../hooks/useArticles";
 
 export const Articles = ({ navigation }) => {
   const refRBSheet = useRef();
 
-  const [postsHook, firstPost, fourPosts, loading] = usePosts();
+  const [
+    articlesHook,
+    firstArticle,
+    fourArticles,
+    loading,
+    getArticlesByDoctor,
+    getArticlesBySpecialty,
+  ] = useArticles();
   const [specialitiesHook] = useSpecialities();
 
-  const handleSpecialityChange = (region, specialty, sortBy) => {};
+  const [specialty, setSpecialty] = useState(null);
+  const [sortBy, setSortBy] = useState(null);
+  const [articleList, setArticleList] = useState([]);
+
+  const filterSpecialtyAndSort = async (specialtyName, sortBy) => {
+    const filter = await getArticlesBySpecialty(specialtyName, sortBy);
+    return;
+  };
+
+  const handleSpecialityChange = async (region, specialty, sortBy) => {
+    if (specialty?.name) {
+      const filter = await getArticlesBySpecialty(specialty.name, sortBy);
+      setArticleList(filter);
+    } else if (!(specialty?.name) && sortBy) {
+      const sort = sortBy === "A-Z"
+        ? articlesHook.slice().sort((a, b) => a.article_title.localeCompare(b.article_title))
+        : articlesHook.slice().sort((a, b) => b.article_title.localeCompare(a.article_title));
+      setArticleList(sort);
+    } else if (!specialty && !sortBy) {
+      setArticleList(articlesHook);
+    }
+  };  
+
+  // const handleSpecialityChange = async (region, specialty, sortBy) => {
+  //   const filterArticles = async () => {
+  //     if (specialty?.name) {
+  //       return await getArticlesBySpecialty(specialty.name, sortBy);
+  //     }
+  //     return articlesHook.slice();
+  //   };
+  
+  //   const sortArticles = (articles) => {
+  //     if (!sortBy) return articles;
+  //     return articles.sort((a, b) => 
+  //       sortBy === "A-Z"
+  //         ? a.article_title.localeCompare(b.article_title)
+  //         : b.article_title.localeCompare(a.article_title)
+  //     );
+  //   };
+  
+  //   const filteredArticles = await filterArticles();
+  //   const sortedArticles = sortArticles(filteredArticles);
+  
+  //   setArticleList(sortedArticles);
+  //   console.log(region, specialty?.name || null, sortBy);
+  // };
+  
+  useEffect(() => {
+    setArticleList(articlesHook);
+  }, [articlesHook]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { flex: 1 }]}>
       <HeaderBack navigation={navigation} title="Tin tức" />
-
       <View style={styles.searchContainer}>
         <View style={styles.searchButton}>
           <FontAwesome
@@ -52,42 +108,47 @@ export const Articles = ({ navigation }) => {
       </View>
 
       {!loading ? (
-        <FlatList
-        //   style={styles.list}
-          data={postsHook}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item._id}
-          ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-          renderItem={({ item }) => {
-            return (
-              <Text style={{ padding: 10 }}>{item.post_title}</Text>
-              // <TouchableOpacity
-              //   style={styles.postContainer}
-              //   onPress={() =>
-              //     navigation.navigate("ViewArticle", { post: item })
-              //   }>
-              //   <Image source={images.poster} style={styles.imagePost} />
-              //   <Text style={styles.titlePost} numberOfLines={2}>
-              //     {item.post_title}
-              //   </Text>
-              //   <Text style={[styles.datePost, { alignSelf: "flex-start" }]}>
-              //     Thuộc {item.speciality_id?.name}
-              //   </Text>
-              //   <View style={styles.datePostContainer}>
-              //     <FontAwesome5
-              //       name="calendar-alt"
-              //       size={18}
-              //       color={COLORS.gray}
-              //     />
-              //     <Text style={styles.datePost}>{item.createdAt}</Text>
-              //   </View>
-              // </TouchableOpacity>
-            );
-          }}
-          ListHeaderComponent={<View style={{ height: 10 }} />}
-          ListFooterComponent={<View style={{ height: 10 }} />}
-        />
-      ) : <Text>dang loading</Text>}
+        articleList && articleList.length > 0 ? (
+          <FlatList
+            style={styles.list}
+            data={articleList}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item) => item._id}
+            ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+            renderItem={({ item }) => {
+              return (
+                <TouchableOpacity
+                  style={styles.postContainer}
+                  onPress={() =>
+                    navigation.navigate("ViewArticle", { post: item })
+                  }>
+                  <Image source={images.poster} style={styles.imagePost} />
+                  <Text style={styles.titlePost} numberOfLines={2}>
+                    {item.article_title}
+                  </Text>
+                  <Text style={styles.specialtyPost}>
+                    Đăng bởi: {item.doctor_id?.email}
+                  </Text>
+                  <View style={styles.datePostContainer}>
+                    <FontAwesome5
+                      name="calendar-alt"
+                      size={18}
+                      color={COLORS.gray}
+                    />
+                    <Text style={styles.datePost}>{item.date_published}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
+            ListHeaderComponent={<View style={{ height: 10 }} />}
+            ListFooterComponent={<View style={{ height: 10 }} />}
+          />
+        ) : (
+          <Text>khoong cos data</Text>
+        )
+      ) : (
+        <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+      )}
 
       <BottomSheet
         bottomSheetRef={refRBSheet}
@@ -101,10 +162,10 @@ export const Articles = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.white,
   },
   list: {
-    flex: 1,
-    paddingHorizontal: 12,
+    paddingHorizontal: 15,
   },
   searchContainer: {
     paddingTop: 10,
@@ -145,32 +206,38 @@ const styles = StyleSheet.create({
   postContainer: {
     borderRadius: 10,
     padding: 10,
-    elevation: 2,
+    elevation: 3,
     backgroundColor: COLORS.white,
+    shadowColor: COLORS.PersianGreen,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: COLORS.Light20PersianGreen,
   },
   imagePost: {
-    height: 150,
+    height: 120,
     resizeMode: "cover",
     width: "100%",
   },
   titlePost: {
     fontWeight: "bold",
-    fontSize: 16,
     textDecorationLine: "underline",
     color: COLORS.blue,
     textAlign: "justify",
     marginTop: 5,
+    alignSelf: "flex-start",
   },
   datePostContainer: {
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "flex-start",
-    margin: 5,
   },
   datePost: {
-    fontSize: 14,
     color: COLORS.gray,
     marginLeft: 5,
+  },
+  specialtyPost: {
+    fontSize: 14,
+    color: COLORS.gray,
+    alignSelf: "flex-start",
   },
 });

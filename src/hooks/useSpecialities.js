@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import SpecialitiesAPI from "../API/Speciality_API";
-import { Buffer } from "buffer";
 
 const useSpecialities = () => {
   const [specialitiesHook, setSpecialitiesHook] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const filterSort = (data) => {
-    return data.sort((a, b) => a.name.localeCompare(b.name));
-  };
+  // const filterSort = (data) => {
+  //   return data.slice().sort((a, b) => a.name.localeCompare(b.name));
+  // };
 
   const filterSpecialities = async () => {
     setLoading(true);

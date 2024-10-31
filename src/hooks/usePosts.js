@@ -3,21 +3,9 @@ import Post_API from "../API/Post_API";
 
 const usePosts = () => {
   const [postsHook, setPostsHook] = useState([]);
-  const [firstPost, setFirstPost] = useState({});
-  const [fourPosts, setFourPosts] = useState([]);
+  // const [firstPost, setFirstPost] = useState({});
+  // const [fourPosts, setFourPosts] = useState([]);
   const [loading, isLoading] = useState(false);
-
-  const filterFirstPost = (data) => {
-    return data.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    )[0];
-  };
-
-  const filterFourPosts = (data) => {
-    return data
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      .splice(1, 4);
-  };
 
   const filterPosts = async () => {
     isLoading(true);
@@ -25,8 +13,6 @@ const usePosts = () => {
       const allPosts = await Post_API.get_All_Post();
 
       setPostsHook(allPosts);
-      setFirstPost(filterFirstPost(allPosts));
-      setFourPosts(filterFourPosts(allPosts));
     } catch (error) {
       console.error("Failed to fetch specialities:", error);
     } finally {
@@ -38,7 +24,22 @@ const usePosts = () => {
     filterPosts();
   }, []);
 
-  return [postsHook, firstPost, fourPosts, loading];
+  const getPostsBySpecialty = (data, specialty) => {
+    if (!specialty && !area) {
+      return data;
+    } else {
+      const doctorBySpecialty = data.filter((item) => {
+        const matchArea = area ? item.region_id === area._id : true;
+        const matchSpecialty = specialty
+          ? item.speciality_id === specialty._id
+          : true;
+        return matchArea && matchSpecialty;
+      });
+      return doctorBySpecialty;
+    }
+  };
+
+  return [postsHook, loading];
 };
 
 export default usePosts;

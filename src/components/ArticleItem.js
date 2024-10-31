@@ -9,24 +9,28 @@ import {
 import { COLORS, images } from "../constants";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
-const ArticleItem = ({ data }) => (
-  <View style={styles.itemContainer}>
+const ArticleItem = ({ data, navigation }) => (
+  <TouchableOpacity
+    style={styles.itemContainer}
+    onPress={() => navigation.navigate("ViewArticle", { post: data })}>
     <View style={styles.imageButton}>
       <Image source={images.poster} style={styles.image} />
     </View>
     <View style={styles.item}>
       <View>
-        <Text style={styles.title}>{data.post_title}</Text>
+        <Text style={styles.title} numberOfLines={2}>
+          {data.article_title}
+        </Text>
       </View>
       <Text style={styles.content} numberOfLines={2} ellipsizeMode="tail">
-        {data.post_content}
+        {data.article_content}
       </Text>
       <View style={styles.dateContainer}>
         <FontAwesome5 name="calendar-alt" size={15} color={COLORS.gray} />
-        <Text style={styles.date}>{data.createdAt}</Text>
+        <Text style={styles.date}>{data.date_published}</Text>
       </View>
     </View>
-  </View>
+  </TouchableOpacity>
 );
 
 export default ArticleItem;
@@ -38,7 +42,7 @@ const styles = StyleSheet.create({
     margin: 5,
     marginHorizontal: 12,
     flexDirection: "row",
-    padding: 10
+    padding: 10,
   },
   imageButton: {
     height: 70,

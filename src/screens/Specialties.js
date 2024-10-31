@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   itemSpecialty: {
     flex: 1,
     margin: 2,
-    aspectRatio: 1, // Chiều cao bằng chiều rộng để tạo khung vuông
+    aspectRatio: 1,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 0.5,

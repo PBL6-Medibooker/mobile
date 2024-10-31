@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   Image,
   ScrollView,
   StyleSheet,
@@ -11,26 +10,55 @@ import { COLORS, images } from "../constants";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HeaderBack } from "../components";
 import { formatToDDMMYYYY, formatToHHMMSS } from "../utils/ConvertDate";
-import usePosts from "../hooks/usePosts";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { windowWidth } from "../utils/Dimentions";
+import useArticles from "../hooks/useArticles";
+import { useEffect, useRef, useState } from "react";
 
 const ViewArticle = ({ navigation, route }) => {
   const { post } = route.params || {};
-  const [postsHook, firstPost, fourPosts] = usePosts();
+
+  const [articlesByDoctor, setArticlesByDoctor] = useState([]);
+
+  const [
+    articlesHook,
+    firstArticle,
+    fourArticles,
+    loading,
+    getArticlesByDoctor,
+  ] = useArticles();
+
+  const scrollViewRef = useRef();
+
+  useEffect(() => {
+    const getArticlesByDoctorEmail = async () => {
+      const articlesDoctor = await getArticlesByDoctor(
+        post.doctor_id.email,
+        post._id
+      );
+      // console.log(articlesDoctor);
+      setArticlesByDoctor(articlesDoctor);
+    };
+
+    getArticlesByDoctorEmail();
+    scrollViewRef.current.scrollTo({ y: 0, animated: true });
+  }, [post]);
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} ref={scrollViewRef}>
         <HeaderBack navigation={navigation} backgroundColor={true} />
 
         {post ? (
           <View style={styles.articleContainer}>
-            <Text style={styles.postTitle}>{post.post_title}</Text>
-            <Text style={styles.postSpecialty}>{post.speciality_id.name}</Text>
-            <Text style={styles.postContent}>{post.post_content}</Text>
+            <Text style={styles.postTitle}>{post.article_title}</Text>
             <Text style={styles.postCreatedAt}>
-              Đăng lúc: {formatToHHMMSS(post.createdAt)}{" "}
-              {formatToDDMMYYYY(post.createdAt)}
+              Đăng lúc: {formatToHHMMSS(post.date_published)}{" "}
+              {formatToDDMMYYYY(post.date_published)}
+            </Text>
+            <Text style={styles.postContent}>{post.article_content}</Text>
+            <Text style={styles.postSpecialty}>
+              Bởi: {post.doctor_id.email}
             </Text>
           </View>
         ) : (
@@ -42,15 +70,19 @@ const ViewArticle = ({ navigation, route }) => {
           horizontal
           showsHorizontalScrollIndicator={false}
           style={{ marginLeft: 15 }}>
-          {fourPosts.map((post) => (
+          {articlesByDoctor.map((post) => (
             <View key={post._id}>
-              <TouchableOpacity style={styles.suggestedPost}>
+              <TouchableOpacity
+                style={styles.suggestedPost}
+                onPress={() =>
+                  navigation.navigate("ViewArticle", { post: post })
+                }>
                 <Image
                   source={images.poster}
                   style={styles.imageSuggestedPost}
                 />
                 <Text style={styles.titleSuggestedPost} numberOfLines={2}>
-                  {post.post_title}
+                  {post.article_title}
                 </Text>
                 <View style={styles.dateSuggestedPostContainer}>
                   <FontAwesome5
@@ -58,7 +90,9 @@ const ViewArticle = ({ navigation, route }) => {
                     size={15}
                     color={COLORS.gray}
                   />
-                  <Text style={styles.dateSuggestedPost}>{post.createdAt}</Text>
+                  <Text style={styles.dateSuggestedPost}>
+                    {post.date_published}
+                  </Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -86,11 +120,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
     fontWeight: "bold",
+    marginBottom: 10,
   },
   postSpecialty: {
     color: COLORS.gray,
     textAlign: "center",
     marginBottom: 10,
+    textAlign: "right",
   },
   postContent: {
     fontSize: 16,
@@ -114,10 +150,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     shadowColor: COLORS.PersianGreen,
     alignItems: "center",
-    width: windowWidth / 4 * 3,
+    width: (windowWidth / 4) * 3,
     borderWidth: 0.5,
     borderColor: COLORS.Light20PersianGreen,
     marginRight: 15,
+    height: 210,
   },
   imageSuggestedPost: {
     height: 120,
@@ -131,12 +168,13 @@ const styles = StyleSheet.create({
     color: COLORS.blue,
     textAlign: "justify",
     marginTop: 5,
+    alignSelf: "flex-start",
   },
   dateSuggestedPostContainer: {
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "flex-start",
-    margin: 5,
+    marginVertical: 5,
   },
   dateSuggestedPost: {
     fontSize: 12,

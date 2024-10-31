@@ -19,10 +19,11 @@ import { articles } from "../utils/articles";
 import { ArticleItem, HeaderHome } from "../components";
 import { useAuth } from "../AuthProvider";
 import usePosts from "../hooks/usePosts";
+import useArticles from "../hooks/useArticles";
 
 const Home = ({ navigation }) => {
   const { storedToken, isLoggedIn } = useAuth();
-  const [postsHook, firstPost, fourPosts] = usePosts();
+  const [articlesHook, firstArticle, fourArticles, loading] = useArticles();
 
   const handleBooking = () => {
     if (!isLoggedIn) {
@@ -46,10 +47,10 @@ const Home = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
-        data={fourPosts}
+        data={fourArticles}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item._id.toString()}
-        renderItem={({ item }) => <ArticleItem data={item} />}
+        renderItem={({ item }) => <ArticleItem data={item} navigation={navigation} />}
         ListHeaderComponent={() => (
           <>
             <HeaderHome
@@ -156,28 +157,34 @@ const Home = ({ navigation }) => {
                 Tin tức mới nhất:
               </Text>
 
-              <TouchableOpacity style={styles.firstPostContainer} onPress={() => navigation.navigate("ViewArticle", {post: firstPost})}>
-                <Image source={images.poster} style={styles.imageFirstPost} />
-                <Text style={styles.titleFirstPost} numberOfLines={2}>
-                  {firstPost.post_title}
+              <TouchableOpacity
+                style={styles.firstArticleContainer}
+                onPress={() =>
+                  navigation.navigate("ViewArticle", { post: firstArticle })
+                }>
+                <Image source={images.poster} style={styles.imageFirstArticle} />
+                <Text style={styles.titleFirstArticle} numberOfLines={2}>
+                  {firstArticle.article_title}
                 </Text>
                 <Text
-                  style={[styles.dateFirstPost, { alignSelf: "flex-start" }]}>
-                  Thuộc {firstPost.speciality_id?.name}
+                  style={[styles.dateFirstArticle, { alignSelf: "flex-start" }]}>
+                  Đăng bởi: {firstArticle.doctor_id?.email}
                 </Text>
-                <View style={styles.dateFirstPostContainer}>
+                <View style={styles.dateFirstArticleContainer}>
                   <FontAwesome5
                     name="calendar-alt"
                     size={18}
                     color={COLORS.gray}
                   />
-                  <Text style={styles.dateFirstPost}>
-                    {firstPost.createdAt}
+                  <Text style={styles.dateFirstArticle}>
+                    {firstArticle.date_published}
                   </Text>
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.showAll} onPress={()=>navigation.navigate("Articles")}>
+              <TouchableOpacity
+                style={styles.showAll}
+                onPress={() => navigation.navigate("Articles")}>
                 <Text style={styles.showAll}>Xem tất cả</Text>
               </TouchableOpacity>
             </View>
@@ -268,7 +275,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.PersianGreen,
     borderRadius: 999,
   },
-  firstPostContainer: {
+  firstArticleContainer: {
     borderRadius: 10,
     padding: 10,
     marginVertical: 10,
@@ -276,12 +283,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     alignItems: "center",
   },
-  imageFirstPost: {
+  imageFirstArticle: {
     height: 150,
     resizeMode: "cover",
     width: "95%",
   },
-  titleFirstPost: {
+  titleFirstArticle: {
     fontWeight: "bold",
     fontSize: 16,
     textDecorationLine: "underline",
@@ -289,13 +296,13 @@ const styles = StyleSheet.create({
     textAlign: "justify",
     marginTop: 5,
   },
-  dateFirstPostContainer: {
+  dateFirstArticleContainer: {
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "flex-start",
     margin: 5,
   },
-  dateFirstPost: {
+  dateFirstArticle: {
     fontSize: 14,
     color: COLORS.gray,
     marginLeft: 5,

@@ -16,7 +16,7 @@ const BottomSheet = ({
   selectedRegion,
   setSelectedRegion,
   selectedSortBy,
-  setSelectedSortBy
+  setSelectedSortBy,
 }) => {
   const [specialty, setSpecialty] = useState(null);
   const [region, setRegion] = useState(null);
@@ -39,6 +39,11 @@ const BottomSheet = ({
   const handleResetPress = () => {
     setSpecialty(null);
     setSortBy(null);
+    setRegion(null);
+    if (onSelected) {
+      onSelected(null, null, null);
+    }
+    bottomSheetRef.current.close();
   };
 
   return (
