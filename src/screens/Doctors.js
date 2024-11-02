@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Button,
   FlatList,
   Pressable,
@@ -22,25 +23,37 @@ const Doctors = ({ navigation }) => {
   const [specialty, setSpecialty] = useState(null);
   const [region, setRegion] = useState(null);
   const [sortBy, setSortBy] = useState(null);
+  const [doctorList, setDoctorList] = useState([]);
 
   const [specialitiesHook] = useSpecialities();
   const [regionsHook] = useRegions();
-  const [doctorsHook] = useAccount();
+  const [doctorsHook, getDoctorsBySpecialtyAndRegion] = useAccount();
+
+  useEffect(() => {
+    setDoctorList(doctorsHook);
+  }, [doctorsHook]);
 
   const refRBSheet = useRef();
 
   const handleSpecialityChange = (region, specialty, sortBy) => {
-    if (region) {
-      setRegion(region);
-      console.log(region.name);
+    const doctors = getDoctorsBySpecialtyAndRegion(
+      doctorsHook,
+      specialty,
+      region
+    );
+    if (Array.isArray(doctors)) {
+      const sortDoctors = doctors.slice().sort((a, b) => {
+        if (sortBy === "A-Z") {
+          return a.name.localeCompare(b.name);
+        } else if (sortBy === "Z-A") {
+          return b.name.localeCompare(a.name);
+        }
+        return 0;
+      });
+      setDoctorList(sortDoctors);
+    } else {
+      setDoctorList([]);
     }
-    if (specialty) {
-      setSpecialty(specialty);
-      console.log(specialty.name);
-    }
-    if (sortBy) setSortBy(sortBy);
-
-    console.log(sortBy);
   };
 
   return (
@@ -72,22 +85,27 @@ const Doctors = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        style={styles.list}
-        data={doctorsHook}
-        keyExtractor={(item) => item._id}
-        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-        renderItem={({ item }) => {
-          return <DoctorItem item={item} navigation={navigation} />;
-        }}
-        ListHeaderComponent={<View style={{ height: 10 }} />}
-      />
+      {doctorList && doctorList.length > 0 ? (
+        <FlatList
+          style={styles.list}
+          data={doctorList}
+          keyExtractor={(item) => item._id}
+          ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+          renderItem={({ item }) => {
+            return <DoctorItem item={item} navigation={navigation} />;
+          }}
+          ListHeaderComponent={<View style={{ height: 10 }} />}
+        />
+      ) : (
+        <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+      )}
 
       <BottomSheet
         bottomSheetRef={refRBSheet}
         onSelected={handleSpecialityChange}
         specialtyList={specialitiesHook}
         regionList={regionsHook}
+        height={390}
       />
     </SafeAreaView>
   );

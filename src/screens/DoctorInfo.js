@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CalendarCustom, HeaderBack } from "../components";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -8,14 +8,21 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { COLORS, images } from "../constants";
 import useSpecialities from "../hooks/useSpecialities";
+import useRegions from "../hooks/useRegions";
+import { useAuth } from "../AuthProvider";
 
 const DoctorInfo = ({ navigation, route }) => {
   const { doctorSelected } = route.params || {};
+
+  const [area, setArea] = useState(null);
+  const [specialty, setSpecialty] = useState(null);
+  const [healthStatus, setHealthStatus] = useState(null);
 
   const [selectedDay, setSelectedDay] = useState({
     date: null,
@@ -25,8 +32,50 @@ const DoctorInfo = ({ navigation, route }) => {
 
   const [message, setMessage] = useState(null);
 
-  const [specialitiesHook, get_Specialty_By_ID, loading, error] =
-    useSpecialities();
+  const [specialitiesHook, get_Specialty_By_ID, loading] = useSpecialities();
+  const [regionsHook, get_Region_By_ID] = useRegions();
+
+  const { isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    const getSpecialtyById = async () => {
+      const specialtyById = await get_Specialty_By_ID(
+        specialitiesHook,
+        doctorSelected.speciality_id
+      );
+      // console.log(specialtyById);
+      setSpecialty(specialtyById);
+    };
+
+    const getRegionById = async () => {
+      const regionById = await get_Region_By_ID(
+        regionsHook,
+        doctorSelected.region_id
+      );
+      // console.log(regionById);
+      setArea(regionById);
+    };
+
+    getSpecialtyById();
+    getRegionById();
+  }, [specialitiesHook]);
+
+  const handleSetDate = () => {
+    if (selectedDay.time !== null) {
+      // console.log(selectedDay);
+      const info = {
+        region: area,
+        specialty: specialty,
+        doctor: doctorSelected,
+        medicalHistory: null,
+        healthStatus: healthStatus,
+        time: selectedDay,
+      };
+      navigation.navigate("VerifyBooking", info);
+    } else {
+      setMessage("* Chưa chọn ngày - khung giờ");
+    }
+  };
 
   if (loading) {
     return (
@@ -35,20 +84,6 @@ const DoctorInfo = ({ navigation, route }) => {
       </SafeAreaView>
     );
   }
-
-  const specialtyName = get_Specialty_By_ID(
-    specialitiesHook,
-    doctorSelected.speciality_id
-  );
-
-  const handleSetDate = () => {
-    if (selectedDay.time !== null) {
-      console.log(selectedDay);
-      navigation.navigate("VerifyBooking");
-    } else {
-      setMessage("* Chưa chọn ngày - khung giờ");
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -59,14 +94,26 @@ const DoctorInfo = ({ navigation, route }) => {
             activeOpacity={0.85}
             onPress={() => {}}
             style={styles.myAvatar}>
-            <Image source={images.user_default} style={styles.image} />
+            <Image
+              source={
+                doctorSelected.profile_image
+                  ? {
+                      uri: `data:image/png;base64,${doctorSelected.profile_image}`,
+                    }
+                  : images.doctor_default
+              }
+              style={styles.image}
+            />
           </TouchableOpacity>
 
           <View style={styles.myBasicInformation}>
             <Text style={[styles.text, { fontWeight: "bold", fontSize: 16 }]}>
               {doctorSelected.name}
             </Text>
-            <Text style={styles.text}>{specialtyName}</Text>
+            {specialty?.name && (
+              <Text style={styles.text}>{specialty?.name}</Text>
+            )}
+            {area?.name && <Text style={styles.text}>{area?.name}</Text>}
           </View>
         </View>
 
@@ -81,11 +128,12 @@ const DoctorInfo = ({ navigation, route }) => {
           <Text style={styles.contentText}>doctor.bio.introduction</Text>
 
           <CalendarCustom
+            navigation={navigation}
             schedule={doctorSelected.active_hours}
             setMessage={setMessage}
             setSelectedDay={(val) => {
               setSelectedDay(val);
-              console.log("dp: ", val);
+              // console.log("dp: ", val);
             }}
             selectedDay={selectedDay}
             theme="light"
@@ -96,6 +144,19 @@ const DoctorInfo = ({ navigation, route }) => {
               <Text style={{ color: "red", textAlign: "center" }}>
                 {message}
               </Text>
+            </View>
+          )}
+
+          {selectedDay.time !== null && (
+            <View>
+              <Text style={styles.textHealth}>Tình trạng sức khoẻ</Text>
+              <TextInput
+                style={styles.textInputHealth}
+                numberOfLines={3}
+                multiline
+                value={healthStatus}
+                onChangeText={setHealthStatus}
+              />
             </View>
           )}
 
@@ -175,5 +236,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 15,
+  },
+  textHealth: {
+    color: COLORS.PersianGreen,
+    fontWeight: "bold",
+    fontSize: 15,
+    marginVertical: 5,
+  },
+  textInputHealth: {
+    borderWidth: 1,
+    borderColor: COLORS.silver,
+    borderRadius: 10,
+    textAlignVertical: "top",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    height: 100,
+    marginBottom: 10,
   },
 });

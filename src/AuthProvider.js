@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
           console.error("Failed to fetch account info: ", error);
         }
-      }
+      } else setAccountInfo(null);
     };
 
     fetchAccountInfo();

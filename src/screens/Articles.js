@@ -44,15 +44,20 @@ export const Articles = ({ navigation }) => {
     if (specialty?.name) {
       const filter = await getArticlesBySpecialty(specialty.name, sortBy);
       setArticleList(filter);
-    } else if (!(specialty?.name) && sortBy) {
-      const sort = sortBy === "A-Z"
-        ? articlesHook.slice().sort((a, b) => a.article_title.localeCompare(b.article_title))
-        : articlesHook.slice().sort((a, b) => b.article_title.localeCompare(a.article_title));
+    } else if (!specialty?.name && sortBy) {
+      const sort = articlesHook.slice().sort((a, b) => {
+        if (sortBy === "A-Z") {
+          return a.article_title.localeCompare(b.article_title); // Sắp xếp A-Z
+        } else if (sortBy === "Z-A") {
+          return b.article_title.localeCompare(a.article_title); // Sắp xếp Z-A
+        }
+        return 0;
+      });
       setArticleList(sort);
     } else if (!specialty && !sortBy) {
       setArticleList(articlesHook);
     }
-  };  
+  };
 
   // const handleSpecialityChange = async (region, specialty, sortBy) => {
   //   const filterArticles = async () => {
@@ -61,23 +66,23 @@ export const Articles = ({ navigation }) => {
   //     }
   //     return articlesHook.slice();
   //   };
-  
+
   //   const sortArticles = (articles) => {
   //     if (!sortBy) return articles;
-  //     return articles.sort((a, b) => 
+  //     return articles.sort((a, b) =>
   //       sortBy === "A-Z"
   //         ? a.article_title.localeCompare(b.article_title)
   //         : b.article_title.localeCompare(a.article_title)
   //     );
   //   };
-  
+
   //   const filteredArticles = await filterArticles();
   //   const sortedArticles = sortArticles(filteredArticles);
-  
+
   //   setArticleList(sortedArticles);
   //   console.log(region, specialty?.name || null, sortBy);
   // };
-  
+
   useEffect(() => {
     setArticleList(articlesHook);
   }, [articlesHook]);
@@ -154,6 +159,7 @@ export const Articles = ({ navigation }) => {
         bottomSheetRef={refRBSheet}
         onSelected={handleSpecialityChange}
         specialtyList={specialitiesHook}
+        height={330}
       />
     </SafeAreaView>
   );

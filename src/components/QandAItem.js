@@ -47,7 +47,7 @@ const QandAItem = ({ item, navigation }) => {
         <View style={styles.answer}>
           <View style={styles.doctorInfo}>
             <Image source={images.user_default} style={styles.image} />
-            <View>
+            <View style={styles.doctorProfile}>
               <Text>{item.post_comments[0].replier}</Text>
               <Text>Bác sĩ</Text>
             </View>
@@ -144,5 +144,8 @@ const styles = StyleSheet.create({
   doctorInfo: {
     flexDirection: "row",
     marginBottom: 10,
+  },
+  doctorProfile: {
+    alignSelf: "center",
   },
 });

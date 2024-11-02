@@ -54,7 +54,7 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
 
   if (loading) {
     return (
-      <View style={{flex: 1, alignItems: 'center', }}>
+      <View style={{ flex: 1, alignItems: "center" }}>
         <ActivityIndicator size="large" color="#00ff00" />
         <Text>Đang tải dữ liệu...</Text>
       </View>
@@ -72,14 +72,14 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
   const handleSpecialityChange = async (region, specialty, sortBy) => {
     try {
       const filteredDoctors = await fetchDoctorList(region);
-      const sortedDoctors =
-        sortBy === "A-Z"
-          ? filteredDoctors
-              .slice()
-              .sort((a, b) => a.name.localeCompare(b.name))
-          : filteredDoctors
-              .slice()
-              .sort((a, b) => b.name.localeCompare(a.name));
+      const sortedDoctors = filteredDoctors.slice().sort((a, b) => {
+        if (sortBy === "A-Z") {
+          return a.name.localeCompare(b.name);
+        } else if (sortBy === "Z-A") {
+          return b.name.localeCompare(a.name);
+        }
+        return 0;
+      });
       setDoctorList(sortedDoctors);
     } catch (sortError) {
       console.error("Error sorting doctor list:", sortError);
@@ -132,8 +132,8 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
       <BottomSheet
         bottomSheetRef={refRBSheet}
         onSelected={handleSpecialityChange}
-        // specialtyList={specialitiesHook}
         regionList={regionsHook}
+        height={330}
       />
     </SafeAreaView>
   );

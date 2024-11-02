@@ -1,6 +1,8 @@
 import {
+  ActivityIndicator,
   FlatList,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -12,24 +14,49 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useEffect, useRef, useState } from "react";
 import useSpecialities from "../hooks/useSpecialities";
 import usePosts from "../hooks/usePosts";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useAuth } from "../AuthProvider";
 
 const Forum = ({ navigation }) => {
   const [specialty, setSpecialty] = useState(null);
   const [sortBy, setSortBy] = useState(null);
 
-  const [specialities, sortSpecialities] = useSpecialities();
+  const { accountInfo } = useAuth();
+
+  const [specialitiesHook] = useSpecialities();
   const [postsHook] = usePosts();
+
+  const [specialtyList, setSpecialtyList] = useState([]);
+  const [postList, setPostList] = useState([]);
 
   const refRBSheet = useRef();
 
-  const handleSpecialityChange = (specialty, sortBy) => {
-    if (specialty) {
-      setSpecialty(specialty);
-      console.log(specialty.name);
-    }
-    if (sortBy) setSortBy(sortBy);
+  useEffect(() => {
+    setPostList(postsHook);
+  }, [postsHook]);
 
-    console.log(sortBy);
+  const handleSpecialityChange = (region, specialty, sortBy) => {
+    // if (specialty) {
+    //   setSpecialty(specialty);
+    //   console.log(specialty.name);
+    // }
+    // if (sortBy) setSortBy(sortBy);
+    // console.log(sortBy);
+    const filterPosts = specialty
+      ? postsHook.filter((item) => item.speciality_id._id === specialty._id)
+      : postsHook;
+    if (Array.isArray(filterPosts)) {
+      const sortPosts = filterPosts.slice().sort((a, b) => {
+        if (sortBy === "A-Z") {
+          return a.post_title.localeCompare(b.post_title);
+        } else if (sortBy === "Z-A") {
+          return b.post_title.localeCompare(a.post_title);
+        }
+        return 0;
+      });
+      setPostList(sortPosts);
+    } else setPostList([]);
   };
 
   return (
@@ -58,22 +85,37 @@ const Forum = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        style={styles.list}
-        data={postsHook}
-        keyExtractor={(item) => item._id}
-        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-        renderItem={({ item }) => {
-          return <QandAItem item={item} navigation={navigation} />;
-        }}
-        ListHeaderComponent={<View style={{ height: 10 }} />}
-        ListFooterComponent={<View style={{ height: 15 }} />}
-      />
+      {postList && postList.length > 0 ? (
+        <FlatList
+          style={styles.list}
+          data={postList}
+          keyExtractor={(item) => item._id}
+          ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+          renderItem={({ item }) => {
+            return <QandAItem item={item} navigation={navigation} />;
+          }}
+          ListHeaderComponent={<View style={{ height: 10 }} />}
+          ListFooterComponent={<View style={{ height: 15 }} />}
+        />
+      ) : (
+        <Text>K co bai post nao</Text>
+      )}
+
+      {!accountInfo?.__t && (
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            /* Thêm hành động cho nút */
+          }}>
+          <FontAwesome6 name="add" size={42} color={COLORS.white} />
+        </TouchableOpacity>
+      )}
 
       <BottomSheet
         bottomSheetRef={refRBSheet}
         onSelected={handleSpecialityChange}
-        specialtyList={sortSpecialities}
+        specialtyList={specialitiesHook}
+        height={330}
       />
     </SafeAreaView>
   );
@@ -125,5 +167,17 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 12,
     // marginTop: 8,
+  },
+  addButton: {
+    position: "absolute",
+    bottom: 25, // Khoảng cách từ đáy màn hình
+    right: 25,
+    // transform: [{ translateX: -50 }], // Đưa nút về giữa
+    backgroundColor: COLORS.PersianGreen,
+    borderRadius: 999,
+    height: 55,
+    aspectRatio: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

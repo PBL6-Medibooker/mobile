@@ -16,11 +16,15 @@ const useRegions = () => {
     }
   };
 
+  const get_Region_By_ID = (data, id) => {
+    return data.find((item) => item._id === id);
+  };
+
   useEffect(() => {
     filterRegions();
   }, []);
 
-  return [regionsHook];
+  return [regionsHook, get_Region_By_ID];
 };
 
 export default useRegions;

@@ -25,7 +25,7 @@ const useSpecialities = () => {
   };
 
   const get_Specialty_By_ID = (data, id) => {
-    return data.find((item) => item._id === id)?.name;
+    return data.find((item) => item._id === id);
   };
 
   useEffect(() => {

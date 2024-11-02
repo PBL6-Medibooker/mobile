@@ -4,6 +4,7 @@ import { COLORS } from "../constants";
 import RadioView from "./RadioView";
 import { useEffect, useState } from "react";
 import moment from "moment";
+import { useAuth } from "../AuthProvider";
 
 const darkTheme = {
   calendarBackground: COLORS.black,
@@ -33,8 +34,11 @@ const CalendarCustom = ({
   schedule,
   selectedDay,
   setSelectedDay,
+  navigation,
 }) => {
   const [markedDates, setMarkedDates] = useState({});
+
+  const { isLoggedIn } = useAuth();
 
   const getMarkedDatesForMonth = () => {
     let marked = {};
@@ -65,7 +69,10 @@ const CalendarCustom = ({
 
   const activeHours = () => {
     return schedule
-      .filter((item) => item.hour_type === "appointment" && item.day === selectedDay.dayOfWeek)
+      .filter(
+        (item) =>
+          item.hour_type === "appointment" && item.day === selectedDay.dayOfWeek
+      )
       .map((item) => ({
         value: item._id,
         label: `${item.start_time} - ${item.end_time}`,
@@ -141,7 +148,9 @@ const CalendarCustom = ({
             options={activeHours()} // Gọi hàm activeHours
             selectedOption={selectedDay.time}
             onSelect={(val) => {
-              setSelectedDay({ ...selectedDay, time: val });
+              if (isLoggedIn) {
+                setSelectedDay({ ...selectedDay, time: val });
+              } else navigation.navigate("Login");
             }}
             textColor={theme === "light" ? COLORS.black : COLORS.white}
             setMessage={setMessage}

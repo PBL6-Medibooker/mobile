@@ -6,7 +6,7 @@ import { useAuth } from "../AuthProvider";
 
 const HeaderHome = ({ title, navigation }) => {
   // const navigation = useNavigation();
-  const { storedToken, isLoggedIn } = useAuth();
+  const { accountInfo, storedToken, isLoggedIn } = useAuth();
   const handle = () => {
     if (!isLoggedIn) {
       navigation.navigate("Login");
@@ -24,7 +24,14 @@ const HeaderHome = ({ title, navigation }) => {
       </TouchableOpacity>
       <Text style={styles.text}>{title}</Text>
       <TouchableOpacity onPress={() => handle()} activeOpacity={0.7}>
-        <Image source={images.user_default} style={styles.image} />
+        <Image
+          source={
+            accountInfo?.profile_image
+              ? { uri: `data:image/png;base64,${accountInfo.profile_image}` }
+              : images.user_default
+          }
+          style={styles.image}
+        />
       </TouchableOpacity>
     </View>
   );

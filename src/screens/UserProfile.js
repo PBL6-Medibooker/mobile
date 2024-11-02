@@ -14,7 +14,6 @@ import { COLORS, images } from "../constants";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { UploadImage } from "../utils/Upload";
 import { useState } from "react";
-import useAccount from "../hooks/useAccount";
 
 const UserProfile = ({ navigation }) => {
   const { storedToken, isLoggedIn, accountInfo } = useAuth();
@@ -36,7 +35,15 @@ const UserProfile = ({ navigation }) => {
         <View style={styles.myAvatar}>
           <TouchableOpacity activeOpacity={0.85} onPress={() => {}}>
             <Image
-              source={uriAvatar ? { uri: uriAvatar } : images.user_default}
+              source={
+                uriAvatar
+                  ? { uri: uriAvatar }
+                  : accountInfo?.profile_image
+                  ? {
+                      uri: `data:image/png;base64,${accountInfo.profile_image}`,
+                    }
+                  : images.user_default
+              }
               style={styles.image}
             />
           </TouchableOpacity>

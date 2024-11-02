@@ -19,7 +19,14 @@ const DrawerContent = ({ navigation, isLoggedIn }) => {
   return (
     <View style={styles.container}>
       <Pressable onPress={() => handleManagerAccount()}>
-        <Image source={images.user_default} style={styles.image} />
+        <Image
+          source={
+            accountInfo?.profile_image
+              ? { uri: `data:image/png;base64,${accountInfo.profile_image}` }
+              : images.user_default
+          }
+          style={styles.image}
+        />
       </Pressable>
       <Text
         style={{

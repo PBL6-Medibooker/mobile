@@ -49,7 +49,7 @@ const get_Doctor_List = async () => {
 const get_Account_By_Email = async (email) => {
   try {
     const res = await client.post("/acc/get-acc", {email: email});
-    console.log("response: ", res.data);
+    // console.log("response: ", res.data);
     return res.data;
   } catch (error) {
     if (error.response) {
