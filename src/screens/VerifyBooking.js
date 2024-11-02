@@ -243,10 +243,10 @@ const VerifyBooking = ({ navigation, route }) => {
         )}
 
         {/* Tiền sử bệnh lý */}
-        {medicalHistory && (
+        {accountInfo.underlying_condition !== "none" && (
           <View style={styles.problemContainer}>
             <Text style={styles.infoTitle}>Tiền sử bệnh lý</Text>
-            <Text style={styles.problemText}>- {medicalHistory}</Text>
+            <Text style={styles.problemText}>- {accountInfo.underlying_condition}</Text>
           </View>
         )}
 

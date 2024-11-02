@@ -39,10 +39,9 @@ const styles = StyleSheet.create({
   itemContainer: {
     borderBottomWidth: 1,
     borderColor: COLORS.silver,
-    margin: 5,
     marginHorizontal: 12,
     flexDirection: "row",
-    padding: 10,
+    paddingVertical: 15,
   },
   imageButton: {
     height: 70,

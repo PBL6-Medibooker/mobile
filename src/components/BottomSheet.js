@@ -53,6 +53,8 @@ const BottomSheet = ({
       openDuration={true}
       closeOnPressBack={true}
       closeOnPressMask={true}
+      dragOnContent={true}
+      draggable={true}
       customStyles={{
         wrapper: {
           backgroundColor: "rgba(0,0,0,0.2)",

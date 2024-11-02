@@ -245,14 +245,15 @@ const Booking = ({ navigation, route }) => {
             </Text>
           ) : null}
 
-          <Text style={styles.text}>Tiểu sử bệnh lý</Text>
+          {/* <Text style={styles.text}>Tiền sử bệnh lý</Text>
           <TextInput
             style={[styles.textInput, { height: 100 }]}
             numberOfLines={3}
             value={medicalHistory}
             multiline
             onChangeText={setMedicalHistory}
-          />
+          /> */}
+          
           <Text style={styles.text}>Tình trạng sức khoẻ</Text>
           <TextInput
             style={[styles.textInput, { height: 100 }]}
