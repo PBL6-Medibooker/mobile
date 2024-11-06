@@ -3,36 +3,83 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { COLORS, images } from "../constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useAccount from "../hooks/useAccount";
+import Account_API from "../API/Account_API";
+import { useAuth } from "../AuthProvider";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import Post_API from "../API/Post_API";
 
 const QandAItem = ({ item, navigation }) => {
   const [isViewAnswer, setIsViewAnswer] = useState(false);
+  const [isReplied, setIsReplied] = useState(false);
+  const [comment, setComment] = useState(null);
+
+  const [doctorsHook, getDoctorsBySpecialtyAndRegion, loading] = useAccount();
+  const { accountInfo } = useAuth();
+  const [postItem, setPostItem] = useState(item);
+
+  const [replier, setReplier] = useState(null);
+
+  useEffect(() => {
+    const getReplierNameById = async () => {
+      if (postItem.post_comments && postItem.post_comments.length > 0) {
+        const replierRes = await Account_API.get_Account_By_Id(
+          postItem.post_comments[0]?.replier
+        );
+        setReplier(replierRes);
+      }
+    };
+    getReplierNameById();
+  }, [postItem]);
 
   const toggleShowFullText = () => {
-    navigation.navigate("QADetail", { QA: item });
+    navigation.navigate("QADetail", { QA: postItem, replier: replier });
+  };
+
+  const handleSendAnswer = async () => {
+    try {
+      console.log(postItem._id, accountInfo.email, comment);
+
+      const res = await Post_API.add_Comment(
+        postItem._id,
+        accountInfo.email,
+        comment
+      );
+      console.log(res);
+      if (typeof res === "object") {
+        console.log("success");
+        setPostItem(res);
+        setIsViewAnswer(true);
+        setIsReplied(false);
+      }
+    } catch (error) {
+      console.error("error: ", error);
+    }
   };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.question} onPress={toggleShowFullText}>
-        <Text style={styles.title}>{item.post_title}</Text>
+        <Text style={styles.title}>{postItem?.post_title}</Text>
         <View style={styles.userInfo}>
           <AntDesign name="message1" size={18} color={COLORS.PersianGreen} />
-          <Text style={styles.userName}>{item.user_id.email}</Text>
+          <Text style={styles.userName}>{postItem?.user_id?.email}</Text>
         </View>
         <View style={styles.specialty}>
-          <Text>#{item.speciality_id.name.replace(/\s/g, "")}</Text>
+          <Text>#{postItem?.speciality_id?.name?.replace(/\s/g, "")}</Text>
         </View>
         <Text style={styles.content} numberOfLines={7}>
-          {item.post_content}
+          {postItem?.post_content}
         </Text>
 
-        {item.post_comments?.length > 0 && (
+        {postItem?.post_comments?.length > 0 && (
           <Pressable
             onPress={() => {
               setIsViewAnswer(!isViewAnswer);
@@ -41,22 +88,60 @@ const QandAItem = ({ item, navigation }) => {
             <Text style={styles.viewText}>Xem câu trả lời</Text>
           </Pressable>
         )}
+
+        {postItem?.post_comments?.length === 0 &&
+          accountInfo?.__t === "Doctor" && (
+            <Pressable
+              onPress={() => {
+                setIsReplied(!isReplied);
+              }}
+              style={{ alignSelf: "flex-end" }}>
+              <Text style={styles.viewText}>Trả lời</Text>
+            </Pressable>
+          )}
       </TouchableOpacity>
 
-      {isViewAnswer && item.post_comments?.length > 0 && (
+      {isReplied && (
+        <View style={styles.answerQuestion}>
+          <TextInput
+            style={styles.inputAnswer}
+            value={comment}
+            onChangeText={setComment}
+          />
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.sendButton}
+            onPress={() => handleSendAnswer()}>
+            <Ionicons name="send" size={15} color="white" />
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {isViewAnswer && postItem?.post_comments?.length > 0 && (
         <View style={styles.answer}>
           <View style={styles.doctorInfo}>
-            <Image source={images.user_default} style={styles.image} />
+            <Pressable>
+              <Image
+                source={
+                  replier.profile_image
+                    ? { uri: `data:image/png;base64,${replier.profile_image}` }
+                    : images.doctor_default
+                }
+                style={styles.image}
+              />
+            </Pressable>
             <View style={styles.doctorProfile}>
-              <Text>{item.post_comments[0].replier}</Text>
+              <Pressable>
+                <Text>{replier?.username || "Bác sĩ"}</Text>
+              </Pressable>
               <Text>Bác sĩ</Text>
             </View>
           </View>
           <Text numberOfLines={4} style={styles.content}>
-            {item.post_comments[0].comment_content}
+            {postItem?.post_comments[0].comment_content}
           </Text>
 
-          {item.post_comments[0].comment_content.length > 100 && (
+          {postItem?.post_comments[0].comment_content.length > 100 && (
             <TouchableOpacity
               onPress={toggleShowFullText}
               style={{ alignSelf: "flex-start" }}>
@@ -147,5 +232,35 @@ const styles = StyleSheet.create({
   },
   doctorProfile: {
     alignSelf: "center",
+  },
+  answerQuestion: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 15,
+    backgroundColor: COLORS.Concrete,
+    paddingBottom: 5,
+    paddingHorizontal: 5,
+    marginTop: -10,
+    borderBottomLeftRadius: 22,
+    borderBottomRightRadius: 22,
+  },
+  inputAnswer: {
+    borderWidth: 1,
+    borderColor: COLORS.silver,
+    borderRadius: 999,
+    flex: 1,
+    paddingHorizontal: 15,
+    height: 35,
+    backgroundColor: COLORS.white,
+  },
+  sendButton: {
+    backgroundColor: COLORS.PersianGreen,
+    padding: 8,
+    borderRadius: 999,
+    height: 32,
+    aspectRatio: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 5,
   },
 });

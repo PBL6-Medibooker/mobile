@@ -28,7 +28,7 @@ const ViewArticle = ({ navigation, route }) => {
     getArticlesByDoctor,
   ] = useArticles();
 
-  const scrollViewRef = useRef();
+  // const scrollViewRef = useRef();
 
   useEffect(() => {
     const getArticlesByDoctorEmail = async () => {
@@ -41,12 +41,12 @@ const ViewArticle = ({ navigation, route }) => {
     };
 
     getArticlesByDoctorEmail();
-    scrollViewRef.current.scrollTo({ y: 0, animated: true });
+    // scrollViewRef.current.scrollTo({ y: 0, animated: true });
   }, [post]);
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} ref={scrollViewRef}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <HeaderBack navigation={navigation} backgroundColor={true} />
 
         {post ? (
@@ -75,7 +75,7 @@ const ViewArticle = ({ navigation, route }) => {
               <TouchableOpacity
                 style={styles.suggestedPost}
                 onPress={() =>
-                  navigation.navigate("ViewArticle", { post: post })
+                  navigation.push("ViewArticle", { post: post })
                 }>
                 <Image
                   source={images.poster}

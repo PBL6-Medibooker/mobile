@@ -14,7 +14,7 @@ const useAccount = () => {
         name: username,
         ...rest,
       }));
-      
+
       setDoctorsHook(dropdown);
     } catch (error) {
       console.error("Failed to fetch doctors:", error);

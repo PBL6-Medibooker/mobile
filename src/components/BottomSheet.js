@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, TouchableWithoutFeedback, View } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { COLORS } from "../constants";
 import Dropdown from "./Dropdown";
@@ -12,12 +12,6 @@ const BottomSheet = ({
   regionList,
   onSelected,
   height,
-  selectedSpecialty,
-  onSelectedSpecialty,
-  selectedRegion,
-  setSelectedRegion,
-  selectedSortBy,
-  setSelectedSortBy,
 }) => {
   const [specialty, setSpecialty] = useState(null);
   const [region, setRegion] = useState(null);
@@ -26,11 +20,16 @@ const BottomSheet = ({
   const [specialitiesHook] = useSpecialities();
   const [regionsHook] = useRegions();
 
+  const [openedDropdown, setOpenedDropdown] = useState(null);
+
   const handleSortSelection = (type) => {
     setSortBy(type);
+    setOpenedDropdown(null);
   };
 
   const handleOkPress = () => {
+    setOpenedDropdown(null);
+
     if (onSelected) {
       onSelected(region, specialty, sortBy); // Truyền chuyên khoa và sortBy về component cha
     }
@@ -41,10 +40,16 @@ const BottomSheet = ({
     setSpecialty(null);
     setSortBy(null);
     setRegion(null);
+
+    setOpenedDropdown(null);
     if (onSelected) {
       onSelected(null, null, null);
     }
     bottomSheetRef.current.close();
+  };
+
+  const handleFocus = (field) => {
+    setOpenedDropdown(field);
   };
 
   return (
@@ -69,115 +74,131 @@ const BottomSheet = ({
           borderTopRightRadius: 30,
         },
       }}>
-      <View style={{ margin: 20 }}>
-        <Text
-          style={{
-            marginBottom: 5,
-            textAlign: "center",
-            fontSize: 16,
-            fontWeight: "bold",
-          }}>
-          Filter
-        </Text>
-
-        {regionList ? (
-          <>
-            <Text style={{ marginBottom: 5 }}>Khu vực: </Text>
-            <Dropdown
-              data={regionsHook}
-              onChange={setRegion}
-              placeholder="Chọn khu vực"
-              value={region}
-            />
-          </>
-        ) : null}
-
-        {specialtyList ? (
-          <>
-            <Text style={{ marginBottom: 5 }}>Chuyên khoa: </Text>
-            <Dropdown
-              data={specialtyList}
-              onChange={setSpecialty}
-              placeholder="Chọn chuyên khoa"
-              value={specialty}
-            />
-          </>
-        ) : null}
-
-        <Text style={{ marginTop: 10, marginBottom: 5 }}>Sắp xếp theo: </Text>
-        <View style={{}}>
-          <Pressable onPress={() => handleSortSelection("A-Z")}>
-            <Text
-              style={{
-                padding: 5,
-                backgroundColor:
-                  sortBy === "A-Z" ? COLORS.Light20PersianGreen : "transparent",
-              }}>
-              Theo thứ tự A {String.fromCharCode(8594)} Z
-            </Text>
-          </Pressable>
-          <View
+      <TouchableWithoutFeedback
+        style={{ margin: 20 }}
+        onPress={() => setOpenedDropdown(null)}>
+        <View style={{ margin: 20 }}>
+          <Text
             style={{
-              height: 2,
-              backgroundColor: COLORS.silver,
-              borderRadius: 999,
-              marginVertical: 3,
-            }}
-          />
-
-          <Pressable onPress={() => handleSortSelection("Z-A")}>
-            <Text
-              style={{
-                padding: 5,
-                backgroundColor:
-                  sortBy === "Z-A" ? COLORS.Light20PersianGreen : "transparent",
-              }}>
-              Theo thứ tự Z {String.fromCharCode(8594)} A
-            </Text>
-          </Pressable>
-
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-evenly",
-              marginVertical: 10,
+              marginBottom: 5,
+              textAlign: "center",
+              fontSize: 16,
+              fontWeight: "bold",
             }}>
-            <Pressable
-              onPress={handleResetPress}
-              style={{
-                backgroundColor: COLORS.PersianGreen,
-                borderRadius: 5,
-                flex: 1,
-              }}>
+            Filter
+          </Text>
+
+          {regionList ? (
+            <>
+              <Text style={{ marginBottom: 5 }}>Khu vực: </Text>
+              <Dropdown
+                data={regionsHook}
+                onChange={setRegion}
+                placeholder="Chọn khu vực"
+                value={region}
+                onFocus={() => handleFocus("region")}
+                expanded={openedDropdown === "region"}
+                setExpanded={setOpenedDropdown}
+              />
+            </>
+          ) : null}
+
+          {specialtyList ? (
+            <>
+              <Text style={{ marginBottom: 5 }}>Chuyên khoa: </Text>
+              <Dropdown
+                data={specialtyList}
+                onChange={setSpecialty}
+                placeholder="Chọn chuyên khoa"
+                value={specialty}
+                onFocus={() => handleFocus("specialty")}
+                expanded={openedDropdown === "specialty"}
+                setExpanded={setOpenedDropdown}
+              />
+            </>
+          ) : null}
+
+          <View style={{}}>
+            <Text style={{ marginTop: 10, marginBottom: 5 }}>
+              Sắp xếp theo:{" "}
+            </Text>
+            <Pressable onPress={() => handleSortSelection("A-Z")}>
               <Text
                 style={{
                   padding: 5,
-                  color: COLORS.white,
-                  textAlign: "center",
+                  backgroundColor:
+                    sortBy === "A-Z"
+                      ? COLORS.Light20PersianGreen
+                      : "transparent",
                 }}>
-                Đặt lại
+                Theo thứ tự A {String.fromCharCode(8594)} Z
               </Text>
             </Pressable>
-            <View style={{ width: 10 }} />
-            <Pressable
-              onPress={handleOkPress}
+            <View
               style={{
-                backgroundColor: COLORS.PersianGreen,
-                borderRadius: 5,
-                flex: 1,
-              }}>
+                height: 2,
+                backgroundColor: COLORS.silver,
+                borderRadius: 999,
+                marginVertical: 3,
+              }}
+            />
+
+            <Pressable onPress={() => handleSortSelection("Z-A")}>
               <Text
                 style={{
                   padding: 5,
-                  color: COLORS.white,
-                  textAlign: "center",
+                  backgroundColor:
+                    sortBy === "Z-A"
+                      ? COLORS.Light20PersianGreen
+                      : "transparent",
                 }}>
-                OK
+                Theo thứ tự Z {String.fromCharCode(8594)} A
               </Text>
             </Pressable>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                marginVertical: 10,
+              }}>
+              <Pressable
+                onPress={handleResetPress}
+                style={{
+                  backgroundColor: COLORS.PersianGreen,
+                  borderRadius: 5,
+                  flex: 1,
+                }}>
+                <Text
+                  style={{
+                    padding: 5,
+                    color: COLORS.white,
+                    textAlign: "center",
+                  }}>
+                  Đặt lại
+                </Text>
+              </Pressable>
+              <View style={{ width: 10 }} />
+              <Pressable
+                onPress={handleOkPress}
+                style={{
+                  backgroundColor: COLORS.PersianGreen,
+                  borderRadius: 5,
+                  flex: 1,
+                }}>
+                <Text
+                  style={{
+                    padding: 5,
+                    color: COLORS.white,
+                    textAlign: "center",
+                  }}>
+                  OK
+                </Text>
+              </Pressable>
+            </View>
           </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </RBSheet>
   );
 };

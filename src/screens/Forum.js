@@ -7,42 +7,45 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { BottomSheet, HeaderBack, QandAItem } from "../components";
+import { BottomSheet, HeaderBack } from "../components";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useSpecialities from "../hooks/useSpecialities";
 import usePosts from "../hooks/usePosts";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useAuth } from "../AuthProvider";
+import QandAItem from "../components/QandAItem";
 
 const Forum = ({ navigation }) => {
-  const [specialty, setSpecialty] = useState(null);
-  const [sortBy, setSortBy] = useState(null);
-
-  const { accountInfo } = useAuth();
+  const { accountInfo, isLoggedIn } = useAuth();
 
   const [specialitiesHook] = useSpecialities();
-  const [postsHook] = usePosts();
+  const [postsHook, filterPosts] = usePosts();
 
-  const [specialtyList, setSpecialtyList] = useState([]);
   const [postList, setPostList] = useState([]);
 
   const refRBSheet = useRef();
+  const refScroll = useRef();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      filterPosts();
+      if (refScroll.current) {
+        refScroll.current.scrollToIndex({ index: 0, animated: true });
+      }
+    });
+
+    // Clean up the listener on unmount
+    return unsubscribe;
+  }, [navigation, filterPosts]);
 
   useEffect(() => {
     setPostList(postsHook);
   }, [postsHook]);
 
   const handleSpecialityChange = (region, specialty, sortBy) => {
-    // if (specialty) {
-    //   setSpecialty(specialty);
-    //   console.log(specialty.name);
-    // }
-    // if (sortBy) setSortBy(sortBy);
-    // console.log(sortBy);
     const filterPosts = specialty
       ? postsHook.filter((item) => item.speciality_id._id === specialty._id)
       : postsHook;
@@ -58,6 +61,19 @@ const Forum = ({ navigation }) => {
       setPostList(sortPosts);
     } else setPostList([]);
   };
+
+  const handleAddPost = () => {
+    if (!isLoggedIn) {
+      navigation.navigate("Login");
+    } else {
+      navigation.navigate("AddPost");
+    }
+  };
+
+  const renderQandAItem = useCallback(
+    ({ item }) => <QandAItem item={item} navigation={navigation} />,
+    [navigation]
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -87,15 +103,21 @@ const Forum = ({ navigation }) => {
 
       {postList && postList.length > 0 ? (
         <FlatList
+          ref={refScroll}
           style={styles.list}
           data={postList}
           keyExtractor={(item) => item._id}
+          getItemLayout={(data, index) => ({
+            length: 80,
+            offset: 80 * index,
+            index,
+          })}
           ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-          renderItem={({ item }) => {
-            return <QandAItem item={item} navigation={navigation} />;
-          }}
+          renderItem={renderQandAItem}
           ListHeaderComponent={<View style={{ height: 10 }} />}
           ListFooterComponent={<View style={{ height: 15 }} />}
+          initialNumToRender={5}
+          maxToRenderPerBatch={10}
         />
       ) : (
         <Text>K co bai post nao</Text>
@@ -105,7 +127,7 @@ const Forum = ({ navigation }) => {
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => {
-            /* Thêm hành động cho nút */
+            handleAddPost();
           }}>
           <FontAwesome6 name="add" size={42} color={COLORS.white} />
         </TouchableOpacity>

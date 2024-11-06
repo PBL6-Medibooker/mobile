@@ -1,19 +1,13 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HeaderBack } from "../components";
 
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { COLORS, images } from "../constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useState } from "react";
 
 const QADetail = ({ navigation, route }) => {
-  const { QA } = route.params || {};
+  const { QA, replier } = route.params || {};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -27,7 +21,7 @@ const QADetail = ({ navigation, route }) => {
             <Text style={styles.userName}>{QA.user_id.email}</Text>
           </View>
           <View style={styles.specialty}>
-            <Text>#{QA.speciality_id.name.replace(/\s/g, "")}</Text>
+            <Text>#{QA.speciality_id?.name?.replace(/\s/g, "")}</Text>
           </View>
           <Text style={styles.content}>{QA.post_content}</Text>
         </View>
@@ -35,9 +29,16 @@ const QADetail = ({ navigation, route }) => {
         {QA.post_comments?.length > 0 && (
           <View style={styles.answer}>
             <View style={styles.doctorInfo}>
-              <Image source={images.user_default} style={styles.image} />
+              <Image
+                source={
+                  replier.profile_image
+                    ? { uri: `data:image/png;base64,${replier.profile_image}` }
+                    : images.doctor_default
+                }
+                style={styles.image}
+              />
               <View>
-                <Text>{QA.post_comments[0].replier}</Text>
+                <Text>{replier?.username}</Text>
                 <Text>Bác sĩ</Text>
               </View>
             </View>

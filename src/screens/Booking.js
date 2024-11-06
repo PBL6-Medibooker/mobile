@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -43,6 +44,8 @@ const Booking = ({ navigation, route }) => {
   const [regionsHook] = useRegions();
   const [doctorsHook, getDoctorsBySpecialty] = useAccount();
   const [doctors, setDoctors] = useState(null);
+
+  const [openedDropdown, setOpenedDropdown] = useState(null);
 
   // useEffect(() => {
   //   const getDoctorBySpecialty = () => {
@@ -127,6 +130,8 @@ const Booking = ({ navigation, route }) => {
     if (message === field) {
       setIsVerified(false);
     }
+
+    setOpenedDropdown(field);
   };
 
   const handle = () => {
@@ -180,72 +185,79 @@ const Booking = ({ navigation, route }) => {
         showsVerticalScrollIndicator={false}>
         <HeaderBack navigation={navigation} title="ĐĂNG KÝ LỊCH HẸN" />
 
-        <View style={styles.main}>
-          <Text style={styles.text}>Chọn khu vực</Text>
-          <Dropdown
-            data={regionsHook}
-            placeholder="Chọn khu vực"
-            onChange={setArea}
-            value={area}
-            onFocus={() => {
-              handleFocus("area");
-            }}
-          />
+        <TouchableWithoutFeedback onPress={() => setOpenedDropdown(null)}>
+          <View style={styles.main}>
+            <Text style={styles.text}>Chọn khu vực</Text>
+            <Dropdown
+              data={regionsHook}
+              placeholder="Chọn khu vực"
+              onChange={setArea}
+              value={area}
+              onFocus={() => {
+                handleFocus("area");
+              }}
+              expanded={openedDropdown === "area"}
+              setExpanded={setOpenedDropdown}
+            />
 
-          {isVerified && message === "area" ? (
-            <Text style={styles.message}>* Chưa chọn khu vực</Text>
-          ) : null}
+            {isVerified && message === "area" ? (
+              <Text style={styles.message}>* Chưa chọn khu vực</Text>
+            ) : null}
 
-          <Text style={styles.text}>Chọn chuyên khoa</Text>
-          <Dropdown
-            data={specialitiesHook}
-            placeholder="Chọn chuyên khoa"
-            onChange={setSpecialty}
-            value={specialty}
-            onFocus={() => {
-              handleFocus("specialty");
-            }}
-          />
+            <Text style={styles.text}>Chọn chuyên khoa</Text>
+            <Dropdown
+              data={specialitiesHook}
+              placeholder="Chọn chuyên khoa"
+              onChange={setSpecialty}
+              value={specialty}
+              onFocus={() => {
+                handleFocus("specialty");
+              }}
+              expanded={openedDropdown === "specialty"}
+              setExpanded={setOpenedDropdown}
+            />
 
-          {isVerified && message === "specialty" ? (
-            <Text style={styles.message}>* Chưa chọn chuyên khoa</Text>
-          ) : null}
+            {isVerified && message === "specialty" ? (
+              <Text style={styles.message}>* Chưa chọn chuyên khoa</Text>
+            ) : null}
 
-          <Text style={styles.text}>Chọn bác sĩ</Text>
-          <Dropdown
-            data={doctors}
-            placeholder="Chọn bác sĩ"
-            onChange={setDoctor}
-            onFocus={() => {
-              handleFocus("doctor");
-            }}
-            disabled={!(area && specialty)}
-            value={doctor}
-          />
+            <Text style={styles.text}>Chọn bác sĩ</Text>
+            <Dropdown
+              data={doctors}
+              placeholder="Chọn bác sĩ"
+              onChange={setDoctor}
+              onFocus={() => {
+                handleFocus("doctor");
+              }}
+              disabled={!(area && specialty)}
+              value={doctor}
+              expanded={openedDropdown === "doctor"}
+              setExpanded={setOpenedDropdown}
+            />
 
-          {isVerified && message === "doctor" ? (
-            <Text style={styles.message}>* Chưa chọn bác sĩ</Text>
-          ) : null}
+            {isVerified && message === "doctor" ? (
+              <Text style={styles.message}>* Chưa chọn bác sĩ</Text>
+            ) : null}
 
-          <Text style={styles.text}>Chọn ngày - khung giờ khám</Text>
-          <DatePicker
-            value={datePicker}
-            schedule={doctor ? doctor.active_hours : null}
-            onChange={setDatePicker}
-            placeholder="Chọn ngày - khung giờ khám"
-            disabled={!(area && specialty && doctor)}
-            onFocus={() => {
-              handleFocus("time");
-            }}
-          />
+            <Text style={styles.text}>Chọn ngày - khung giờ khám</Text>
+            <DatePicker
+              value={datePicker}
+              schedule={doctor ? doctor.active_hours : null}
+              onChange={setDatePicker}
+              placeholder="Chọn ngày - khung giờ khám"
+              disabled={!(area && specialty && doctor)}
+              onFocus={() => {
+                handleFocus("time");
+              }}
+            />
 
-          {isVerified && message === "time" ? (
-            <Text style={styles.message}>
-              * Chưa chọn ngày - khung giờ khám
-            </Text>
-          ) : null}
+            {isVerified && message === "time" ? (
+              <Text style={styles.message}>
+                * Chưa chọn ngày - khung giờ khám
+              </Text>
+            ) : null}
 
-          {/* <Text style={styles.text}>Tiền sử bệnh lý</Text>
+            {/* <Text style={styles.text}>Tiền sử bệnh lý</Text>
           <TextInput
             style={[styles.textInput, { height: 100 }]}
             numberOfLines={3}
@@ -253,31 +265,32 @@ const Booking = ({ navigation, route }) => {
             multiline
             onChangeText={setMedicalHistory}
           /> */}
-          
-          <Text style={styles.text}>Tình trạng sức khoẻ</Text>
-          <TextInput
-            style={[styles.textInput, { height: 100 }]}
-            numberOfLines={3}
-            multiline
-            value={healthStatus}
-            onChangeText={setHealthStatus}
-          />
-          <Pressable
-            onPress={() => {
-              handle();
-              // navigation.navigate("VerifyBooking");
-            }}
-            style={({ pressed }) => [
-              {
-                backgroundColor: pressed
-                  ? COLORS.Light50PersianGreen
-                  : COLORS.PersianGreen,
-              },
-              styles.button,
-            ]}>
-            <Text style={styles.buttonText}>Tiếp theo</Text>
-          </Pressable>
-        </View>
+
+            <Text style={styles.text}>Tình trạng sức khoẻ</Text>
+            <TextInput
+              style={[styles.textInput, { height: 100 }]}
+              numberOfLines={3}
+              multiline
+              value={healthStatus}
+              onChangeText={setHealthStatus}
+            />
+            <Pressable
+              onPress={() => {
+                handle();
+                // navigation.navigate("VerifyBooking");
+              }}
+              style={({ pressed }) => [
+                {
+                  backgroundColor: pressed
+                    ? COLORS.Light50PersianGreen
+                    : COLORS.PersianGreen,
+                },
+                styles.button,
+              ]}>
+              <Text style={styles.buttonText}>Tiếp theo</Text>
+            </Pressable>
+          </View>
+        </TouchableWithoutFeedback>
       </ScrollView>
     </SafeAreaView>
   );

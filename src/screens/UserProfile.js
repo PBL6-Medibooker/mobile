@@ -14,6 +14,7 @@ import { COLORS, images } from "../constants";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { UploadImage } from "../utils/Upload";
 import { useState } from "react";
+import Account_API from "../API/Account_API";
 
 const UserProfile = ({ navigation }) => {
   const { storedToken, isLoggedIn, accountInfo } = useAuth();
@@ -26,6 +27,19 @@ const UserProfile = ({ navigation }) => {
       console.log("image selected", image);
       setUriAvatar(image.uri);
     }
+
+    // try {
+    //   await Account_API.updateAccountInfo(
+    //     accountInfo._id,
+    //     accountInfo.usename,
+    //     accountInfo.phone,
+    //     "123",
+    //     image
+    //   );
+    //   // console.log(res);
+    // } catch (error) {
+    //   console.error("Lỗi khi cập nhật thông tin tài khoản:", error);
+    // }
   };
 
   return (

@@ -3,8 +3,6 @@ import Post_API from "../API/Post_API";
 
 const usePosts = () => {
   const [postsHook, setPostsHook] = useState([]);
-  // const [firstPost, setFirstPost] = useState({});
-  // const [fourPosts, setFourPosts] = useState([]);
   const [loading, isLoading] = useState(false);
 
   const filterPosts = async () => {
@@ -39,7 +37,7 @@ const usePosts = () => {
     }
   };
 
-  return [postsHook, loading];
+  return [postsHook, filterPosts, loading];
 };
 
 export default usePosts;

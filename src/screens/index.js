@@ -21,6 +21,7 @@ import SettingAccount from "./SettingAccount";
 import PasswordManage from "./PasswordManage";
 import ViewArticle from "./ViewArticle";
 import { Articles } from "./Articles";
+import AddPost from "./addPost";
 
 export {
   Home,
@@ -46,4 +47,5 @@ export {
   PasswordManage,
   ViewArticle,
   Articles,
+  AddPost,
 };

@@ -16,7 +16,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import useRegions from "../hooks/useRegions";
 
 const SpecialtyDetail = ({ specialty, navigation }) => {
-  const [doctorsHook, getDoctorsBySpecialty, loading, error] = useAccount();
+  const [doctorsHook, getDoctorsBySpecialty, get_Account_By_Id, loading, error] = useAccount();
   const [regionsHook] = useRegions();
   const [doctorList, setDoctorList] = useState([]);
 
