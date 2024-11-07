@@ -15,7 +15,6 @@ import { COLORS, images } from "../constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useAuth } from "../AuthProvider";
 import { useEffect, useState } from "react";
-import Client_API from "../API/Client_API";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import {
   formatDate,
@@ -26,54 +25,44 @@ import Appointment_API from "../API/Appointment_API";
 
 const VerifyBooking = ({ navigation, route }) => {
   const { accountInfo } = useAuth();
-  const [client, setClient] = useState(null);
   const [insurance, setInsurance] = useState({
-    insurance_name: null,
-    insurance_number: null,
-    insurance_location: null,
-    insurance_exp_date: null,
+    name: null,
+    number: null,
+    location: null,
+    exp_date: null,
   });
 
   const { region, specialty, doctor, medicalHistory, healthStatus, time } =
     route.params;
 
-  useEffect(() => {
-    const check_client = async () => {
-      const client = await Client_API.get_Client_By_User_Id(accountInfo._id);
-      setClient(client);
-    };
-
-    check_client();
-  }, [accountInfo]);
-
   const handleRegister = async () => {
-    if (!client) {
-      const add_client = await Client_API.add_Client(
+    try {
+      const add_appointment = await Appointment_API.add_Appointment(
         accountInfo._id,
+        doctor._id,
+        `${time.dayOfWeek} ${formatToDDMMYYYY(time.date)}`,
+        time.time.start_time,
+        time.time.end_time,
+        healthStatus,
+        null,
         insurance
       );
-      if (add_client) {
-        console.log(add_client);
-        const add_appointment = await Appointment_API.add_Appointment(
-          add_client._id,
-          doctor._id,
-          `${time.dayOfWeek} ${formatToDDMMYYYY(time.date)}`,
-          time.time.start_time,
-          time.time.end_time,
-          healthStatus
-        );
-        if (add_appointment) {
-          console.log(add_appointment);
-          Alert.alert("Thông báo", "Đặt lịch hẹn thành công.", [
-            {
-              text: "OK",
-              onPress: () => {
-                navigation.navigate("Home");
-              },
+      if (add_appointment?.status) {
+        console.log(add_appointment?.status);
+        Alert.alert("Thông báo", "Đặt lịch hẹn thành công.", [
+          {
+            text: "OK",
+            onPress: () => {
+              navigation.navigate("Home");
             },
-          ]);
-        }
+          },
+        ]);
       }
+      if (!add_appointment) {
+        Alert.alert("Thông báo", "Đặt lịch hẹn thất bại.", [{ text: "OK" }]);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -85,11 +74,18 @@ const VerifyBooking = ({ navigation, route }) => {
         {/* Thông tin bác sĩ */}
         <View style={styles.doctorInfoContainer}>
           <View style={styles.doctorCard}>
-            <Image source={images.avatar} style={styles.doctorImage} />
+            <Image
+              source={
+                doctor.profile_image
+                  ? { uri: `data:image/png;base64,${doctor.profile_image}` }
+                  : images.doctor_default
+              }
+              style={styles.doctorImage}
+            />
             <View style={styles.doctorDetails}>
-              <Text style={styles.doctorName}>{doctor.name}</Text>
+              <Text style={styles.doctorName}>{doctor?.name}</Text>
               <Text style={styles.specialty}>
-                {specialty.name} khu vực {region.name}
+                {specialty?.name} khu vực {region?.name}
               </Text>
               {/* <Text style={styles.specialty}>{region.name}</Text> */}
             </View>
@@ -145,108 +141,60 @@ const VerifyBooking = ({ navigation, route }) => {
         </View>
 
         {/* Thông tin bảo hiểm */}
-        {client && client.insurance ? (
-          <View style={styles.problemContainer}>
-            <Text style={styles.infoTitle}>Bảo hiểm</Text>
-            <View style={styles.insuranceContainer}>
-              {client.insurance.map((insurance, index) => (
-                <View key={insurance._id}>
-                  <View style={styles.infoInsurance}>
-                    <Text style={styles.insuranceName}>{insurance.name}</Text>
-                    <TouchableOpacity>
-                      <FontAwesome6 name="edit" size={20} color={COLORS.blue} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={{ marginLeft: 8 }}>
-                      <FontAwesome6
-                        name="trash-can"
-                        size={20}
-                        color={COLORS.blue}
-                      />
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={styles.infoRow}>
-                    <Text>Số BH:</Text>
-                    <Text>{insurance.number}</Text>
-                  </View>
-
-                  <View style={styles.infoRow}>
-                    <Text>Địa chỉ:</Text>
-                    <Text>{insurance.location}</Text>
-                  </View>
-
-                  <View style={styles.infoRow}>
-                    <Text>Ngày hết hạn:</Text>
-                    <Text>{insurance.exp_date}</Text>
-                  </View>
-
-                  {index !== client.insurance.length - 1 && (
-                    <View style={styles.separator}></View>
-                  )}
-                </View>
-              ))}
-            </View>
-            {/* <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Tên</Text>
-            <Text style={styles.infoValue}>{client.insurance[0].name}</Text>
-          </View> */}
+        <View style={styles.problemContainer}>
+          <Text style={styles.infoTitle}>Bảo hiểm</Text>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Tên BH:</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="BHYT"
+              value={insurance.name}
+              onChangeText={(val) => setInsurance({ ...insurance, name: val })}
+            />
           </View>
-        ) : (
-          <View style={styles.problemContainer}>
-            <Text style={styles.infoTitle}>Bảo hiểm</Text>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Tên BH:</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="BHYT"
-                value={insurance.insurance_name}
-                onChangeText={(val) =>
-                  setInsurance({ ...insurance, insurance_name: val })
-                }
-              />
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Số BH:</Text>
-              <TextInput
-                style={styles.textInput}
-                keyboardType="number-pad"
-                placeholder="123456789"
-                value={insurance.insurance_number}
-                onChangeText={(val) =>
-                  setInsurance({ ...insurance, insurance_number: val })
-                }
-              />
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Địa chỉ:</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Đà Nẵng"
-                value={insurance.insurance_location}
-                onChangeText={(val) =>
-                  setInsurance({ ...insurance, insurance_location: val })
-                }
-              />
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Ngày hết hạn:</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="12/12/2025"
-                value={insurance.insurance_exp_date}
-                onChangeText={(val) =>
-                  setInsurance({ ...insurance, insurance_exp_date: val })
-                }
-              />
-            </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Số BH:</Text>
+            <TextInput
+              style={styles.textInput}
+              keyboardType="number-pad"
+              placeholder="123456789"
+              value={insurance.number}
+              onChangeText={(val) =>
+                setInsurance({ ...insurance, number: val })
+              }
+            />
           </View>
-        )}
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Địa chỉ:</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Đà Nẵng"
+              value={insurance.location}
+              onChangeText={(val) =>
+                setInsurance({ ...insurance, location: val })
+              }
+            />
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Ngày hết hạn:</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="12/12/2025"
+              value={insurance.exp_date}
+              onChangeText={(val) =>
+                setInsurance({ ...insurance, exp_date: val })
+              }
+            />
+          </View>
+        </View>
 
         {/* Tiền sử bệnh lý */}
         {accountInfo.underlying_condition !== "none" && (
           <View style={styles.problemContainer}>
             <Text style={styles.infoTitle}>Tiền sử bệnh lý</Text>
-            <Text style={styles.problemText}>- {accountInfo.underlying_condition}</Text>
+            <Text style={styles.problemText}>
+              - {accountInfo.underlying_condition}
+            </Text>
           </View>
         )}
 

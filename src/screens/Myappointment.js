@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import HeaderBack from "../components/HeaderBack";
 import { COLORS, images } from "../constants";
 import {
@@ -9,12 +9,16 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Appointment_API from "../API/Appointment_API";
+import { useAuth } from "../AuthProvider";
+import { useFocusEffect } from "@react-navigation/native";
+import { AppointmentItem } from "../components";
 
 const Myappointment = ({ navigation }) => {
   const [selectedFilter, setSelectedFilter] = useState("Complete");
+  const { accountInfo } = useAuth();
+  const [myAppointments, setMyAppointments] = useState([]);
 
   const doctors = [
     { name: "PGS.TS.BS Lê Hoàng", specialty: "Khoa tim mạch" },
@@ -28,6 +32,31 @@ const Myappointment = ({ navigation }) => {
     { name: "GS.TS.BS Kiều Phương Linh.", specialty: "Khoa răng-hàm-mặt" },
     { name: "GS.TS.BS Kiều Phương Linh.", specialty: "Khoa răng-hàm-mặt" },
   ];
+
+  useFocusEffect(
+    useCallback(() => {
+      const getAppointments = async () => {
+        try {
+          const appointments = await Appointment_API.get_All_Appointment(
+            accountInfo._id
+          );
+          
+          if (appointments && Array.isArray(appointments)) {
+            setMyAppointments(appointments);
+          } else {
+            console.warn("Dữ liệu trả về không đúng định dạng.");
+          }
+        } catch (error) {
+          console.error("Lỗi khi lấy danh sách cuộc hẹn:", error);
+        }
+      };
+
+      if (accountInfo && accountInfo._id) {
+        getAppointments();
+      }
+    }, [accountInfo])
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack navigation={navigation} title="Cuộc hẹn của tôi" />
@@ -79,40 +108,8 @@ const Myappointment = ({ navigation }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.mainContainer}>
-        {doctors.map((doctor, index) => (
-          <View key={index} style={styles.doctorContainer}>
-            <Image source={images.avatar} style={styles.doctorImage} />
-            <View style={styles.doctorInfo}>
-              <Text style={styles.doctorName}>{doctor.name}</Text>
-              <Text style={styles.doctorSpecialty}>{doctor.specialty}</Text>
-            </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={() => navigation.navigate("AppointmentDetail")}>
-                <AntDesign
-                  style={styles.iconStyle}
-                  name="ellipsis1"
-                  size={24}
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={() => navigation.navigate("Booking")}>
-                <AntDesign style={styles.iconStyle} name="calendar" size={24} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={() => navigation.navigate("SettingAccount")}>
-                <AntDesign
-                  style={styles.iconStyle}
-                  name="closesquareo"
-                  size={24}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
+        {myAppointments.map((appointment) => (
+          <AppointmentItem key={appointment._id} item={appointment} navigation={navigation} />
         ))}
       </ScrollView>
     </SafeAreaView>
