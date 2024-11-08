@@ -1,3 +1,4 @@
+import { parse } from "date-fns";
 import client from "./client";
 
 const add_Appointment = async (
@@ -64,7 +65,63 @@ const get_All_Appointment = async (user_id) => {
   }
 };
 
+const get_Appointment_By_Status = async (user_id) => {
+  try {
+    const currentDate = new Date();
+    const response = await client.get("/appointment/get-all-client");
+    const appointments = response.data;
+    if (appointments && Array.isArray(appointments) && user_id) {
+      const filteredAppointments = appointments.filter(
+        (item) => item.user_id === user_id && item.is_deleted === false
+      );
+
+      const upcoming = filteredAppointments.filter((appointment) => {
+        const datePart = appointment.appointment_day
+          .split(" ")
+          .slice(1)
+          .join(" ");
+        const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
+        return parsedDate > currentDate;
+      });
+
+      const complete = filteredAppointments.filter((appointment) => {
+        const datePart = appointment.appointment_day
+          .split(" ")
+          .slice(1)
+          .join(" ");
+        const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
+        return parsedDate < currentDate;
+      });
+
+      const cancelled = appointments.filter(
+        (item) => item.user_id === user_id && item.is_deleted === true
+      );
+      return { upcoming: upcoming, complete: complete, cancelled: cancelled };
+    }
+    return appointments;
+  } catch (error) {
+    if (error.response) {
+      console.log("Error response: ", error.response.data.error);
+    } else {
+      console.log("Error not response: ", error.message);
+    }
+    return null;
+  }
+};
+
+const delete_Appointment = async (appointmentId) => {
+  try {
+    const response = await client.get("/appointment/get-all-client");
+  } catch (error) {
+    if (error.response)
+      console.log("Error response: ", error.response.data.error);
+    else console.log("Error not response: ", error.message);
+    return null;
+  }
+};
+
 export default {
   add_Appointment,
   get_All_Appointment,
+  get_Appointment_By_Status,
 };

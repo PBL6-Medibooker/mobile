@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,6 +26,8 @@ const AddPost = ({ navigation }) => {
 
   const [error, isError] = useState(false);
   const [message, setMessage] = useState(null);
+
+  const [openedDropdown, setOpenedDropdown] = useState(null);
 
   const handleAddPost = async () => {
     isError(true);
@@ -67,71 +70,79 @@ const AddPost = ({ navigation }) => {
     if (message === field) {
       isError(false);
     }
+    if (field === "specialty") setOpenedDropdown(field);
+    else setOpenedDropdown(null)
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <HeaderBack navigation={navigation} backgroundColor={true} />
-        <Text style={styles.screenTitle}>ĐẶT CÂU HỎI CHO CHUYÊN GIA</Text>
-        <View style={styles.postContent}>
-          <View>
-            <Text style={styles.specialtyLabel}>Bạn gửi tư vấn đến khoa:</Text>
-            <Dropdown
-              data={specialitiesHook}
-              placeholder="Chuyên khoa"
-              onFocus={() => handleFocus("specialty")}
-              value={specialty}
-              onChange={setSpecialty}
-            />
-          </View>
-          {error && message === "specialty" ? (
-            <Text style={styles.message}>
-              * Chưa chọn chuyên khoa cần tư vấn
-            </Text>
-          ) : null}
-          <View>
-            <Text style={styles.specialtyLabel}>Tiêu đề:</Text>
-            <TextInput
-              style={styles.title}
-              onFocus={() => handleFocus("title")}
-              value={postTitle}
-              onChangeText={setPostTitle}
-            />
-          </View>
-          {error && message === "title" ? (
-            <Text style={styles.message}>* Chưa nhập tiêu đề câu hỏi</Text>
-          ) : null}
-          <View>
-            <Text style={styles.specialtyLabel}>Đặt câu hỏi:</Text>
-            <TextInput
-              style={styles.content}
-              numberOfLines={3}
-              multiline
-              onFocus={() => handleFocus("content")}
-              value={postContent}
-              onChangeText={setPostContent}
-            />
-          </View>
-          {error && message === "content" ? (
-            <Text style={styles.message}>* Chưa nhập nội dung câu hỏi</Text>
-          ) : null}
-          <Pressable
-            onPress={() => {
-              handleAddPost();
-            }}
-            style={({ pressed }) => [
-              {
-                backgroundColor: pressed
-                  ? COLORS.Light50PersianGreen
-                  : COLORS.PersianGreen,
-              },
-              styles.button,
-            ]}>
-            <Text style={styles.buttonText}>Tiếp theo</Text>
-          </Pressable>
+      <TouchableWithoutFeedback onPress={() => setOpenedDropdown(null)}>
+        <View style={{ flex: 1 }}>
+          <ScrollView keyboardShouldPersistTaps="always">
+            <HeaderBack navigation={navigation} backgroundColor={true} />
+            <Text style={styles.screenTitle}>ĐẶT CÂU HỎI CHO CHUYÊN GIA</Text>
+            <View style={styles.postContent}>
+              <View>
+                <Text style={styles.specialtyLabel}>
+                  Bạn gửi tư vấn đến khoa:
+                </Text>
+                <Dropdown
+                  data={specialitiesHook}
+                  placeholder="Chuyên khoa"
+                  onFocus={() => handleFocus("specialty")}
+                  value={specialty}
+                  onChange={setSpecialty}
+                  expanded={openedDropdown === "specialty"}
+                  setExpanded={setOpenedDropdown}
+                />
+              </View>
+              {error && message === "specialty" && (
+                <Text style={styles.message}>
+                  * Chưa chọn chuyên khoa cần tư vấn
+                </Text>
+              )}
+              <View>
+                <Text style={styles.specialtyLabel}>Tiêu đề:</Text>
+                <TextInput
+                  style={styles.title}
+                  onFocus={() => handleFocus("title")}
+                  value={postTitle}
+                  onChangeText={setPostTitle}
+                />
+              </View>
+              {error && message === "title" && (
+                <Text style={styles.message}>* Chưa nhập tiêu đề câu hỏi</Text>
+              )}
+              <View>
+                <Text style={styles.specialtyLabel}>Đặt câu hỏi:</Text>
+                <TextInput
+                  style={styles.content}
+                  numberOfLines={3}
+                  multiline
+                  onFocus={() => handleFocus("content")}
+                  value={postContent}
+                  onChangeText={setPostContent}
+                />
+              </View>
+              {error && message === "content" && (
+                <Text style={styles.message}>* Chưa nhập nội dung câu hỏi</Text>
+              )}
+              <Pressable
+                onPress={handleAddPost}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed
+                      ? COLORS.Light50PersianGreen
+                      : COLORS.PersianGreen,
+                  },
+                  styles.button,
+                ]}>
+                <Text style={styles.buttonText}>Tiếp theo</Text>
+              </Pressable>
+            </View>
+          </ScrollView>
         </View>
-      </ScrollView>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 };

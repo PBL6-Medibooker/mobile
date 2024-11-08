@@ -16,36 +16,24 @@ import { useFocusEffect } from "@react-navigation/native";
 import { AppointmentItem } from "../components";
 
 const Myappointment = ({ navigation }) => {
-  const [selectedFilter, setSelectedFilter] = useState("Complete");
+  const [selectedFilter, setSelectedFilter] = useState("Upcoming");
   const { accountInfo } = useAuth();
-  const [myAppointments, setMyAppointments] = useState([]);
 
-  const doctors = [
-    { name: "PGS.TS.BS Lê Hoàng", specialty: "Khoa tim mạch" },
-    { name: "PGS.TS.BS Nguyễn Minh", specialty: "Khoa ngoại thần kinh" },
-    { name: "TS.BS Châu Thanh Vũ.", specialty: "Khoa nhi" },
-    { name: "TS.BS Kiều Phương Linh.", specialty: "Khoa răng-hàm-mặt" },
-    { name: "PGS.TS.BS Đàm Văn Thanh.", specialty: "Khoa hô hấp" },
-    { name: "GS.TS.BS Kiều Phương Linh.", specialty: "Khoa răng-hàm-mặt" },
-    { name: "GS.TS.BS Kiều Phương Linh.", specialty: "Khoa răng-hàm-mặt" },
-    { name: "GS.TS.BS Kiều Phương Linh.", specialty: "Khoa răng-hàm-mặt" },
-    { name: "GS.TS.BS Kiều Phương Linh.", specialty: "Khoa răng-hàm-mặt" },
-    { name: "GS.TS.BS Kiều Phương Linh.", specialty: "Khoa răng-hàm-mặt" },
-  ];
+  const [appoinmentsUpcoming, setAppoinmentsUpcoming] = useState([]);
+  const [appoinmentsComplete, setAppoinmentsComplete] = useState([]);
+  const [appoinmentsCanceled, setAppoinmentsCanceled] = useState([]);
 
   useFocusEffect(
     useCallback(() => {
       const getAppointments = async () => {
         try {
-          const appointments = await Appointment_API.get_All_Appointment(
+          const appointments = await Appointment_API.get_Appointment_By_Status(
             accountInfo._id
           );
-          
-          if (appointments && Array.isArray(appointments)) {
-            setMyAppointments(appointments);
-          } else {
-            console.warn("Dữ liệu trả về không đúng định dạng.");
-          }
+
+          setAppoinmentsCanceled(appointments.cancelled);
+          setAppoinmentsComplete(appointments.complete);
+          setAppoinmentsUpcoming(appointments.upcoming);
         } catch (error) {
           console.error("Lỗi khi lấy danh sách cuộc hẹn:", error);
         }
@@ -64,21 +52,6 @@ const Myappointment = ({ navigation }) => {
         <TouchableOpacity
           style={[
             styles.filterButton,
-            selectedFilter === "Complete" && styles.activeButton,
-          ]}
-          onPress={() => setSelectedFilter("Complete")}>
-          <Text
-            style={[
-              styles.filterButtonText,
-              selectedFilter === "Complete" && styles.activeButtonText,
-            ]}>
-            Complete
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.filterButton,
             selectedFilter === "Upcoming" && styles.activeButton,
           ]}
           onPress={() => setSelectedFilter("Upcoming")}>
@@ -88,6 +61,21 @@ const Myappointment = ({ navigation }) => {
               selectedFilter === "Upcoming" && styles.activeButtonText,
             ]}>
             Upcoming
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.filterButton,
+            selectedFilter === "Complete" && styles.activeButton,
+          ]}
+          onPress={() => setSelectedFilter("Complete")}>
+          <Text
+            style={[
+              styles.filterButtonText,
+              selectedFilter === "Complete" && styles.activeButtonText,
+            ]}>
+            Complete
           </Text>
         </TouchableOpacity>
 
@@ -108,9 +96,36 @@ const Myappointment = ({ navigation }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.mainContainer}>
-        {myAppointments.map((appointment) => (
-          <AppointmentItem key={appointment._id} item={appointment} navigation={navigation} />
-        ))}
+        {selectedFilter === "Cancelled" &&
+          appoinmentsCanceled.map((appointment) => (
+            <AppointmentItem
+              key={appointment._id}
+              appointmentKey={appointment._id}
+              item={appointment}
+              navigation={navigation}
+              filter={selectedFilter}
+            />
+          ))}
+        {selectedFilter === "Complete" &&
+          appoinmentsComplete.map((appointment) => (
+            <AppointmentItem
+              key={appointment._id}
+              appointmentKey={appointment._id}
+              item={appointment}
+              navigation={navigation}
+              filter={selectedFilter}
+            />
+          ))}
+        {selectedFilter === "Upcoming" &&
+          appoinmentsUpcoming.map((appointment) => (
+            <AppointmentItem
+              key={appointment._id}
+              appointmentKey={appointment._id}
+              item={appointment}
+              navigation={navigation}
+              filter={selectedFilter}
+            />
+          ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -146,7 +161,7 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   mainContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     paddingBottom: 10,
   },
   iconButton: {

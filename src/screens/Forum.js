@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   StyleSheet,
   Text,
   TextInput,
@@ -11,55 +12,56 @@ import { BottomSheet, HeaderBack } from "../components";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import useSpecialities from "../hooks/useSpecialities";
-import usePosts from "../hooks/usePosts";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useAuth } from "../AuthProvider";
 import QandAItem from "../components/QandAItem";
+import { useFocusEffect } from "@react-navigation/native";
+import Post_API from "../API/Post_API";
 
 const Forum = ({ navigation }) => {
   const { accountInfo, isLoggedIn } = useAuth();
 
   const [specialitiesHook] = useSpecialities();
-  const [postsHook, filterPosts] = usePosts();
-
   const [postList, setPostList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const refRBSheet = useRef();
   const refScroll = useRef();
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      filterPosts();
+  const getPosts = async () => {
+    try {
+      setLoading(true);
+      const allPosts = await Post_API.get_All_Post();
+      // console.log(allPosts);
+      setPostList([]);
+      setPostList(allPosts);
+      setLoading(false);
+
+      // Scroll to top when data is refreshed
       if (refScroll.current) {
         refScroll.current.scrollToIndex({ index: 0, animated: true });
       }
-    });
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
+  };
 
-    // Clean up the listener on unmount
-    return unsubscribe;
-  }, [navigation, filterPosts]);
+  useFocusEffect(
+    useCallback(() => {
+      getPosts();
+    }, [])
+  );
 
-  useEffect(() => {
-    setPostList(postsHook);
-  }, [postsHook]);
-
-  const handleSpecialityChange = (region, specialty, sortBy) => {
-    const filterPosts = specialty
-      ? postsHook.filter((item) => item.speciality_id._id === specialty._id)
-      : postsHook;
-    if (Array.isArray(filterPosts)) {
-      const sortPosts = filterPosts.slice().sort((a, b) => {
-        if (sortBy === "A-Z") {
-          return a.post_title.localeCompare(b.post_title);
-        } else if (sortBy === "Z-A") {
-          return b.post_title.localeCompare(a.post_title);
-        }
-        return 0;
-      });
-      setPostList(sortPosts);
-    } else setPostList([]);
+  const handleSpecialityChange = async (region, specialty, sortBy) => {
+    const filterPosts = await Post_API.get_Post_By_Specialty_Sort(
+      specialty,
+      sortBy
+    );
+    setPostList(filterPosts);
   };
 
   const handleAddPost = () => {
@@ -68,6 +70,12 @@ const Forum = ({ navigation }) => {
     } else {
       navigation.navigate("AddPost");
     }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getPosts();
+    setRefreshing(false);
   };
 
   const renderQandAItem = useCallback(
@@ -93,11 +101,7 @@ const Forum = ({ navigation }) => {
         <TouchableOpacity
           style={styles.btnFilter}
           onPress={() => refRBSheet.current.open()}>
-          <FontAwesome
-            name="filter"
-            size={20}
-            color={COLORS.white} // Thay đổi màu sắc nếu cần
-          />
+          <FontAwesome name="filter" size={20} color={COLORS.white} />
         </TouchableOpacity>
       </View>
 
@@ -107,28 +111,20 @@ const Forum = ({ navigation }) => {
           style={styles.list}
           data={postList}
           keyExtractor={(item) => item._id}
-          getItemLayout={(data, index) => ({
-            length: 80,
-            offset: 80 * index,
-            index,
-          })}
           ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
           renderItem={renderQandAItem}
           ListHeaderComponent={<View style={{ height: 10 }} />}
           ListFooterComponent={<View style={{ height: 15 }} />}
-          initialNumToRender={5}
-          maxToRenderPerBatch={10}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       ) : (
-        <Text>K co bai post nao</Text>
+        <Text>Không có bài post nào</Text>
       )}
 
       {!accountInfo?.__t && (
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => {
-            handleAddPost();
-          }}>
+        <TouchableOpacity style={styles.addButton} onPress={handleAddPost}>
           <FontAwesome6 name="add" size={42} color={COLORS.white} />
         </TouchableOpacity>
       )}

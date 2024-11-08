@@ -9,7 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
 import { convertAppointmentDate } from "../utils/ConvertDate";
 
-const AppointmentItem = ({ key, item, navigation }) => {
+const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
   const [doctor, setDoctor] = useState({});
   const [specialty, setSpecialty] = useState({});
   const [region, setRegion] = useState({});
@@ -33,8 +33,16 @@ const AppointmentItem = ({ key, item, navigation }) => {
     getDoctorById();
   }, [item]);
 
+  const handleCancelAppointment = async () => {
+    try {
+      
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
-    <View style={styles.container}>
+    <View style={styles.container} key={appointmentKey}>
       <View style={styles.doctorContainer}>
         <Image
           source={
@@ -64,24 +72,33 @@ const AppointmentItem = ({ key, item, navigation }) => {
             <AntDesign style={styles.iconStyle} name="ellipsis1" size={24} />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => {
-              const doctorToSend = {
-                ...doctor,
-                name: doctor.username,
-              };
-              navigation.navigate("DoctorInfo", {
-                doctorSelected: doctorToSend,
-              });
-            }}>
-            <AntDesign style={styles.iconStyle} name="calendar" size={24} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => navigation.navigate("SettingAccount")}>
-            <AntDesign style={styles.iconStyle} name="closesquareo" size={24} />
-          </TouchableOpacity>
+          {filter !== "Upcoming" && (
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => {
+                const doctorToSend = {
+                  ...doctor,
+                  name: doctor.username,
+                };
+                navigation.navigate("DoctorInfo", {
+                  doctorSelected: doctorToSend,
+                });
+              }}>
+              <AntDesign style={styles.iconStyle} name="calendar" size={24} />
+            </TouchableOpacity>
+          )}
+
+          {filter === "Upcoming" && (
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => handleCancelAppointment()}>
+              <AntDesign
+                style={styles.iconStyle}
+                name="closesquareo"
+                size={24}
+              />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
       <View
@@ -127,6 +144,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 2,
+    borderWidth: 1,
+    borderColor: COLORS.Light20PersianGreen,
   },
   doctorContainer: {
     flexDirection: "row",

@@ -14,9 +14,10 @@ import { BottomSheet, HeaderBack } from "../components";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { COLORS, images } from "../constants";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useSpecialities from "../hooks/useSpecialities";
 import useArticles from "../hooks/useArticles";
+import { useFocusEffect } from "@react-navigation/native";
 
 export const Articles = ({ navigation }) => {
   const refRBSheet = useRef();
@@ -30,15 +31,8 @@ export const Articles = ({ navigation }) => {
     getArticlesBySpecialty,
   ] = useArticles();
   const [specialitiesHook] = useSpecialities();
-
-  const [specialty, setSpecialty] = useState(null);
-  const [sortBy, setSortBy] = useState(null);
+  
   const [articleList, setArticleList] = useState([]);
-
-  const filterSpecialtyAndSort = async (specialtyName, sortBy) => {
-    const filter = await getArticlesBySpecialty(specialtyName, sortBy);
-    return;
-  };
 
   const handleSpecialityChange = async (region, specialty, sortBy) => {
     if (specialty?.name) {
@@ -59,33 +53,11 @@ export const Articles = ({ navigation }) => {
     }
   };
 
-  // const handleSpecialityChange = async (region, specialty, sortBy) => {
-  //   const filterArticles = async () => {
-  //     if (specialty?.name) {
-  //       return await getArticlesBySpecialty(specialty.name, sortBy);
-  //     }
-  //     return articlesHook.slice();
-  //   };
-
-  //   const sortArticles = (articles) => {
-  //     if (!sortBy) return articles;
-  //     return articles.sort((a, b) =>
-  //       sortBy === "A-Z"
-  //         ? a.article_title.localeCompare(b.article_title)
-  //         : b.article_title.localeCompare(a.article_title)
-  //     );
-  //   };
-
-  //   const filteredArticles = await filterArticles();
-  //   const sortedArticles = sortArticles(filteredArticles);
-
-  //   setArticleList(sortedArticles);
-  //   console.log(region, specialty?.name || null, sortBy);
-  // };
-
-  useEffect(() => {
-    setArticleList(articlesHook);
-  }, [articlesHook]);
+  useFocusEffect(
+    useCallback(() => {
+      setArticleList(articlesHook);
+    }, [articlesHook])
+  );
 
   return (
     <SafeAreaView style={[styles.container, { flex: 1 }]}>

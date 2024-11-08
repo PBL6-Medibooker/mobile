@@ -5,15 +5,21 @@ import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { COLORS, images } from "../constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useState } from "react";
+import { formatDistanceToNow } from "date-fns";
+import { tr, vi } from "date-fns/locale";
+import { useAuth } from "../AuthProvider";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const QADetail = ({ navigation, route }) => {
   const { QA, replier } = route.params || {};
 
+  const { accountInfo } = useAuth();
+
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderBack navigation={navigation} title="Q&A" />
+      <HeaderBack navigation={navigation} backgroundColor={true} />
 
-      <ScrollView style={{ padding: 10 }} showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.question}>
           <Text style={styles.title}>{QA.post_title}</Text>
           <View style={styles.userInfo}>
@@ -21,9 +27,18 @@ const QADetail = ({ navigation, route }) => {
             <Text style={styles.userName}>{QA.user_id.email}</Text>
           </View>
           <View style={styles.specialty}>
-            <Text>#{QA.speciality_id?.name?.replace(/\s/g, "")}</Text>
+            <Text style={{ fontSize: 12 }}>
+              #{QA.speciality_id?.name?.replace(/\s/g, "")}
+            </Text>
           </View>
           <Text style={styles.content}>{QA.post_content}</Text>
+          <Text style={styles.createdDate}>
+            Đăng lúc:{" "}
+            {formatDistanceToNow(new Date(QA.createdAt), {
+              addSuffix: true,
+              locale: vi,
+            })}
+          </Text>
         </View>
 
         {QA.post_comments?.length > 0 && (
@@ -38,13 +53,22 @@ const QADetail = ({ navigation, route }) => {
                 style={styles.image}
               />
               <View>
-                <Text>{replier?.username}</Text>
-                <Text>Bác sĩ</Text>
+                <View
+                  style={styles.commentContainer}>
+                  <Text style={styles.usernameComment}>
+                    {replier?.username}
+                  </Text>
+                  <Text style={styles.content}>
+                    {QA.post_comments[0].comment_content}
+                  </Text>
+                </View>
+                {accountInfo.email === replier.email && (
+                  <View style={styles.editIcon}>
+                  <FontAwesome name="edit" size={15} color={COLORS.gray} />
+                  </View>
+                )}
               </View>
             </View>
-            <Text style={styles.content}>
-              {QA.post_comments[0].comment_content}
-            </Text>
           </View>
         )}
 
@@ -63,9 +87,8 @@ const styles = StyleSheet.create({
   },
   question: {
     paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 15,
-    borderWidth: 1,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
     borderColor: COLORS.Light20PersianGreen,
     backgroundColor: COLORS.white,
     shadowColor: COLORS.PersianGreen,
@@ -75,12 +98,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 17,
     fontWeight: "bold",
-  },
-  user: {
-    flexDirection: "row",
-    paddingVertical: 3,
-    alignItems: "center",
-    justifyContent: "space-between",
   },
   userInfo: {
     flexDirection: "row",
@@ -97,34 +114,28 @@ const styles = StyleSheet.create({
   specialty: {
     paddingVertical: 2,
     paddingHorizontal: 5,
-    backgroundColor: COLORS.silver,
+    backgroundColor: COLORS.Concrete,
     borderRadius: 5,
     borderWidth: 0.5,
     borderColor: COLORS.gray,
     alignSelf: "flex-start",
     marginBottom: 5,
   },
-  viewText: {
-    fontStyle: "italic",
-    textDecorationLine: "underline",
-  },
   answer: {
     paddingHorizontal: 10,
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
-    backgroundColor: COLORS.Concrete,
     marginBottom: 10,
-    marginTop: -10,
-    paddingTop: 20,
+    paddingTop: 15,
   },
   image: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     resizeMode: "contain",
     borderRadius: 999,
-    borderColor: COLORS.gray,
+    borderColor: COLORS.Light20PersianGreen,
     borderWidth: 0.5,
-    marginEnd: 15,
+    marginEnd: 10,
   },
   doctorInfo: {
     flexDirection: "row",
@@ -132,5 +143,26 @@ const styles = StyleSheet.create({
     // paddingBottom: 10,
     // borderBottomWidth: 1,
     // borderColor: COLORS.PersianGreen
+  },
+  createdDate: {
+    fontSize: 12,
+    textAlign: "right",
+    paddingTop: 5,
+    marginTop: 5,
+    color: COLORS.gray,
+  },
+  commentContainer: {
+    backgroundColor: COLORS.silver,
+    padding: 8,
+    borderRadius: 10,
+    position: "relative",
+  },
+  usernameComment: {
+    fontWeight: "bold",
+  },
+  editIcon: {
+    position: "absolute",
+    bottom: -18,
+    right: 0,
   },
 });

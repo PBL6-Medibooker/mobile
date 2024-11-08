@@ -21,7 +21,14 @@ const AppointmentDetail = ({ navigation, route }) => {
       {/* Thông tin bác sĩ */}
       <View style={styles.doctorInfoContainer}>
         <View style={styles.doctorCard}>
-          <Image source={images.avatar} style={styles.doctorImage} />
+          <Image
+            source={
+              doctor.profile_image
+                ? { uri: `data:image/png;base64,${doctor.profile_image}` }
+                : images.doctor_default
+            }
+            style={styles.doctorImage}
+          />
           <View style={styles.doctorDetails}>
             <Text style={styles.doctorName}>{doctor.username}</Text>
             <Text style={styles.specialty}>{specialty.name}</Text>

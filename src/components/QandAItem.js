@@ -15,6 +15,8 @@ import Account_API from "../API/Account_API";
 import { useAuth } from "../AuthProvider";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Post_API from "../API/Post_API";
+import { formatDistanceToNow } from "date-fns";
+import { vi } from "date-fns/locale";
 
 const QandAItem = ({ item, navigation }) => {
   const [isViewAnswer, setIsViewAnswer] = useState(false);
@@ -73,8 +75,16 @@ const QandAItem = ({ item, navigation }) => {
           <Text style={styles.userName}>{postItem?.user_id?.email}</Text>
         </View>
         <View style={styles.specialty}>
-          <Text>#{postItem?.speciality_id?.name?.replace(/\s/g, "")}</Text>
+          <Text style={{ fontSize: 12 }}>
+            #{postItem?.speciality_id?.name?.replace(/\s/g, "")}
+          </Text>
         </View>
+        <Text style={styles.createdDate}>
+          {formatDistanceToNow(new Date(postItem.createdAt), {
+            addSuffix: true,
+            locale: vi,
+          })}
+        </Text>
         <Text style={styles.content} numberOfLines={7}>
           {postItem?.post_content}
         </Text>
@@ -123,8 +133,8 @@ const QandAItem = ({ item, navigation }) => {
             <Pressable>
               <Image
                 source={
-                  replier.profile_image
-                    ? { uri: `data:image/png;base64,${replier.profile_image}` }
+                  replier?.profile_image
+                    ? { uri: `data:image/png;base64,${replier?.profile_image}` }
                     : images.doctor_default
                 }
                 style={styles.image}
@@ -166,7 +176,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 15,
     borderWidth: 0.5,
-    borderColor: COLORS.gray,
+    borderColor: COLORS.silver,
     backgroundColor: COLORS.white,
     zIndex: 1,
     elevation: 2,
@@ -196,7 +206,7 @@ const styles = StyleSheet.create({
   specialty: {
     paddingVertical: 2,
     paddingHorizontal: 5,
-    backgroundColor: COLORS.silver,
+    backgroundColor: COLORS.Concrete,
     borderRadius: 5,
     borderWidth: 0.5,
     borderColor: COLORS.gray,
@@ -263,4 +273,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 5,
   },
+  createdDate: {
+    fontSize: 12,
+    textAlign: 'right',
+    borderTopWidth: 1.5,
+    borderColor: COLORS.Light20PersianGreen,
+    paddingTop: 5,
+    marginTop: 5,
+    color: COLORS.gray
+  }
 });
