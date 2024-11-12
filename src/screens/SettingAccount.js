@@ -1,9 +1,11 @@
 import {
+  Alert,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
   } from "react-native";
+  import React, { useState } from 'react';
   import Ionicons from "@expo/vector-icons/Ionicons";
   import { useAuth } from "../AuthProvider";
   import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,10 +13,88 @@ import {
   import { COLORS} from "../constants";
   import MaterialIcons from "@expo/vector-icons/MaterialIcons";
   import AntDesign from '@expo/vector-icons/AntDesign';
-
+  import Account_API from '../API/Account_API'; 
+  
 
   
   const SettingAccount = ({ navigation }) => {
+    
+    const { accountInfo, logout } = useAuth(); // Lấy hàm logout từ AuthProvider
+    const account_Ids = [accountInfo?._id];
+    const [is_deleted, setIsDeleting] = useState(false);
+    
+    
+
+
+    const handleDeleteAccount = () => {
+      // Hiển thị hộp thoại xác nhận xóa tài khoản
+      Alert.alert(
+        'Xác nhận xóa tài khoản',
+        'Bạn có chắc chắn muốn xóa tài khoản không?',
+        [
+          { text: 'Hủy', style: 'cancel' },
+          {
+            text: 'Xóa',
+            onPress: () => {
+              // Hiển thị hộp thoại lựa chọn giữa xóa mềm và xóa cứng
+              Alert.alert(
+                'Chọn hình thức xóa',
+                'Bạn muốn xóa tài khoản bằng hình thức nào?',
+                [
+                  {
+                    text: 'Xóa mềm',
+                    onPress: async () => {
+                      setIsDeleting(true);
+                      try {
+                        await Account_API.softDeleteAccount(account_Ids);
+                        Alert.alert('Thành công', 'Tài khoản đã được xóa mềm.', [
+                          {
+                            text: "OK",
+                            onPress: () => {
+                              logout(); // Gọi hàm logout
+                              navigation.navigate('Login'); // Điều hướng về màn hình Login
+                            }
+                          }
+                        ]);
+                      } catch (error) {
+                        Alert.alert('Lỗi', 'Không thể xóa tài khoản.');
+                      } finally {
+                        setIsDeleting(false);
+                      }
+                    }
+                  },
+                  {
+                    text: 'Xóa cứng',
+                    onPress: async () => {
+                      
+                      try {
+                        await Account_API.permaDeleteAccount(account_Ids);
+                        Alert.alert('Thành công', 'Tài khoản đã được xóa vĩnh viễn.', [
+                          {
+                            text: "OK",
+                            onPress: () => {
+                              logout(); // Gọi hàm logout
+                              navigation.navigate('Login'); // Điều hướng về màn hình Login
+                            }
+                          }
+                        ]);
+                      } catch (error) {
+                        Alert.alert('Lỗi', 'Không thể xóa tài khoản.');
+                      } finally {
+                        
+                      }
+                    }
+                  },
+                  { text: 'Hủy', style: 'cancel' },
+                ]
+              );
+            }
+          }
+        ]
+      );
+    };
+    
+
     return (
       <SafeAreaView style={styles.container}>
         <HeaderBack navigation={navigation} title="Cài Đặt" />
@@ -52,7 +132,7 @@ import {
               style={styles.iconItem}
             />
             <Text style={styles.textItem}>Xóa Tài Khoản</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <TouchableOpacity onPress={handleDeleteAccount}>
             <Ionicons
               name="chevron-forward"
               size={28}

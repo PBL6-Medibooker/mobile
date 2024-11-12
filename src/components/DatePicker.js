@@ -4,7 +4,14 @@ import { useCallback, useState } from "react";
 import { COLORS } from "../constants";
 import CalendarCustom from "./CalendarCustom";
 
-const DatePicker = ({ onChange, placeholder, disabled, schedule, value }) => {
+const DatePicker = ({
+  onChange,
+  placeholder,
+  disabled,
+  schedule,
+  value,
+  onFocus,
+}) => {
   const [openStartDatePicker, setOpenStartDatePicker] = useState(false);
   const [message, setMessage] = useState(null);
 
@@ -12,7 +19,7 @@ const DatePicker = ({ onChange, placeholder, disabled, schedule, value }) => {
     onChange({
       date: null,
       dayOfWeek: null,
-      time: null
+      time: null,
     });
     setMessage(null);
     setOpenStartDatePicker(false); // Close the modal
@@ -30,7 +37,10 @@ const DatePicker = ({ onChange, placeholder, disabled, schedule, value }) => {
     <View>
       <TouchableOpacity
         style={styles.btnDatePicker}
-        onPress={() => !disabled && setOpenStartDatePicker(true)} // Prevent opening if disabled
+        onPress={() => {
+          onFocus();
+          !disabled && setOpenStartDatePicker(true);
+        }} // Prevent opening if disabled
         disabled={disabled} // Disable the button if needed
       >
         <Text

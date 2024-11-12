@@ -11,12 +11,13 @@ const BottomSheet = ({
   specialtyList,
   regionList,
   onSelected,
+  height,
   selectedSpecialty,
   onSelectedSpecialty,
   selectedRegion,
   setSelectedRegion,
   selectedSortBy,
-  setSelectedSortBy
+  setSelectedSortBy,
 }) => {
   const [specialty, setSpecialty] = useState(null);
   const [region, setRegion] = useState(null);
@@ -39,22 +40,29 @@ const BottomSheet = ({
   const handleResetPress = () => {
     setSpecialty(null);
     setSortBy(null);
+    setRegion(null);
+    if (onSelected) {
+      onSelected(null, null, null);
+    }
+    bottomSheetRef.current.close();
   };
 
   return (
     <RBSheet
       ref={bottomSheetRef}
-      height={370}
+      height={height}
       openDuration={true}
       closeOnPressBack={true}
       closeOnPressMask={true}
+      dragOnContent={true}
+      draggable={true}
       customStyles={{
         wrapper: {
           backgroundColor: "rgba(0,0,0,0.2)",
         },
         draggableIcon: {
-          backgroundColor: COLORS.gray,
-          width: 100,
+          backgroundColor: COLORS.silver,
+          width: 50,
         },
         container: {
           borderTopLeftRadius: 30,

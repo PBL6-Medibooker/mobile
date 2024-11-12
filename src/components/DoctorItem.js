@@ -13,41 +13,40 @@ import { useEffect } from "react";
 const DoctorItem = ({ item, navigation }) => {
   // useEffect(() => console.log(item));
   return (
-      <View style={styles.doctorContainer} key={item._id}>
+    <View style={styles.doctorContainer} key={item._id}>
+      <Pressable
+        style={styles.imageContainer}
+        onPress={() => {
+          navigation.navigate("DoctorInfo", { doctorSelected: item });
+        }}>
+        <Image
+          source={
+            item.profile_image
+              ? { uri: `data:image/png;base64,${item.profile_image}` }
+              : images.doctor_default
+          }
+          style={styles.image}
+        />
+      </Pressable>
+      <View style={styles.infoContainer}>
         <Pressable
-          style={styles.imageContainer}
           onPress={() => {
             navigation.navigate("DoctorInfo", { doctorSelected: item });
           }}>
-          <Image
-            source={
-              item.profile_image ? { uri: item.profile_image } : images.avatar
-            }
-            style={styles.image}
-          />
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.position} numberOfLines={2} ellipsizeMode="tail">
+            {item.bio}
+          </Text>
         </Pressable>
-        <View style={styles.infoContainer}>
-          <Pressable
-            onPress={() => {
-              navigation.navigate("DoctorInfo", { doctorSelected: item });
-            }}>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text
-              style={styles.position}
-              numberOfLines={2}
-              ellipsizeMode="tail">
-              {item.bio}
-            </Text>
-          </Pressable>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("Booking", { doctorSelected: item });
-            }}
-            style={styles.makeAppointment}>
-            <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("Booking", { doctorSelected: item });
+          }}
+          style={styles.makeAppointment}>
+          <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
+        </TouchableOpacity>
       </View>
+    </View>
   );
 };
 
@@ -60,6 +59,7 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: COLORS.white,
     borderRadius: 10,
+    elevation: 2
   },
   imageContainer: {
     width: 80,
@@ -72,6 +72,9 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     borderRadius: 15,
     marginEnd: 10,
+    borderWidth: 1,
+    borderColor: COLORS.PersianGreen,
+    borderRadius: 999,
   },
   name: {
     fontSize: 16,

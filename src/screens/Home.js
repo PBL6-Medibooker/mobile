@@ -16,41 +16,29 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { articles } from "../utils/articles";
-import { useNavigation } from "@react-navigation/native";
 import { ArticleItem, HeaderHome } from "../components";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
 import { useAuth } from "../AuthProvider";
-
-const dataArticles = articles.map((s) => ({
-  title: s.title,
-  id: s.id,
-  content: s.content,
-  date: s.date,
-}));
+import usePosts from "../hooks/usePosts";
+import useArticles from "../hooks/useArticles";
 
 const Home = ({ navigation }) => {
-  // const navigation = useNavigation();
   const { storedToken, isLoggedIn } = useAuth();
+  const [articlesHook, firstArticle, fourArticles, loading] = useArticles();
 
   const handleBooking = () => {
     if (!isLoggedIn) {
-      Alert.alert(
-        "Thông báo",
-        "Vui lòng đăng nhập để đăng kí lịch hẹn.", 
-        [
-          {
-            text: "để sau",
-            style: "cancel",
+      Alert.alert("Thông báo", "Vui lòng đăng nhập để đăng kí lịch hẹn.", [
+        {
+          text: "để sau",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            navigation.navigate("Login");
           },
-          {
-            text: "OK",
-            onPress: async () => {
-              navigation.navigate("Login");
-            },
-          },
-        ]
-      );
+        },
+      ]);
     } else {
       navigation.navigate("Booking");
     }
@@ -59,9 +47,10 @@ const Home = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <FlatList
-        data={dataArticles}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <ArticleItem data={item} />}
+        data={fourArticles}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={(item) => item._id.toString()}
+        renderItem={({ item }) => <ArticleItem data={item} navigation={navigation} />}
         ListHeaderComponent={() => (
           <>
             <HeaderHome
@@ -129,7 +118,9 @@ const Home = ({ navigation }) => {
               </View>
               <View style={styles.featureRow}>
                 <TouchableOpacity
-                  style={[styles.featureButton, { borderRightWidth: 1 }]}>
+                  style={[styles.featureButton, { borderRightWidth: 1 }]}
+                  // onPress={() => navigation.navigate("Tracuu")}
+                >
                   <View style={styles.featureIcon}>
                     <FontAwesome5
                       name="search"
@@ -150,7 +141,9 @@ const Home = ({ navigation }) => {
                   </View>
                   <Text style={styles.featureText}>Dịch vụ</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.featureButton}>
+                <TouchableOpacity style={styles.featureButton}
+                  onPress={() => navigation.navigate("Service")}
+                >
                   <View style={styles.featureIcon}>
                     <MaterialIcons
                       name="content-paste-search"
@@ -167,6 +160,37 @@ const Home = ({ navigation }) => {
               <Text style={{ fontSize: 16, fontWeight: "bold" }}>
                 Tin tức mới nhất:
               </Text>
+
+              <TouchableOpacity
+                style={styles.firstArticleContainer}
+                onPress={() =>
+                  navigation.navigate("ViewArticle", { post: firstArticle })
+                }>
+                <Image source={images.poster} style={styles.imageFirstArticle} />
+                <Text style={styles.titleFirstArticle} numberOfLines={2}>
+                  {firstArticle.article_title}
+                </Text>
+                <Text
+                  style={[styles.dateFirstArticle, { alignSelf: "flex-start" }]}>
+                  Đăng bởi: {firstArticle.doctor_id?.email}
+                </Text>
+                <View style={styles.dateFirstArticleContainer}>
+                  <FontAwesome5
+                    name="calendar-alt"
+                    size={18}
+                    color={COLORS.gray}
+                  />
+                  <Text style={styles.dateFirstArticle}>
+                    {firstArticle.date_published}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.showAll}
+                onPress={() => navigation.navigate("Articles")}>
+                <Text style={styles.showAll}>Xem tất cả</Text>
+              </TouchableOpacity>
             </View>
           </>
         )}
@@ -189,6 +213,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: COLORS.silver,
+    // elevation: 5,
+    backgroundColor: COLORS.white,
+    // shadowColor: COLORS.PersianGreen,
   },
   bookingFrame: {
     flexDirection: "row",
@@ -251,5 +278,42 @@ const styles = StyleSheet.create({
     height: 3,
     backgroundColor: COLORS.PersianGreen,
     borderRadius: 999,
+  },
+  firstArticleContainer: {
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 10,
+    elevation: 2,
+    backgroundColor: COLORS.white,
+    alignItems: "center",
+  },
+  imageFirstArticle: {
+    height: 150,
+    resizeMode: "cover",
+    width: "95%",
+  },
+  titleFirstArticle: {
+    fontWeight: "bold",
+    fontSize: 16,
+    textDecorationLine: "underline",
+    color: COLORS.blue,
+    textAlign: "justify",
+    marginTop: 5,
+  },
+  dateFirstArticleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-start",
+    margin: 5,
+  },
+  dateFirstArticle: {
+    fontSize: 14,
+    color: COLORS.gray,
+    marginLeft: 5,
+  },
+  showAll: {
+    color: COLORS.blue,
+    alignSelf: "flex-end",
+    textDecorationLine: "underline",
   },
 });

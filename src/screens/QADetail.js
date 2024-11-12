@@ -1,15 +1,11 @@
-// import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HeaderBack } from "../components";
 
 import {
   Image,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { COLORS, images } from "../constants";
@@ -18,42 +14,40 @@ import { useState } from "react";
 
 const QADetail = ({ navigation, route }) => {
   const { QA } = route.params || {};
-  //   if (QA) console.log(QA);
 
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack navigation={navigation} title="Q&A" />
 
-      <ScrollView style={{padding: 12}} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ padding: 10 }} showsVerticalScrollIndicator={false}>
         <View style={styles.question}>
-          <Text style={styles.title}>{QA.title}</Text>
+          <Text style={styles.title}>{QA.post_title}</Text>
           <View style={styles.userInfo}>
             <AntDesign name="message1" size={18} color={COLORS.PersianGreen} />
-            <Text style={styles.userName}>{QA.user}</Text>
+            <Text style={styles.userName}>{QA.user_id.email}</Text>
           </View>
           <View style={styles.specialty}>
-            <Text>#{QA.specialty.replace(/\s/g, "")}</Text>
+            <Text>#{QA.speciality_id.name.replace(/\s/g, "")}</Text>
           </View>
-          <Text style={styles.content}>{QA.question}</Text>
-          {/* <Pressable
-            onPress={() => {
-              setIsViewAnswer(!isViewAnswer);
-            }}
-            style={{ alignSelf: "flex-end" }}>
-            <Text style={styles.viewText}>Xem câu trả lời</Text>
-          </Pressable> */}
+          <Text style={styles.content}>{QA.post_content}</Text>
         </View>
 
-        <View style={styles.answer}>
-          <View style={styles.doctorInfo}>
-            <Image source={images.user_default} style={styles.image} />
-            <View>
-              <Text>{QA.answer.doctor}</Text>
-              <Text>Bác sĩ</Text>
+        {QA.post_comments?.length > 0 && (
+          <View style={styles.answer}>
+            <View style={styles.doctorInfo}>
+              <Image source={images.user_default} style={styles.image} />
+              <View>
+                <Text>{QA.post_comments[0].replier}</Text>
+                <Text>Bác sĩ</Text>
+              </View>
             </View>
+            <Text style={styles.content}>
+              {QA.post_comments[0].comment_content}
+            </Text>
           </View>
-          <Text style={styles.content}>{QA.answer.content}</Text>
-        </View>
+        )}
+
+        <View style={{ height: 20 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -64,22 +58,18 @@ export default QADetail;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.white,
   },
   question: {
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 15,
-    borderWidth: 0.5,
-    borderColor: COLORS.gray,
+    borderWidth: 1,
+    borderColor: COLORS.Light20PersianGreen,
     backgroundColor: COLORS.white,
-    // zIndex: 100,
-    // shadowOffset: {
-    //   width: 10,
-    //   height: 10,
-    // },
-    // shadowColor: COLORS.Concrete,
-    // shadowOpacity: 0.3,
-    // elevation: 5,
+    shadowColor: COLORS.PersianGreen,
+    elevation: 3,
+    zIndex: 1,
   },
   title: {
     fontSize: 17,
@@ -94,6 +84,7 @@ const styles = StyleSheet.create({
   userInfo: {
     flexDirection: "row",
     paddingVertical: 3,
+    alignItems: "center",
   },
   userName: {
     color: COLORS.PersianGreen,
@@ -117,11 +108,13 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   answer: {
-    padding: 10,
+    paddingHorizontal: 10,
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
     backgroundColor: COLORS.Concrete,
     marginBottom: 10,
+    marginTop: -10,
+    paddingTop: 20,
   },
   image: {
     width: 50,
@@ -135,5 +128,8 @@ const styles = StyleSheet.create({
   doctorInfo: {
     flexDirection: "row",
     marginBottom: 10,
+    // paddingBottom: 10,
+    // borderBottomWidth: 1,
+    // borderColor: COLORS.PersianGreen
   },
 });

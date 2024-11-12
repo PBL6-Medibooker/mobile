@@ -8,17 +8,23 @@ const useRegions = () => {
     try {
       const allRegions = await Region_API.get_Region_List();
 
-      setRegionsHook(allRegions.sort((a, b) => a.name.localeCompare(b.name)));
+      setRegionsHook(
+        allRegions.slice().sort((a, b) => a.name.localeCompare(b.name))
+      );
     } catch (error) {
       console.error("Failed to fetch specialities:", error);
     }
+  };
+
+  const get_Region_By_ID = (data, id) => {
+    return data.find((item) => item._id === id);
   };
 
   useEffect(() => {
     filterRegions();
   }, []);
 
-  return [regionsHook];
+  return [regionsHook, get_Region_By_ID];
 };
 
 export default useRegions;

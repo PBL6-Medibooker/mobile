@@ -36,6 +36,9 @@ const Booking = ({ navigation, route }) => {
     time: null,
   });
 
+  const [message, setMessage] = useState(null);
+  const [isVerified, setIsVerified] = useState(false);
+
   const [specialitiesHook] = useSpecialities();
   const [regionsHook] = useRegions();
   const [doctorsHook, getDoctorsBySpecialty] = useAccount();
@@ -56,7 +59,7 @@ const Booking = ({ navigation, route }) => {
   //       area
   //     );
   //     console.log(doctorsBySpecialtyAndRegion);
-      
+
   //     setDoctors(doctorsBySpecialtyAndRegion);
   //   };
 
@@ -70,7 +73,7 @@ const Booking = ({ navigation, route }) => {
   //     setDoctor(doctorSelected)
   //   }
   // }, [doctorSelected, regionsHook, specialitiesHook]);
-  
+
   useEffect(() => {
     const getDoctorBySpecialty = () => {
       // Chỉ thiết lập lại doctor và datePicker khi doctorSelected không tồn tại
@@ -82,23 +85,28 @@ const Booking = ({ navigation, route }) => {
           time: null,
         });
       }
-  
-      if (specialty && area) { // Chỉ gọi khi specialty và area đã có giá trị
+
+      if (specialty && area) {
+        // Chỉ gọi khi specialty và area đã có giá trị
         const doctorsBySpecialtyAndRegion = getDoctorsBySpecialty(
           doctorsHook,
           specialty,
           area
         );
-        console.log(doctorsBySpecialtyAndRegion);
+        // console.log(doctorsBySpecialtyAndRegion);
         setDoctors(doctorsBySpecialtyAndRegion);
       }
     };
-  
+
     getDoctorBySpecialty();
-  }, [specialty, area, doctorsHook, doctorSelected]);  
-  
+  }, [specialty, area, doctorsHook, doctorSelected]);
+
   useEffect(() => {
-    if (doctorSelected && regionsHook.length > 0 && specialitiesHook.length > 0) { 
+    if (
+      doctorSelected &&
+      regionsHook.length > 0 &&
+      specialitiesHook.length > 0
+    ) {
       // Đảm bảo dữ liệu đã tải xong
       const selectedRegion = regionsHook.find(
         (item) => item._id === doctorSelected.region_id
@@ -106,7 +114,7 @@ const Booking = ({ navigation, route }) => {
       const selectedSpecialty = specialitiesHook.find(
         (item) => item._id === doctorSelected.speciality_id
       );
-  
+
       if (selectedRegion && selectedSpecialty) {
         setArea(selectedRegion);
         setSpecialty(selectedSpecialty);
@@ -115,7 +123,36 @@ const Booking = ({ navigation, route }) => {
     }
   }, [doctorSelected, regionsHook, specialitiesHook]);
 
+  const handleFocus = (field) => {
+    if (message === field) {
+      setIsVerified(false);
+    }
+  };
+
   const handle = () => {
+    setIsVerified(true);
+    if (!area) {
+      setMessage("area");
+      return;
+    }
+    if (!specialty) {
+      setMessage("specialty");
+      return;
+    }
+    if (!doctor) {
+      setMessage("doctor");
+      return;
+    }
+    if (!(datePicker.date && datePicker.dayOfWeek && datePicker.time)) {
+      setMessage("time");
+      return;
+    }
+    setIsVerified(false);
+
+    handleSelectedFull();
+  };
+
+  const handleSelectedFull = () => {
     console.log(
       area,
       service,
@@ -125,6 +162,15 @@ const Booking = ({ navigation, route }) => {
       healthStatus,
       datePicker
     );
+    const info = {
+      region: area,
+      specialty: specialty,
+      doctor: doctor,
+      medicalHistory: medicalHistory,
+      healthStatus: healthStatus,
+      time: datePicker,
+    };
+    navigation.navigate("VerifyBooking", info);
   };
 
   return (
@@ -141,7 +187,14 @@ const Booking = ({ navigation, route }) => {
             placeholder="Chọn khu vực"
             onChange={setArea}
             value={area}
+            onFocus={() => {
+              handleFocus("area");
+            }}
           />
+
+          {isVerified && message === "area" ? (
+            <Text style={styles.message}>* Chưa chọn khu vực</Text>
+          ) : null}
 
           <Text style={styles.text}>Chọn chuyên khoa</Text>
           <Dropdown
@@ -149,16 +202,30 @@ const Booking = ({ navigation, route }) => {
             placeholder="Chọn chuyên khoa"
             onChange={setSpecialty}
             value={specialty}
+            onFocus={() => {
+              handleFocus("specialty");
+            }}
           />
+
+          {isVerified && message === "specialty" ? (
+            <Text style={styles.message}>* Chưa chọn chuyên khoa</Text>
+          ) : null}
 
           <Text style={styles.text}>Chọn bác sĩ</Text>
           <Dropdown
             data={doctors}
             placeholder="Chọn bác sĩ"
             onChange={setDoctor}
+            onFocus={() => {
+              handleFocus("doctor");
+            }}
             disabled={!(area && specialty)}
             value={doctor}
           />
+
+          {isVerified && message === "doctor" ? (
+            <Text style={styles.message}>* Chưa chọn bác sĩ</Text>
+          ) : null}
 
           <Text style={styles.text}>Chọn ngày - khung giờ khám</Text>
           <DatePicker
@@ -167,16 +234,26 @@ const Booking = ({ navigation, route }) => {
             onChange={setDatePicker}
             placeholder="Chọn ngày - khung giờ khám"
             disabled={!(area && specialty && doctor)}
+            onFocus={() => {
+              handleFocus("time");
+            }}
           />
 
-          <Text style={styles.text}>Tiểu sử bệnh lý</Text>
+          {isVerified && message === "time" ? (
+            <Text style={styles.message}>
+              * Chưa chọn ngày - khung giờ khám
+            </Text>
+          ) : null}
+
+          {/* <Text style={styles.text}>Tiền sử bệnh lý</Text>
           <TextInput
             style={[styles.textInput, { height: 100 }]}
             numberOfLines={3}
             value={medicalHistory}
             multiline
             onChangeText={setMedicalHistory}
-          />
+          /> */}
+          
           <Text style={styles.text}>Tình trạng sức khoẻ</Text>
           <TextInput
             style={[styles.textInput, { height: 100 }]}
@@ -188,7 +265,7 @@ const Booking = ({ navigation, route }) => {
           <Pressable
             onPress={() => {
               handle();
-              navigation.navigate("VerifyBooking");
+              // navigation.navigate("VerifyBooking");
             }}
             style={({ pressed }) => [
               {
@@ -254,5 +331,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     width: "90%",
+  },
+  message: {
+    color: COLORS.red,
+    fontSize: 12,
   },
 });

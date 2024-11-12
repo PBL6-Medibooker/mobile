@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SpecialtyDetail } from "../screens";
 import { COLORS } from "../constants";
 import { HeaderBack } from "../components";
@@ -9,15 +9,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
 
-const Information_Specialty = ({ navigation }) => {
+const Information_Specialty = ({ route, navigation }) => {
+  const { specialty } = route.params || {};
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack
         navigation={navigation}
-        title="dfghj"
+        title={specialty.name}
         screenName="Specialty"
       />
-      <Text>Giới thiệu</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+      <Text style={styles.descriptionSpecialty}>{specialty.description}</Text>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -27,12 +30,13 @@ const DoctorList_Specialty = ({ route, navigation }) => {
   return <SpecialtyDetail navigation={navigation} specialty={specialty} />;
 };
 
-const Services_Specialty = ({ navigation }) => {
+const Services_Specialty = ({ route, navigation }) => {
+  const { specialty } = route.params || {};
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack
         navigation={navigation}
-        title="dfghj"
+        title={specialty.name}
         screenName="Specialty"
       />
       <Text>Dịch vụ</Text>
@@ -61,13 +65,21 @@ export default BottomTabNavigation = ({ route, navigation }) => {
         tabBarActiveTintColor: COLORS.PersianGreen,
         tabBarInactiveTintColor: COLORS.gray,
       })}>
-      <Tab.Screen name="Giới thiệu" component={Information_Specialty} />
+      <Tab.Screen
+        name="Giới thiệu"
+        component={Information_Specialty}
+        initialParams={{ specialty }}
+      />
       <Tab.Screen
         name="Bác sĩ"
         component={DoctorList_Specialty}
         initialParams={{ specialty }}
       />
-      <Tab.Screen name="Dịch vụ" component={Services_Specialty} />
+      <Tab.Screen
+        name="Dịch vụ"
+        component={Services_Specialty}
+        initialParams={{ specialty }}
+      />
     </Tab.Navigator>
   );
 };
@@ -76,7 +88,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
-    // alignItems: "center",
-    // justifyContent: "center",
   },
+  descriptionSpecialty: {
+    textAlign: 'justify',
+    margin: 15
+  }
 });

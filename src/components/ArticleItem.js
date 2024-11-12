@@ -9,24 +9,28 @@ import {
 import { COLORS, images } from "../constants";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
-const ArticleItem = ({ data }) => (
-  <View style={styles.itemContainer}>
-    <TouchableOpacity  style={styles.imageButton}>
+const ArticleItem = ({ data, navigation }) => (
+  <TouchableOpacity
+    style={styles.itemContainer}
+    onPress={() => navigation.navigate("ViewArticle", { post: data })}>
+    <View style={styles.imageButton}>
       <Image source={images.poster} style={styles.image} />
-    </TouchableOpacity>
+    </View>
     <View style={styles.item}>
-      <TouchableOpacity>
-        <Text style={styles.title}>{data.title}</Text>
-      </TouchableOpacity>
+      <View>
+        <Text style={styles.title} numberOfLines={2}>
+          {data.article_title}
+        </Text>
+      </View>
       <Text style={styles.content} numberOfLines={2} ellipsizeMode="tail">
-        {data.content}
+        {data.article_content}
       </Text>
       <View style={styles.dateContainer}>
         <FontAwesome5 name="calendar-alt" size={15} color={COLORS.gray} />
-        <Text style={styles.date}>{data.date}</Text>
+        <Text style={styles.date}>{data.date_published}</Text>
       </View>
     </View>
-  </View>
+  </TouchableOpacity>
 );
 
 export default ArticleItem;
@@ -35,9 +39,9 @@ const styles = StyleSheet.create({
   itemContainer: {
     borderBottomWidth: 1,
     borderColor: COLORS.silver,
-    margin: 5,
     marginHorizontal: 12,
     flexDirection: "row",
+    paddingVertical: 15,
   },
   imageButton: {
     height: 70,
@@ -45,8 +49,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   image: {
-    height: '100%',
-    width: '100%',
+    height: "100%",
+    width: "100%",
     resizeMode: "cover",
     borderColor: COLORS.black,
     borderWidth: 1,

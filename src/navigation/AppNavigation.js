@@ -1,7 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DrawerNavigation from "./DrawerNavigation";
-import { Booking, DoctorInfo, Doctors, Home, Login, QADetail, Register, Specialties, SpecialtyDetail, UpdateUser, UserProfile, VerifyBooking, Myappointment, Privacy, AppointmentDetail, SettingAccount, SettingNotification, PasswordManage } from "../screens";
+import { Booking, DoctorInfo, Doctors, Home, Login, QADetail, Register, Specialties, SpecialtyDetail, UpdateUser, UserProfile, VerifyBooking, Myappointment, Privacy, AppointmentDetail, SettingAccount, SettingNotification, PasswordManage, SoftDeleteAccount, ViewArticle, Articles, UpdateInfo, Service, ForgetPassword} from "../screens";
 import BottomTabNavigation from "./BottomTabNavigation";
 const Stack = createNativeStackNavigator();
 
@@ -28,8 +28,14 @@ const AppNavigation = () => {
             <Stack.Screen name="Privacy" component={Privacy} />
             <Stack.Screen name="AppointmentDetail" component={AppointmentDetail} />
             <Stack.Screen name="SettingAccount" component={SettingAccount} />
+            <Stack.Screen name="SoftDeleteAccount" component={SoftDeleteAccount} />
             <Stack.Screen name="SettingNotification" component={SettingNotification} />
             <Stack.Screen name="PasswordManage" component={PasswordManage} />
+            <Stack.Screen name="ViewArticle" component={ViewArticle} />
+            <Stack.Screen name="Articles" component={Articles} />
+            <Stack.Screen name="UpdateInfo" component={UpdateInfo} />
+            <Stack.Screen name="Service" component={Service} />
+            <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
         </Stack.Navigator>
     </NavigationContainer>
   );

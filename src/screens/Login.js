@@ -112,7 +112,7 @@ const Login = ({ navigation }) => {
             <Text style={styles.loginText}>Đăng nhập</Text>
           </Pressable>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("ForgetPassword")}>
             <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
           </TouchableOpacity>
         </View>

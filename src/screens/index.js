@@ -19,6 +19,12 @@ import AppointmentDetail from "./AppointmentDetail";
 import SettingNotification from "./SettingNotification";
 import SettingAccount from "./SettingAccount";
 import PasswordManage from "./PasswordManage";
+import SoftDeleteAccount from "./SoftDeleteAccount";
+import ViewArticle from "./ViewArticle";
+import { Articles } from "./Articles";
+import UpdateInfo from "./UpdateInfo";
+import Service from "./Service";
+import ForgetPassword from "./ForgetPassword";
 
 export {
   Home,
@@ -42,4 +48,10 @@ export {
   SettingNotification,
   SettingAccount,
   PasswordManage,
+  SoftDeleteAccount,
+  ViewArticle,
+  Articles,
+  UpdateInfo,
+  Service,
+  ForgetPassword,
 };

@@ -33,6 +33,7 @@ const Specialty = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <FlatList
         style={styles.list}
+        showsVerticalScrollIndicator={false}
         data={formatData(specialitiesHook, 2)} // Sử dụng hàm formatData
         numColumns={2}
         keyExtractor={(item) => item._id?.toString()}
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
   itemSpecialty: {
     flex: 1,
     margin: 2,
-    aspectRatio: 1, // Chiều cao bằng chiều rộng để tạo khung vuông
+    aspectRatio: 1,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 0.5,

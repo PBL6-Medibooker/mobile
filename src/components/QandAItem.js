@@ -3,7 +3,6 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -20,40 +19,47 @@ const QandAItem = ({ item, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.question}>
-        <Text style={styles.title}>{item.title}</Text>
+      <TouchableOpacity style={styles.question} onPress={toggleShowFullText}>
+        <Text style={styles.title}>{item.post_title}</Text>
         <View style={styles.userInfo}>
           <AntDesign name="message1" size={18} color={COLORS.PersianGreen} />
-          <Text style={styles.userName}>{item.user}</Text>
+          <Text style={styles.userName}>{item.user_id.email}</Text>
         </View>
         <View style={styles.specialty}>
-          <Text>#{item.specialty.replace(/\s/g, "")}</Text>
+          <Text>#{item.speciality_id.name.replace(/\s/g, "")}</Text>
         </View>
-        <Text style={styles.content}>{item.question}</Text>
-        <Pressable
-          onPress={() => {
-            setIsViewAnswer(!isViewAnswer);
-          }}
-          style={{ alignSelf: "flex-end" }}>
-          <Text style={styles.viewText}>Xem câu trả lời</Text>
-        </Pressable>
-      </View>
+        <Text style={styles.content} numberOfLines={7}>
+          {item.post_content}
+        </Text>
 
-      {isViewAnswer && (
+        {item.post_comments?.length > 0 && (
+          <Pressable
+            onPress={() => {
+              setIsViewAnswer(!isViewAnswer);
+            }}
+            style={{ alignSelf: "flex-end" }}>
+            <Text style={styles.viewText}>Xem câu trả lời</Text>
+          </Pressable>
+        )}
+      </TouchableOpacity>
+
+      {isViewAnswer && item.post_comments?.length > 0 && (
         <View style={styles.answer}>
           <View style={styles.doctorInfo}>
             <Image source={images.user_default} style={styles.image} />
-            <View>
-              <Text>{item.answer.doctor}</Text>
+            <View style={styles.doctorProfile}>
+              <Text>{item.post_comments[0].replier}</Text>
               <Text>Bác sĩ</Text>
             </View>
           </View>
           <Text numberOfLines={4} style={styles.content}>
-            {item.answer.content}
+            {item.post_comments[0].comment_content}
           </Text>
 
-          {item.answer.content.length > 100 && (
-            <TouchableOpacity onPress={toggleShowFullText} style={{alignSelf: 'flex-start'}}>
+          {item.post_comments[0].comment_content.length > 100 && (
+            <TouchableOpacity
+              onPress={toggleShowFullText}
+              style={{ alignSelf: "flex-start" }}>
               <Text style={styles.viewText}>Xem thêm</Text>
             </TouchableOpacity>
           )}
@@ -78,12 +84,6 @@ const styles = StyleSheet.create({
     borderColor: COLORS.gray,
     backgroundColor: COLORS.white,
     zIndex: 1,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    // shadowColor: COLORS.Concrete,
-    // shadowOpacity: 0.5,
     elevation: 2,
   },
   title: {
@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
   userInfo: {
     flexDirection: "row",
     paddingVertical: 3,
+    alignItems: "center",
   },
   userName: {
     color: COLORS.PersianGreen,
@@ -143,5 +144,8 @@ const styles = StyleSheet.create({
   doctorInfo: {
     flexDirection: "row",
     marginBottom: 10,
+  },
+  doctorProfile: {
+    alignSelf: "center",
   },
 });
