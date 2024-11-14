@@ -18,8 +18,7 @@ const RadioView = ({
             selectedOption &&
               selectedOption.value === option.value &&
               styles.selectedButton,
-            index === 0 && styles.firstButton, // Bo góc cho item đầu
-            index === options.length - 1 && styles.lastButton, // Bo góc cho item cuối
+            index !== options.length - 1 && { marginBottom: 8 }, // Bo góc cho item cuối
           ]}
           onPress={() => {
             onSelect(option);
@@ -47,16 +46,15 @@ const styles = StyleSheet.create({
   radioButton: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderEndWidth: 1,
+    justifyContent: "center",
+    borderWidth: 1,
     borderColor: COLORS.silver,
-    // Không cần borderRadius ở đây
+    height: 35,
+    borderRadius: 999,
   },
   radioContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    // flexDirection: "row",
+    // justifyContent: "space-between",
   },
   selectedButton: {
     backgroundColor: COLORS.PersianGreen,

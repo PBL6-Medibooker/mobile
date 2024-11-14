@@ -10,8 +10,8 @@ import {
 } from "../utils/ConvertDate";
 import { useAuth } from "../AuthProvider";
 
-const AppointmentDetail = ({ navigation, route }) => {
-  const { doctor, appoinment } = route.params;
+const DoctorAppointmentDetail = ({ navigation, route }) => {
+  const { user, appoinment } = route.params;
   const { accountInfo } = useAuth();
 
   return (
@@ -24,16 +24,17 @@ const AppointmentDetail = ({ navigation, route }) => {
           <View style={styles.doctorCard}>
             <Image
               source={
-                doctor.profile_image
-                  ? { uri: doctor.profile_image }
+                accountInfo?.profile_image
+                  ? { uri: accountInfo?.profile_image }
                   : images.doctor_default
               }
               style={styles.doctorImage}
             />
             <View style={styles.doctorDetails}>
-              <Text style={styles.doctorName}>{doctor.username}</Text>
+              <Text style={styles.doctorName}>{accountInfo.username}</Text>
               <Text style={styles.specialty}>
-                {doctor?.speciality_id?.name} khu vực {doctor?.region_id?.name}
+                {accountInfo?.speciality_id?.name} khu vực{" "}
+                {accountInfo?.region_id?.name}
               </Text>
             </View>
           </View>
@@ -71,15 +72,15 @@ const AppointmentDetail = ({ navigation, route }) => {
           <Text style={styles.infoTitle}>Thông tin cá nhân</Text>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Họ và Tên</Text>
-            <Text style={styles.infoValue}>{accountInfo.username}</Text>
+            <Text style={styles.infoValue}>{user.username}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Email</Text>
-            <Text style={styles.infoValue}>{accountInfo.email}</Text>
+            <Text style={styles.infoValue}>{user.email}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Số điện thoại</Text>
-            <Text style={styles.infoValue}>{accountInfo.phone}</Text>
+            <Text style={styles.infoValue}>{user.phone}</Text>
           </View>
         </View>
 
@@ -117,11 +118,11 @@ const AppointmentDetail = ({ navigation, route }) => {
         )}
 
         {/* Tiền sử bệnh lý */}
-        {accountInfo.underlying_condition !== "none" && (
+        {user.underlying_condition !== "none" && (
           <View style={styles.problemContainer}>
             <Text style={styles.infoTitle}>Tiền sử bệnh lý</Text>
             <Text style={styles.problemText}>
-              - {accountInfo.underlying_condition}
+              - {user.underlying_condition}
             </Text>
           </View>
         )}
@@ -245,4 +246,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AppointmentDetail;
+export default DoctorAppointmentDetail;

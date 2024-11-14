@@ -143,10 +143,58 @@ const restore_Appointment = async (appointmentId) => {
   }
 };
 
+const get_Doctor_Appointment_By_Status = async (doctor_id) => {
+  try {
+    const currentDate = new Date();
+    const response = await client.post("/appointment/get-all-appointment");
+    const appointments = response.data;
+
+    if (appointments && Array.isArray(appointments) && doctor_id) {
+      const filteredAppointments = appointments.filter(
+        (item) => item.doctor_id === doctor_id && item.is_deleted === false
+      );
+
+      // Common sorting logic
+      const sortAppointments = (a, b) => {
+        const parsedDateA = parseAppointmentStartDate(a);
+        const parsedDateB = parseAppointmentStartDate(b);
+        return parsedDateA - parsedDateB;
+      };
+
+      const upcoming = [...filteredAppointments]
+        .filter(
+          (appointment) => parseAppointmentEndDate(appointment) > currentDate
+        )
+        .sort(sortAppointments);
+
+      const complete = [...filteredAppointments]
+        .filter(
+          (appointment) => parseAppointmentEndDate(appointment) < currentDate
+        )
+        .sort(sortAppointments);
+
+      const cancelled = [...appointments]
+        .filter((item) => item.doctor_id === doctor_id && item.is_deleted === true)
+        .sort(sortAppointments);
+        
+      return { upcoming: upcoming, complete: complete, cancelled: cancelled };
+    }
+    return appointments;
+  } catch (error) {
+    if (error.response) {
+      console.error("Error response: ", error.response.data.error);
+    } else {
+      console.error("Error not response: ", error.message);
+    }
+    return null;
+  }
+};
+
 export default {
   add_Appointment,
   get_All_Appointment,
   get_Appointment_By_Status,
   restore_Appointment,
   soft_delete_Appointment,
+  get_Doctor_Appointment_By_Status
 };

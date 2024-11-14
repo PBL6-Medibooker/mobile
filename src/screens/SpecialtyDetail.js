@@ -59,18 +59,6 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
     [specialty]
   );
 
-  // useEffect(() => {
-  //   const loadDoctors = async () => {
-  //     try {
-  //       const initialDoctors = await fetchDoctorList();
-  //       setDoctorList(initialDoctors);
-  //     } catch (error) {
-  //       console.error("Error loading initial doctor list:", error);
-  //     }
-  //   };
-  //   loadDoctors();
-  // }, [fetchDoctorList]);
-
   const refRBSheet = useRef();
 
   if (loading) {
@@ -107,15 +95,7 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
         screenName="Specialty"
       />
       <View style={styles.searchContainer}>
-        <View style={styles.searchButton}>
-          <FontAwesome
-            name="search"
-            size={16}
-            color={COLORS.silver}
-            style={styles.btnSearch}
-          />
-          <TextInput style={styles.textInput} placeholder="Search" />
-        </View>
+        <Text style={styles.text}>Danh sách bác sĩ:</Text>
 
         <TouchableOpacity
           style={styles.btnFilter}
@@ -170,14 +150,10 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     paddingTop: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: COLORS.PersianGreen,
-    paddingBottom: 25,
-    borderBottomStartRadius: 18,
-    borderBottomEndRadius: 18,
+    justifyContent: "space-between",
   },
   searchButton: {
     flex: 1,
@@ -197,7 +173,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   btnFilter: {
-    backgroundColor: COLORS.Light50PersianGreen,
+    backgroundColor: COLORS.PersianGreen,
     borderRadius: 8,
     marginStart: 5,
     height: 35,
@@ -205,4 +181,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  text: {
+    color: COLORS.PersianGreen,
+    fontSize: 16,
+    fontWeight: 'bold'
+  }
 });

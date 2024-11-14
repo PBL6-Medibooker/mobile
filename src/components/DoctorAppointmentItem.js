@@ -13,21 +13,29 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Speciality_API from "../API/Speciality_API";
 import Region_API from "../API/Region_API";
 import { formatDistanceToNow, parse } from "date-fns";
-import { vi } from "date-fns/locale";
+import { it, vi } from "date-fns/locale";
 import {
   convertAppointmentDate,
   parseAppointmentEndDate,
 } from "../utils/ConvertDate";
 import Appointment_API from "../API/Appointment_API";
 
-const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
+const DoctorAppointmentItem = ({
+  appointmentKey,
+  item,
+  navigation,
+  filter,
+}) => {
   const [doctor, setDoctor] = useState({});
+  const [user, setUser] = useState({});
 
   useEffect(() => {
     const getDoctorById = async () => {
       try {
         const doctor = await Account_API.get_Account_By_Id(item.doctor_id);
         setDoctor(doctor);
+        const userRes = await Account_API.get_Account_By_Id(item.user_id);
+        setUser(userRes);
       } catch (error) {
         console.error(error);
       }
@@ -124,135 +132,138 @@ const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
     ]);
   };
 
-  const handleMakeAnAppointment = async () => {
-    const doctorToSend = {
-      ...doctor,
-      name: doctor.username,
-    };
-    navigation.navigate("DoctorInfo", {
-      doctorSelected: doctorToSend,
-    });
-  };
-
   return (
-    <View style={styles.container} key={appointmentKey}>
-      <View style={styles.doctorContainer}>
-        <View style={styles.doctorImageContainer}>
-          <Image
-            source={
-              doctor.profile_image
-                ? { uri: doctor.profile_image }
-                : images.doctor_default
-            }
-            style={styles.doctorImage}
-          />
-        </View>
-        <View style={styles.doctorInfo}>
-          <Text style={styles.doctorName}>{doctor.username}</Text>
-          <Text style={styles.doctorSpecialty}>
-            {doctor?.speciality_id?.name} khu vực {doctor?.region_id?.name}
-          </Text>
-        </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() =>
-              navigation.navigate("AppointmentDetail", {
-                doctor: doctor,
-                appoinment: item,
-              })
-            }>
-            <AntDesign style={styles.iconStyle} name="ellipsis1" size={24} />
-          </TouchableOpacity>
-
-          {filter !== "Upcoming" && (
-            <TouchableOpacity
-              style={styles.iconButton}
-              onPress={() => handleMakeAnAppointment()}>
-              <AntDesign style={styles.iconStyle} name="calendar" size={24} />
-            </TouchableOpacity>
-          )}
-
-          {filter === "Upcoming" && (
-            <TouchableOpacity
-              style={styles.iconButton}
-              onPress={() => handleCancelAppointment()}>
-              <AntDesign
-                style={styles.iconStyle}
-                name="closesquareo"
-                size={24}
+    <View style={styles.containerAppointment} key={appointmentKey}>
+      <View style={{ flexDirection: "row" }}>
+        <View style={styles.container} />
+        <View style={{ flex: 1, marginVertical: 15, marginHorizontal: 20 }}>
+          <View style={styles.doctorContainer}>
+            <View style={styles.doctorImageContainer}>
+              <Image
+                source={
+                  user.profile_image
+                    ? { uri: user.profile_image }
+                    : images.user_default
+                }
+                style={styles.doctorImage}
               />
+            </View>
+            <View style={styles.doctorInfo}>
+              <Text style={styles.doctorName}>{user.username}</Text>
+              <Text style={styles.doctorSpecialty}>{user?.email}</Text>
+            </View>
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={() =>
+                  navigation.navigate("DoctorAppointmentDetail", {
+                    user: user,
+                    appoinment: item,
+                  })
+                }>
+                <AntDesign
+                  style={styles.iconStyle}
+                  name="ellipsis1"
+                  size={24}
+                />
+              </TouchableOpacity>
+
+              {/* {filter === "Upcoming" && (
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => handleCancelAppointment()}>
+                  <AntDesign
+                    style={styles.iconStyle}
+                    name="closesquareo"
+                    size={24}
+                  />
+                </TouchableOpacity>
+              )} */}
+            </View>
+          </View>
+          {/* <View style={styles.separator} /> */}
+          {item?.health_issue && (
+            <Text style={{ color: COLORS.gray, marginBottom: 5 }}>
+              Tình trạng sức khoẻ: {item.health_issue}
+            </Text>
+          )}
+          <View style={styles.infoRow}>
+            <Text style={{ fontSize: 14, marginEnd: 5 }}>
+              {item.appointment_time_start} - {item.appointment_time_end}
+            </Text>
+            <Text style={{ fontSize: 15 }}>
+              {convertAppointmentDate(item.appointment_day)}
+            </Text>
+          </View>
+          {filter === "Upcoming" && !checkHour(item) && (
+            <TouchableOpacity
+              onPress={() => handleCancelAppointment()}
+              style={styles.restoreButton}>
+              <AntDesign
+                name="closecircleo"
+                size={20}
+                color={COLORS.PersianGreen}
+                style={{ marginRight: 5 }}
+              />
+              <Text style={{ color: COLORS.PersianGreen }}>Cancel</Text>
             </TouchableOpacity>
+          )}
+
+          {filter === "Cancelled" &&
+            parseAppointmentEndDate(item) > new Date() && (
+              <TouchableOpacity
+                onPress={() => handleRestoreAppointment()}
+                style={styles.restoreButton}>
+                <Text style={{ color: COLORS.PersianGreen }}>Khôi phục</Text>
+              </TouchableOpacity>
+            )}
+
+          {filter === "Upcoming" && checkHour(item) && (
+            <View style={styles.restoreButton}>
+              <Text style={{ color: COLORS.PersianGreen }}>Đang diễn ra</Text>
+            </View>
           )}
         </View>
       </View>
-      <View style={styles.separator} />
-      <View style={styles.infoRow}>
-        <Text style={styles.infoItem}>Lịch khám:</Text>
-        <Text style={styles.infoItem}>
-          {convertAppointmentDate(item.appointment_day)}
-        </Text>
-      </View>
-      <Text style={[styles.infoItem, { textAlign: "right", marginBottom: 4 }]}>
-        {item.appointment_time_start} - {item.appointment_time_end}
-      </Text>
-      <View style={styles.infoRow}>
-        <Text style={styles.infoItem}>Ngày đặt lịch:</Text>
-        <Text style={styles.infoItem}>
-          {formatDistanceToNow(new Date(item.createdAt), {
-            addSuffix: true,
-            locale: vi,
-          })}
-        </Text>
-      </View>
-      {filter === "Cancelled" && parseAppointmentEndDate(item) > new Date() && (
-        <TouchableOpacity
-          onPress={() => handleRestoreAppointment()}
-          style={styles.restoreButton}>
-          <Text style={{ color: COLORS.PersianGreen }}>Khôi phục</Text>
-        </TouchableOpacity>
-      )}
-
-      {filter === "Upcoming" && checkHour(item) && (
-        <View style={styles.restoreButton}>
-          <Text style={{ color: COLORS.white }}>Đang diễn ra</Text>
-        </View>
-      )}
     </View>
   );
 };
 
-export default AppointmentItem;
+export default DoctorAppointmentItem;
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: COLORS.white,
-    padding: 10,
-    marginVertical: 5,
+  containerAppointment: {
+    marginVertical: 8,
     borderRadius: 10,
     shadowColor: COLORS.PersianGreen,
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
     borderWidth: 1,
     borderColor: COLORS.Light20PersianGreen,
+    // elevation: 2,
+  },
+  container: {
+    width: 8,
+    backgroundColor: COLORS.PersianGreen,
+    borderTopStartRadius: 10,
+    borderBottomStartRadius: 10,
   },
   doctorContainer: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 20,
   },
   doctorImageContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 10,
+    width: 60,
+    height: 60,
+    borderRadius: 999,
     borderWidth: 1,
     borderColor: COLORS.Light20PersianGreen,
   },
   doctorImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 10,
-    resizeMode: 'cover'
+    width: 60,
+    height: 60,
+    borderRadius: 999,
+    resizeMode: "cover",
   },
   doctorInfo: {
     flex: 1,
@@ -262,6 +273,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: COLORS.black,
+    marginBottom: 5,
   },
   doctorSpecialty: {
     fontSize: 14,
@@ -277,6 +289,7 @@ const styles = StyleSheet.create({
   },
   infoRow: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
   },
   infoItem: {
@@ -286,7 +299,7 @@ const styles = StyleSheet.create({
   restoreButton: {
     flexDirection: "row",
     alignSelf: "flex-end",
-    paddingVertical: 6,
+    paddingVertical: 8,
     paddingHorizontal: 10,
     backgroundColor: COLORS.Light20PersianGreen,
     borderRadius: 999,

@@ -2,6 +2,7 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { COLORS, images } from "../constants";
 import { useEffect, useState } from "react";
 import { useAuth } from "../AuthProvider";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const DrawerContent = ({ navigation, isLoggedIn }) => {
   const [myAccount, setMyAccount] = useState(null);
@@ -17,7 +18,7 @@ const DrawerContent = ({ navigation, isLoggedIn }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Pressable onPress={() => handleManagerAccount()}>
         <Image
           source={
@@ -53,7 +54,7 @@ const DrawerContent = ({ navigation, isLoggedIn }) => {
         </Text>
       )}
       <View style={styles.separate}></View>
-    </View>
+    </SafeAreaView>
   );
 };
 

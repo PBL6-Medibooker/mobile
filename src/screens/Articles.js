@@ -18,6 +18,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import useSpecialities from "../hooks/useSpecialities";
 import useArticles from "../hooks/useArticles";
 import { useFocusEffect } from "@react-navigation/native";
+import Article_API from "../API/Article_API";
 
 export const Articles = ({ navigation }) => {
   const refRBSheet = useRef();
@@ -27,14 +28,15 @@ export const Articles = ({ navigation }) => {
     firstArticle,
     fourArticles,
     loading,
-    getArticlesByDoctor,
     getArticlesBySpecialty,
   ] = useArticles();
   const [specialitiesHook] = useSpecialities();
-  
+
   const [articleList, setArticleList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(null);
 
   const handleSpecialityChange = async (region, specialty, sortBy) => {
+    setSearchQuery(null);
     if (specialty?.name) {
       const filter = await getArticlesBySpecialty(specialty.name, sortBy);
       setArticleList(filter);
@@ -50,6 +52,16 @@ export const Articles = ({ navigation }) => {
       setArticleList(sort);
     } else if (!specialty && !sortBy) {
       setArticleList(articlesHook);
+    }
+  };
+
+  const handleSearch = async (search_query) => {
+    setSearchQuery(search_query);
+    try {
+      const searchPosts = await Article_API.search_Article(search_query);
+      setArticleList(searchPosts);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -70,7 +82,15 @@ export const Articles = ({ navigation }) => {
             color={COLORS.silver}
             style={styles.btnSearch}
           />
-          <TextInput style={styles.textInput} placeholder="Search" />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Search"
+            value={searchQuery}
+            onChangeText={(query) => handleSearch(query)}
+            clearButtonMode="always"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
         </View>
 
         <TouchableOpacity
@@ -168,7 +188,7 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     marginVertical: 1,
-    height: 35
+    height: 35,
   },
   btnSearch: {
     marginHorizontal: 8,

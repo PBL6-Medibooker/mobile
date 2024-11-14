@@ -5,6 +5,7 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
   BookingHistory,
+  DoctorAppointment,
   Forum,
   Home,
   Login,
@@ -21,7 +22,7 @@ import { useAuth } from "../AuthProvider";
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigation = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, accountInfo } = useAuth();
 
   return (
     <Drawer.Navigator
@@ -40,7 +41,7 @@ const DrawerNavigation = () => {
         drawerStyle: {
           marginTop: 32,
           backgroundColor: COLORS.white,
-          width: 250,
+          width: 253,
           borderTopRightRadius: 25,
           borderBottomRightRadius: 25,
         },
@@ -74,7 +75,7 @@ const DrawerNavigation = () => {
               <MaterialIcons name="calendar-month" size={24} color={color} />
             ),
           }}
-          component={Myappointment}
+          component={accountInfo?.__t === "Doctor" ? DoctorAppointment: Myappointment}
         />
       )}
 

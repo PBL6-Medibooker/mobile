@@ -64,6 +64,21 @@ export default BottomTabNavigation = ({ route, navigation }) => {
         },
         tabBarActiveTintColor: COLORS.PersianGreen,
         tabBarInactiveTintColor: COLORS.gray,
+        tabBarLabel: ({ focused, color }) => (
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: focused ? "bold" : "normal",
+              color: color,
+              marginBottom: 5
+            }}
+          >
+            {route.name}
+          </Text>
+        ),
+        tabBarStyle: {
+          height: 60
+        }
       })}>
       <Tab.Screen
         name="Giới thiệu"

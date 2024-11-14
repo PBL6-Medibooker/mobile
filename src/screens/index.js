@@ -14,6 +14,7 @@ import Forum from "./Forum";
 import QADetail from "./PostDetail";
 import UpdateUser from "./UpdateUser";
 import Myappointment from "./Myappointment";
+import DoctorAppointment from "./DoctorAppointment";
 import Privacy from "./Privacy";
 import AppointmentDetail from "./AppointmentDetail";
 import SettingNotification from "./SettingNotification";
@@ -22,6 +23,7 @@ import PasswordManage from "./PasswordManage";
 import ViewArticle from "./ViewArticle";
 import { Articles } from "./Articles";
 import AddPost from "./addPost";
+import DoctorAppointmentDetail from "./DrAppointmentDetail";
 
 export {
   Home,
@@ -48,4 +50,6 @@ export {
   ViewArticle,
   Articles,
   AddPost,
+  DoctorAppointment,
+  DoctorAppointmentDetail,
 };

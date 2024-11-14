@@ -15,6 +15,7 @@ import { Dropdown, HeaderBack, RadioView, DatePicker } from "../components";
 import useSpecialities from "../hooks/useSpecialities";
 import useRegions from "../hooks/useRegions";
 import useAccount from "../hooks/useAccount";
+import Account_API from "../API/Account_API";
 
 const ServiceOptions = [
   { label: "Khám trong giờ", value: "intime" },
@@ -42,43 +43,13 @@ const Booking = ({ navigation, route }) => {
 
   const [specialitiesHook] = useSpecialities();
   const [regionsHook] = useRegions();
-  const [doctorsHook, getDoctorsBySpecialty] = useAccount();
+  const [doctorsHook, getDoctorsBySpecialtyAndRegion] = useAccount();
   const [doctors, setDoctors] = useState(null);
 
   const [openedDropdown, setOpenedDropdown] = useState(null);
 
-  // useEffect(() => {
-  //   const getDoctorBySpecialty = () => {
-  //     setDoctor(null);
-  //     setDatePicker({
-  //       date: null,
-  //       dayOfWeek: null,
-  //       time: null,
-  //     });
-
-  //     const doctorsBySpecialtyAndRegion = getDoctorsBySpecialty(
-  //       doctorsHook,
-  //       specialty,
-  //       area
-  //     );
-  //     console.log(doctorsBySpecialtyAndRegion);
-
-  //     setDoctors(doctorsBySpecialtyAndRegion);
-  //   };
-
-  //   getDoctorBySpecialty();
-  // }, [specialty, area, doctorsHook]);
-
-  // useEffect(() => {
-  //   if (doctorSelected) {
-  //     setArea(regionsHook.find((item) => item._id === doctorSelected.region_id));
-  //     setSpecialty(specialitiesHook.find((item) => item._id === doctorSelected.speciality_id));
-  //     setDoctor(doctorSelected)
-  //   }
-  // }, [doctorSelected, regionsHook, specialitiesHook]);
-
   useEffect(() => {
-    const getDoctorBySpecialty = () => {
+    const getDoctorBySpecialty = async () => {
       // Chỉ thiết lập lại doctor và datePicker khi doctorSelected không tồn tại
       if (!doctorSelected) {
         setDoctor(null);
@@ -91,12 +62,14 @@ const Booking = ({ navigation, route }) => {
 
       if (specialty && area) {
         // Chỉ gọi khi specialty và area đã có giá trị
-        const doctorsBySpecialtyAndRegion = getDoctorsBySpecialty(
-          doctorsHook,
-          specialty,
-          area
+        const doctors = await Account_API.get_Filter_Doctor_List(
+          specialty?.name,
+          area?.name
         );
-        // console.log(doctorsBySpecialtyAndRegion);
+        const doctorsBySpecialtyAndRegion = doctors.map(({ username, ...rest }) => ({
+          name: username,
+          ...rest,
+        }))
         setDoctors(doctorsBySpecialtyAndRegion);
       }
     };

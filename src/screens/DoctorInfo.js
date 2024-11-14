@@ -16,6 +16,7 @@ import { COLORS, images } from "../constants";
 import { useAuth } from "../AuthProvider";
 import Speciality_API from "../API/Speciality_API";
 import Region_API from "../API/Region_API";
+import { useFocusEffect } from "@react-navigation/native";
 
 const DoctorInfo = ({ navigation, route }) => {
   const { doctorSelected } = route.params || {};
@@ -35,22 +36,24 @@ const DoctorInfo = ({ navigation, route }) => {
 
   // const { isLoggedIn } = useAuth();
 
-  useEffect(() => {
-    const getSpecialtyAndRegionById = async () => {
-      setloading(true);
-      const specialtyById = await Speciality_API.get_Speciality_By_Id(
-        doctorSelected.speciality_id
-      );
-      setSpecialty(specialtyById);
-      const regionById = await Region_API.get_Region_By_Id(
-        doctorSelected.region_id
-      );
-      setArea(regionById);
-      setloading(false);
-    };
+  const getSpecialtyAndRegionById = async () => {
+    setloading(true);
+    const specialtyById = await Speciality_API.get_Speciality_By_Id(
+      doctorSelected?.speciality_id?._id ? doctorSelected.speciality_id._id : doctorSelected.speciality_id
+    );
+    setSpecialty(specialtyById);
+    const regionById = await Region_API.get_Region_By_Id(
+      doctorSelected?.region_id?._id ? doctorSelected.region_id._id : doctorSelected.region_id
+    );
+    setArea(regionById);
+    setloading(false);
+  };
 
-    getSpecialtyAndRegionById();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getSpecialtyAndRegionById();
+    }, [])
+  );
 
   const handleSetDate = () => {
     if (selectedDay.time !== null) {

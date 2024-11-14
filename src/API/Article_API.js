@@ -44,8 +44,32 @@ const getArticlesBySpecialty = async (specialtyName) => {
   }
 };
 
+const search_Article = async (search_query) => {
+  try {
+    const res = await client.post("/article/search-article", {
+      search_query: search_query,
+    });
+    const data = res.data.filter((item) => !item.is_deleted);
+    if (data && Array.isArray(data)) {
+      const sort = data
+        .slice()
+        .sort(
+          (a, b) => new Date(b.date_published) - new Date(a.date_published)
+        );
+      return sort;
+    }
+    return data;
+  } catch (error) {
+    if (error.response)
+      console.error("Error response: ", error.response.data.error);
+    else console.error("Error not response: ", error.message);
+    return null;
+  }
+};
+
 export default {
   get_All_Article,
   getArticlesByDoctor,
   getArticlesBySpecialty,
+  search_Article,
 };

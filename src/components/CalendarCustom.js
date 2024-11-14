@@ -5,6 +5,7 @@ import RadioView from "./RadioView";
 import { useEffect, useState } from "react";
 import moment from "moment";
 import { useAuth } from "../AuthProvider";
+import { parse } from "date-fns";
 
 const darkTheme = {
   calendarBackground: COLORS.black,
@@ -67,11 +68,35 @@ const CalendarCustom = ({
     getMarkedDatesForMonth();
   }, []);
 
+  const checkHour = (item) => {
+    const now = new Date();
+    const datePart = selectedDay.date;
+
+    const [year, month, day] = datePart.split("-").map(Number);
+
+    if (
+      day === now.getDate() &&
+      month === now.getMonth() + 1 &&
+      year === now.getFullYear()
+    ) {
+      const [hour, minute] = item.start_time.split(":").map(Number);
+
+      if (now.getHours() > hour) return false;
+      else if (now.getHours() === hour) {
+        if (now.getMinutes() > minute) return false;
+      }
+    }
+
+    return true;
+  };
+
   const activeHours = () => {
-    return schedule
+    const hours = schedule
       .filter(
         (item) =>
-          item.hour_type === "appointment" && item.day === selectedDay.dayOfWeek
+          item.hour_type === "appointment" &&
+          item.day === selectedDay.dayOfWeek &&
+          checkHour(item)
       )
       .map((item) => ({
         value: item._id,
@@ -79,10 +104,11 @@ const CalendarCustom = ({
         start_time: item.start_time,
         end_time: item.end_time,
       }));
+    return hours;
   };
 
   return (
-    <View>
+    <View style={{}}>
       <Calendar
         theme={theme === "light" ? lightTheme : darkTheme}
         style={{ borderRadius: 10 }}
@@ -143,6 +169,7 @@ const CalendarCustom = ({
           ]}>
           Chọn khung giờ khám
         </Text>
+        <View  style={{}}>
         {selectedDay.date !== null ? (
           <RadioView
             options={activeHours()} // Gọi hàm activeHours
@@ -158,6 +185,7 @@ const CalendarCustom = ({
         ) : (
           <Text style={styles.textMessage}>Vui lòng chọn ngày trước</Text>
         )}
+        </View>
       </View>
     </View>
   );
