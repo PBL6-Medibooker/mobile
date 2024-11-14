@@ -77,3 +77,26 @@ export const convertAppointmentDate = (dateString) => {
 //   const formatDate = format(parsedDate, "eeee dd/MM/yyyy", { locale: vi });
 //   console.log(formatDate);
 // };
+export const parseAppointmentStartDate = (appointment) => {
+  const datePart = appointment.appointment_day.split(" ").slice(1).join(" ");
+  const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
+
+  const [hour, minute] = appointment.appointment_time_start
+    .split(":")
+    .map(Number);
+  parsedDate.setHours(hour, minute);
+
+  return parsedDate;
+};
+
+export const parseAppointmentEndDate = (appointment) => {
+  const datePart = appointment.appointment_day.split(" ").slice(1).join(" ");
+  const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
+
+  const [hour, minute] = appointment.appointment_time_end
+    .split(":")
+    .map(Number);
+  parsedDate.setHours(hour, minute);
+
+  return parsedDate;
+};

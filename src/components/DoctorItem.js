@@ -22,7 +22,7 @@ const DoctorItem = ({ item, navigation }) => {
         <Image
           source={
             item.profile_image
-              ? { uri: `data:image/png;base64,${item.profile_image}` }
+              ? { uri: item.profile_image }
               : images.doctor_default
           }
           style={styles.image}

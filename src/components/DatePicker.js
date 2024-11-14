@@ -66,7 +66,7 @@ const DatePicker = ({
               setMessage={setMessage}
               setSelectedDay={(val) => {
                 onChange(val);
-                console.log("dp: ", val);
+                // console.log("dp: ", val);
               }}
               selectedDay={value}
               theme="dark"

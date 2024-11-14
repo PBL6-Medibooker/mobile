@@ -19,14 +19,14 @@ export const UploadImage = async () => {
     });
 
     if (!result.canceled) {
-      console.log(result.assets[0]);
+      // console.log(result.assets[0]);
       return result.assets[0]; // Trả về hình ảnh đã chọn
     } else {
       console.log("User cancelled image picker.");
       return null;
     }
   } catch (error) {
-    console.log("Error while picking the image:", error);
+    console.error("Error while picking the image:", error);
     return null;
   }
 };
@@ -47,14 +47,14 @@ export const UploadPDF = async () => {
     });
 
     if (!result.canceled && result.assets) {
-      console.log("Selected PDF file:", result);
+      // console.log("Selected PDF file:", result);
       return result.assets[0];
     } else if (result.canceled) {
       Alert.alert("Thông báo", "Người dùng đã hủy chọn tệp PDF.");
       return null;
     }
   } catch (error) {
-    console.log("Error while picking the PDF file:", error);
+    console.error("Error while picking the PDF file:", error);
     Alert.alert("Thông báo", "Đã xảy ra lỗi khi chọn tệp PDF.");
     return null;
   } finally {

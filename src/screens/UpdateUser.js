@@ -24,7 +24,7 @@ const UpdateUser = ({ navigation }) => {
   const handleUploadImage = async () => {
     const image = await UploadImage();
     if (image) {
-      console.log("image selected", image);
+      // console.log("image selected", image);
       setUriAvatar(image.uri);
     }
   };

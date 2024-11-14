@@ -163,11 +163,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderColor: COLORS.silver,
     borderWidth: 0.5,
-    padding: 5,
     borderRadius: 5,
   },
   textInput: {
     flex: 1,
+    marginVertical: 1,
+    height: 35
   },
   btnSearch: {
     marginHorizontal: 8,

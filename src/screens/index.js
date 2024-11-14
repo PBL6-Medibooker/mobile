@@ -11,7 +11,7 @@ import DoctorInfo from "./DoctorInfo";
 import Doctors from "./Doctors";
 import Logout from "./Logout";
 import Forum from "./Forum";
-import QADetail from "./QADetail";
+import QADetail from "./PostDetail";
 import UpdateUser from "./UpdateUser";
 import Myappointment from "./Myappointment";
 import Privacy from "./Privacy";

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
 import { COLORS, images } from "../constants";
 import HeaderBack from "../components/HeaderBack";
 import { AntDesign } from "@expo/vector-icons";
@@ -11,88 +11,127 @@ import {
 import { useAuth } from "../AuthProvider";
 
 const AppointmentDetail = ({ navigation, route }) => {
-  const { doctor, specialty, region, appoinment } = route.params;
+  const { doctor, appoinment } = route.params;
   const { accountInfo } = useAuth();
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderBack navigation={navigation} />
+      <ScrollView>
+        <HeaderBack navigation={navigation} />
 
-      {/* Thông tin bác sĩ */}
-      <View style={styles.doctorInfoContainer}>
-        <View style={styles.doctorCard}>
-          <Image
-            source={
-              doctor.profile_image
-                ? { uri: `data:image/png;base64,${doctor.profile_image}` }
-                : images.doctor_default
-            }
-            style={styles.doctorImage}
-          />
-          <View style={styles.doctorDetails}>
-            <Text style={styles.doctorName}>{doctor.username}</Text>
-            <Text style={styles.specialty}>{specialty.name}</Text>
+        {/* Thông tin bác sĩ */}
+        <View style={styles.doctorInfoContainer}>
+          <View style={styles.doctorCard}>
+            <Image
+              source={
+                doctor.profile_image
+                  ? { uri: doctor.profile_image }
+                  : images.doctor_default
+              }
+              style={styles.doctorImage}
+            />
+            <View style={styles.doctorDetails}>
+              <Text style={styles.doctorName}>{doctor.username}</Text>
+              <Text style={styles.specialty}>
+                {doctor?.speciality_id?.name} khu vực {doctor?.region_id?.name}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Thông tin cuộc hẹn */}
-      <View style={styles.appointmentInfo}>
-        <View style={styles.dateContainer}>
-          <Text style={styles.dateText}>
-            {formatAppoinmentDateToNTN(appoinment.appointment_day)}
-          </Text>
-          <Text style={styles.timeText}>
-            {formatAppoinmentDateToDayOfWeek(appoinment.appointment_day)},{" "}
-            {appoinment.appointment_time_start} -{" "}
-            {appoinment.appointment_time_end}
-          </Text>
+        {/* Thông tin cuộc hẹn */}
+        <View style={styles.appointmentInfo}>
+          <View style={styles.dateContainer}>
+            <Text style={styles.dateText}>
+              {formatAppoinmentDateToNTN(appoinment.appointment_day)}
+            </Text>
+            <Text style={styles.timeText}>
+              {formatAppoinmentDateToDayOfWeek(appoinment.appointment_day)},{" "}
+              {appoinment.appointment_time_start} -{" "}
+              {appoinment.appointment_time_end}
+            </Text>
+          </View>
+          <View style={styles.iconsContainer}>
+            <AntDesign
+              name="checkcircle"
+              size={24}
+              color={COLORS.PersianGreen}
+            />
+            <AntDesign
+              name="calendar"
+              size={24}
+              color={COLORS.PersianGreen}
+              style={styles.iconSpacing}
+            />
+          </View>
         </View>
-        <View style={styles.iconsContainer}>
-          <AntDesign name="checkcircle" size={24} color={COLORS.PersianGreen} />
-          <AntDesign
-            name="calendar"
-            size={24}
-            color={COLORS.PersianGreen}
-            style={styles.iconSpacing}
-          />
-        </View>
-      </View>
 
-      {/* Thông tin cá nhân */}
-      <View style={styles.personalInfoContainer}>
-        <Text style={styles.infoTitle}>Thông tin cá nhân</Text>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Họ và Tên</Text>
-          <Text style={styles.infoValue}>{accountInfo.username}</Text>
+        {/* Thông tin cá nhân */}
+        <View style={styles.personalInfoContainer}>
+          <Text style={styles.infoTitle}>Thông tin cá nhân</Text>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Họ và Tên</Text>
+            <Text style={styles.infoValue}>{accountInfo.username}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Email</Text>
+            <Text style={styles.infoValue}>{accountInfo.email}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Số điện thoại</Text>
+            <Text style={styles.infoValue}>{accountInfo.phone}</Text>
+          </View>
         </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Email</Text>
-          <Text style={styles.infoValue}>{accountInfo.email}</Text>
-        </View>
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Số điện thoại</Text>
-          <Text style={styles.infoValue}>{accountInfo.phone}</Text>
-        </View>
-      </View>
 
-      {/* Tiền sử bệnh lý */}
-      {accountInfo.underlying_condition !== "none" && (
-        <View style={styles.problemContainer}>
-          <Text style={styles.infoTitle}>Tiền sử bệnh lý</Text>
-          <Text style={styles.problemText}>
-            - {accountInfo.underlying_condition}
-          </Text>
-        </View>
-      )}
+        {/* Thông tin bảo hiểm */}
+        {appoinment?.insurance?.length > 0 && (
+          <View style={styles.personalInfoContainer}>
+            <Text style={styles.infoTitle}>Bảo hiểm</Text>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Tên bảo hiểm:</Text>
+              <Text style={styles.infoValue}>
+                {appoinment.insurance[0].name}
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Số:</Text>
+              <Text style={styles.infoValue}>
+                {appoinment.insurance[0].number}
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Địa chỉ</Text>
+              <Text style={styles.infoValue}>
+                {appoinment.insurance[0].location}
+              </Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Ngày hết hạn</Text>
+              <Text style={styles.infoValue}>
+                {appoinment.insurance[0].exp_date}
+              </Text>
+            </View>
+          </View>
+        )}
 
-      {/* Tình trạng sức khỏe */}
-      {appoinment?.health_issue && (
-        <View style={styles.problemContainer}>
-          <Text style={styles.infoTitle}>Tình trạng sức khỏe</Text>
-          <Text style={styles.problemText}>- {appoinment.health_issue}</Text>
-        </View>
-      )}
+        {/* Tiền sử bệnh lý */}
+        {accountInfo.underlying_condition !== "none" && (
+          <View style={styles.problemContainer}>
+            <Text style={styles.infoTitle}>Tiền sử bệnh lý</Text>
+            <Text style={styles.problemText}>
+              - {accountInfo.underlying_condition}
+            </Text>
+          </View>
+        )}
+
+        {/* Tình trạng sức khỏe */}
+        {appoinment?.health_issue && (
+          <View style={styles.problemContainer}>
+            <Text style={styles.infoTitle}>Tình trạng sức khỏe</Text>
+            <Text style={styles.problemText}>- {appoinment.health_issue}</Text>
+          </View>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -138,6 +177,7 @@ const styles = StyleSheet.create({
   specialty: {
     fontSize: 16,
     color: COLORS.black,
+    marginRight: 50,
   },
   appointmentInfo: {
     flexDirection: "row",

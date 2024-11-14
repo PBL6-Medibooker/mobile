@@ -24,7 +24,7 @@ const UserProfile = ({ navigation }) => {
   const handleUploadImage = async () => {
     const image = await UploadImage();
     if (image) {
-      console.log("image selected", image);
+      // console.log("image selected", image);
       setUriAvatar(image.uri);
     }
 
@@ -54,7 +54,7 @@ const UserProfile = ({ navigation }) => {
                   ? { uri: uriAvatar }
                   : accountInfo?.profile_image
                   ? {
-                      uri: `data:image/png;base64,${accountInfo.profile_image}`,
+                      uri: accountInfo.profile_image,
                     }
                   : images.user_default
               }

@@ -48,7 +48,7 @@ const VerifyBooking = ({ navigation, route }) => {
         insurance
       );
       if (add_appointment?.status) {
-        console.log(add_appointment?.status);
+        // console.log(add_appointment?.status);
         Alert.alert("Thông báo", "Đặt lịch hẹn thành công.", [
           {
             text: "OK",
@@ -77,7 +77,7 @@ const VerifyBooking = ({ navigation, route }) => {
             <Image
               source={
                 doctor.profile_image
-                  ? { uri: `data:image/png;base64,${doctor.profile_image}` }
+                  ? { uri: doctor.profile_image }
                   : images.doctor_default
               }
               style={styles.doctorImage}

@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Account_API from "./API/Account_API";
+import client from "./API/client";
+import { tr } from "date-fns/locale";
 
 const AuthContext = createContext();
 
@@ -8,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [storedToken, setStoredToken] = useState(null);
   const [accountInfo, setAccountInfo] = useState(null);
+  const [loginPending, setLoginPending] = useState(false); //loading
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -32,6 +35,7 @@ export const AuthProvider = ({ children }) => {
             return;
           }
           const accountData = await Account_API.get_Account_By_Email(myEmail);
+          // console.log("acc login: ", accountData);
           setAccountInfo(accountData);
         } catch (error) {
           console.error("Failed to fetch account info: ", error);
@@ -41,6 +45,31 @@ export const AuthProvider = ({ children }) => {
 
     fetchAccountInfo();
   }, [isLoggedIn]);
+
+  // const fetchUser = async () => {
+  //   setLoginPending(true);
+  //   const token = await AsyncStorage.getItem("userToken");
+  //   if (token !== null) {
+  //     const res = await client.get("acc/get-acc", {
+  //       headers: {
+  //         Authorization: `JWT ${token}`,
+  //       },
+  //     });
+
+  //     if (res.data) {
+  //       setAccountInfo(res.data);
+  //       setIsLoggedIn(true);
+  //     } else {
+  //       setAccountInfo(null);
+  //       setIsLoggedIn(false);
+  //     }
+  //     setLoginPending(false);
+  //   } else {
+  //     setAccountInfo(null);
+  //     setIsLoggedIn(false);
+  //     setLoginPending(false);
+  //   }
+  // };
 
   const login = async (token) => {
     try {

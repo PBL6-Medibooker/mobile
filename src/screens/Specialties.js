@@ -1,15 +1,28 @@
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, images } from "../constants";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { HeaderBack } from "../components";
 import useSpecialities from "../hooks/useSpecialities";
+import Speciality_API from "../API/Speciality_API";
+import { useFocusEffect } from "@react-navigation/native";
 
 // Hàm thêm các item trống nếu không chia hết cho numColumns
 const formatData = (data, numColumns) => {
   const numberOfFullRows = Math.floor(data.length / numColumns);
   let numberOfElementsLastRow = data.length - numberOfFullRows * numColumns;
-  while (numberOfElementsLastRow !== 0 && numberOfElementsLastRow !== numColumns) {
+  while (
+    numberOfElementsLastRow !== 0 &&
+    numberOfElementsLastRow !== numColumns
+  ) {
     data.push({ empty: true }); // Thêm item trống
     numberOfElementsLastRow++;
   }
@@ -18,7 +31,26 @@ const formatData = (data, numColumns) => {
 
 const Specialty = ({ navigation }) => {
   const [specialties, setSpecialties] = useState({});
-  const [specialitiesHook, , loading] = useSpecialities(); // Loading từ hook
+  const [specialitiesHook, ,] = useSpecialities(); // Loading từ hook
+  const [specialtyList, setSpecialtyList] = useState([]);
+  const [loading, setloading] = useState(false);
+
+  const getSpecialtyList = async () => {
+    try {
+      setloading(true);
+      const allSpecialities = await Speciality_API.get_Speciality_List();
+      setSpecialtyList(allSpecialities);
+      setloading(false)
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getSpecialtyList();
+    }, [])
+  );
 
   // Xử lý hiển thị nếu đang tải
   if (loading) {
@@ -34,25 +66,33 @@ const Specialty = ({ navigation }) => {
       <FlatList
         style={styles.list}
         showsVerticalScrollIndicator={false}
-        data={formatData(specialitiesHook, 2)} // Sử dụng hàm formatData
+        data={formatData(specialtyList, 2)} // Sử dụng hàm formatData
         numColumns={2}
         keyExtractor={(item) => item._id?.toString()}
         renderItem={({ item }) => {
           if (item.empty) {
-            return <View style={[styles.itemSpecialty, styles.invisibleItem]} />;
+            return (
+              <View style={[styles.itemSpecialty, styles.invisibleItem]} />
+            );
           }
           return (
             <TouchableOpacity
-              onPress={() => navigation.navigate("BottomTabNavigation", { specialty: item })}
+              onPress={() =>
+                navigation.navigate("BottomTabNavigation", { specialty: item })
+              }
               style={styles.itemSpecialty}>
               {item.speciality_image ? (
                 <Image
-                  source={{ uri: `data:image/png;base64,${item.speciality_image}` }}
+                  source={{ uri: item.speciality_image }}
                   style={styles.imageSpecialty}
                   resizeMode="cover"
                 />
               ) : (
-                <Image source={images.logo} style={styles.imageSpecialty} resizeMode="contain" />
+                <Image
+                  source={images.logo}
+                  style={styles.imageSpecialty}
+                  resizeMode="contain"
+                />
               )}
               <Text style={styles.text}>{item.name}</Text>
             </TouchableOpacity>

@@ -45,7 +45,7 @@ const AddPost = ({ navigation }) => {
     }
 
     isError(false);
-    console.log(accountInfo.email, postTitle, postContent, specialty.name);
+    // console.log(accountInfo.email, postTitle, postContent, specialty.name);
     const res = await Post_API.add_New_Post(
       accountInfo.email,
       postTitle,
@@ -54,7 +54,7 @@ const AddPost = ({ navigation }) => {
     );
 
     if (typeof res === "object") {
-      console.log(res);
+      // console.log(res);
       Alert.alert("Thông báo", "Đặt câu hỏi cho chuyên gia thành công.", [
         {
           text: "OK",

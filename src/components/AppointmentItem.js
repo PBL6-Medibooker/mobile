@@ -1,30 +1,33 @@
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Account_API from "../API/Account_API";
 import { COLORS, images } from "../constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Speciality_API from "../API/Speciality_API";
 import Region_API from "../API/Region_API";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, parse } from "date-fns";
 import { vi } from "date-fns/locale";
-import { convertAppointmentDate } from "../utils/ConvertDate";
+import {
+  convertAppointmentDate,
+  parseAppointmentEndDate,
+} from "../utils/ConvertDate";
+import Appointment_API from "../API/Appointment_API";
 
 const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
   const [doctor, setDoctor] = useState({});
-  const [specialty, setSpecialty] = useState({});
-  const [region, setRegion] = useState({});
 
   useEffect(() => {
     const getDoctorById = async () => {
       try {
         const doctor = await Account_API.get_Account_By_Id(item.doctor_id);
         setDoctor(doctor);
-        const speciality = await Speciality_API.get_Speciality_By_Id(
-          doctor.speciality_id
-        );
-        setSpecialty(speciality);
-        const region = await Region_API.get_Region_By_Id(doctor.region_id);
-        setRegion(region);
       } catch (error) {
         console.error(error);
       }
@@ -33,29 +36,121 @@ const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
     getDoctorById();
   }, [item]);
 
-  const handleCancelAppointment = async () => {
+  const checkHour = (appointment) => {
+    const now = new Date();
+    const datePart = appointment.appointment_day.split(" ").slice(1).join(" ");
+    const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
+
+    if (
+      parsedDate.getDate() === now.getDate() &&
+      parsedDate.getMonth() === now.getMonth() &&
+      parsedDate.getFullYear() === now.getFullYear()
+    ) {
+      const [hour, minute] = appointment.appointment_time_start
+        .split(":")
+        .map(Number);
+
+      if (now.getHours() >= hour) return true;
+    }
+
+    return false;
+  };
+
+  const restoreAppointment = async (appointment) => {
     try {
-      
+      const restore = await Appointment_API.restore_Appointment(
+        appointment._id
+      );
+      if (typeof restore === "object") {
+        Alert.alert("Thông báo", "Khôi phục lịch hẹn thành công.", [
+          {
+            text: "OK",
+            onPress: () => {
+              navigation.navigate("BookingHistory", {
+                refresh: `restore ${appointment._id}`,
+              });
+            },
+          },
+        ]);
+      }
     } catch (error) {
       console.error(error);
     }
-  }
+  };
+
+  const handleRestoreAppointment = () => {
+    Alert.alert("", "Bạn chắc chắn muốn khôi phục cuộc hẹn này?", [
+      { text: "No", style: "cancel" },
+      {
+        text: "Yes",
+        onPress: () => {
+          restoreAppointment(item);
+        },
+      },
+    ]);
+  };
+
+  const cancelAppointment = async (appointmentId) => {
+    try {
+      const cancel = await Appointment_API.soft_delete_Appointment(
+        appointmentId
+      );
+      if (typeof cancel === "object") {
+        Alert.alert("Thông báo", "Huỷ lịch hẹn thành công.", [
+          {
+            text: "OK",
+            onPress: () => {
+              navigation.navigate("BookingHistory", {
+                refresh: `cancel ${appointmentId}`,
+              });
+            },
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCancelAppointment = () => {
+    Alert.alert("", "Bạn chắc chắn muốn huỷ cuộc hẹn này?", [
+      { text: "No", style: "cancel" },
+      {
+        text: "Yes",
+        onPress: async () => {
+          await cancelAppointment(item._id);
+        },
+      },
+    ]);
+  };
+
+  const handleMakeAnAppointment = async () => {
+    const doctorToSend = {
+      ...doctor,
+      name: doctor.username,
+    };
+    navigation.navigate("DoctorInfo", {
+      doctorSelected: doctorToSend,
+    });
+  };
 
   return (
     <View style={styles.container} key={appointmentKey}>
       <View style={styles.doctorContainer}>
-        <Image
-          source={
-            doctor.profile_image
-              ? { uri: `data:image/png;base64,${doctor.profile_image}` }
-              : images.doctor_default
-          }
-          style={styles.doctorImage}
-        />
+        <View style={styles.doctorImageContainer}>
+          <Image
+            source={
+              doctor.profile_image
+                ? { uri: doctor.profile_image }
+                : images.doctor_default
+            }
+            style={styles.doctorImage}
+          />
+        </View>
         <View style={styles.doctorInfo}>
           <Text style={styles.doctorName}>{doctor.username}</Text>
           <Text style={styles.doctorSpecialty}>
-            {specialty.name} khu vực {region.name}
+            {doctor?.speciality_id?.name} khu vực {doctor?.region_id?.name}
           </Text>
         </View>
         <View style={styles.buttonContainer}>
@@ -64,8 +159,6 @@ const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
             onPress={() =>
               navigation.navigate("AppointmentDetail", {
                 doctor: doctor,
-                specialty: specialty,
-                region: region,
                 appoinment: item,
               })
             }>
@@ -75,15 +168,7 @@ const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
           {filter !== "Upcoming" && (
             <TouchableOpacity
               style={styles.iconButton}
-              onPress={() => {
-                const doctorToSend = {
-                  ...doctor,
-                  name: doctor.username,
-                };
-                navigation.navigate("DoctorInfo", {
-                  doctorSelected: doctorToSend,
-                });
-              }}>
+              onPress={() => handleMakeAnAppointment()}>
               <AntDesign style={styles.iconStyle} name="calendar" size={24} />
             </TouchableOpacity>
           )}
@@ -101,15 +186,7 @@ const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
           )}
         </View>
       </View>
-      <View
-        style={{
-          height: 1.5,
-          backgroundColor: COLORS.Light20PersianGreen,
-          marginVertical: 5,
-          borderRadius: 999,
-          marginHorizontal: 15,
-        }}
-      />
+      <View style={styles.separator} />
       <View style={styles.infoRow}>
         <Text style={styles.infoItem}>Lịch khám:</Text>
         <Text style={styles.infoItem}>
@@ -128,6 +205,19 @@ const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
           })}
         </Text>
       </View>
+      {filter === "Cancelled" && parseAppointmentEndDate(item) > new Date() && (
+        <TouchableOpacity
+          onPress={() => handleRestoreAppointment()}
+          style={styles.restoreButton}>
+          <Text style={{ color: COLORS.white }}>Khôi phục</Text>
+        </TouchableOpacity>
+      )}
+
+      {filter === "Upcoming" && checkHour(item) && (
+        <View style={styles.restoreButton}>
+          <Text style={{ color: COLORS.white }}>Đang diễn ra</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -151,10 +241,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  doctorImageContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: COLORS.Light20PersianGreen,
+  },
   doctorImage: {
     width: 50,
     height: 50,
-    borderRadius: 25,
+    borderRadius: 10,
+    resizeMode: 'cover'
   },
   doctorInfo: {
     flex: 1,
@@ -184,5 +282,20 @@ const styles = StyleSheet.create({
   infoItem: {
     fontSize: 14,
     color: COLORS.gray,
+  },
+  restoreButton: {
+    alignSelf: "flex-end",
+    paddingVertical: 3,
+    paddingHorizontal: 6,
+    backgroundColor: COLORS.PersianGreen,
+    borderRadius: 5,
+    marginTop: 5,
+  },
+  separator: {
+    height: 1.5,
+    backgroundColor: COLORS.Light20PersianGreen,
+    marginVertical: 5,
+    borderRadius: 999,
+    marginHorizontal: 15,
   },
 });

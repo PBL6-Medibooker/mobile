@@ -27,7 +27,7 @@ const HeaderHome = ({ title, navigation }) => {
         <Image
           source={
             accountInfo?.profile_image
-              ? { uri: `data:image/png;base64,${accountInfo.profile_image}` }
+              ? { uri: accountInfo.profile_image }
               : images.user_default
           }
           style={styles.image}

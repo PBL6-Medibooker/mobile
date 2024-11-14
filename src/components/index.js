@@ -12,6 +12,7 @@ import InputPassword from "./InputPassword";
 import BottomSheet from "./BottomSheet";
 // import QandAItem from "./QandAItem";
 import AppointmentItem from "./AppointmentItem";
+import PostAnswerItem from "./PostAnswerItem";
 
 export {
   ArticleItem,
@@ -27,5 +28,6 @@ export {
   InputPassword,
   BottomSheet,
   AppointmentItem,
+  PostAnswerItem
   // QandAItem,
 };

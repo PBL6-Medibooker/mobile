@@ -18,7 +18,7 @@ const get_Speciality_List = async () => {
 
 const get_Speciality_By_Id = async (id) => {
   try {
-    const specialities = await get_Speciality_List();
+    const specialities = await get_Speciality_List(); // `/special/get-speciality/${id}`
     return specialities.find((item) => item._id === id);
   } catch (error) {
     console.error(error);

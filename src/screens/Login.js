@@ -45,7 +45,7 @@ const Login = ({ navigation }) => {
             onPress: async () => {
               login(res.token);
               await AsyncStorage.setItem("myEmail", res.email);
-              console.log(res);
+              // console.log(res);
 
               navigation.navigate("Home");
             },

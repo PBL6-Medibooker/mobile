@@ -13,8 +13,20 @@ const get_All_Post = async () => {
     return data;
   } catch (error) {
     if (error.response)
-      console.log("Error response: ", error.response.data.error);
-    else console.log("Error not response: ", error.message);
+      console.error("Error response: ", error.response.data.error);
+    else console.error("Error not response: ", error.message);
+    return null;
+  }
+};
+
+const get_Post_By_Id = async (id) => {
+  try {
+    const res = await client.get(`/post/get-post/${id}`);
+    return res.data;
+  } catch (error) {
+    if (error.response)
+      console.error("Error response: ", error.response.data.error);
+    else console.error("Error not response: ", error.message);
     return null;
   }
 };
@@ -58,8 +70,8 @@ const add_New_Post = async (
     return res.data;
   } catch (error) {
     if (error.response)
-      console.log("Error response: ", error.response.data.error);
-    else console.log("Error not response: ", error.message);
+      console.error("Error response: ", error.response.data.error);
+    else console.error("Error not response: ", error.message);
     return null;
   }
 };
@@ -74,9 +86,74 @@ const add_Comment = async (postId, comment_email, comment_content) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.log("Error response: ", error.response.data.error);
-    else console.log("Error not response: ", error.message);
+      console.error("Error response: ", error.response.data.error);
+    else console.error("Error not response: ", error.message);
     return null;
+  }
+};
+
+const update_Comment = async (comment_content, comment_id, post_id) => {
+  try {
+    const res = await client.post(
+      `post/${post_id}/comment/${comment_id}/update`,
+      {
+        comment_content: comment_content,
+      }
+    );
+    // console.log(res.data);
+    return res.data
+  } catch (error) {
+    if (error.response)
+      console.error("Error response: ", error.response.data.error);
+    else console.error("Error not response: ", error.message);
+    return null;
+  }
+};
+
+const search_Post = async (search_query) => {
+  try {
+    const res = await client.post("/post/search-post", {
+      search_query: search_query,
+    });
+    const data = res.data;
+    if (data && Array.isArray(data)) {
+      const sort = data
+        .slice()
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      return sort;
+    }
+    return data;
+  } catch (error) {
+    if (error.response)
+      console.error("Error response: ", error.response.data.error);
+    else console.error("Error not response: ", error.message);
+    return null;
+  }
+};
+
+const search_Post_By_Specialty_Sort = async (
+  search_query,
+  specialty,
+  sortBy
+) => {
+  try {
+    const posts = await search_Post(search_query);
+    const filterPosts = specialty
+      ? posts.filter((item) => item.speciality_id._id === specialty._id)
+      : posts;
+    if (Array.isArray(filterPosts)) {
+      const sortPosts = filterPosts.slice().sort((a, b) => {
+        if (sortBy === "A-Z") {
+          return a.post_title.localeCompare(b.post_title);
+        } else if (sortBy === "Z-A") {
+          return b.post_title.localeCompare(a.post_title);
+        }
+        return 0;
+      });
+      return sortPosts;
+    } else return [];
+  } catch (error) {
+    console.error(error);
   }
 };
 
@@ -85,4 +162,8 @@ export default {
   add_New_Post,
   add_Comment,
   get_Post_By_Specialty_Sort,
+  search_Post,
+  search_Post_By_Specialty_Sort,
+  get_Post_By_Id,
+  update_Comment,
 };

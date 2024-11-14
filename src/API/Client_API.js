@@ -3,7 +3,7 @@ import client from "./client";
 const get_Client_By_User_Id = async (userID) => {
   try {
     const res = await client.get(`/client/get-client-by-userid/${userID}`);
-    console.log("response: ", res.data);
+    // console.log("response: ", res.data);
     return res.data;
   } catch (error) {
     if (error.response) {

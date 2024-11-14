@@ -13,9 +13,9 @@ import {
   View,
 } from "react-native";
 import { COLORS, images } from "../constants";
-import useSpecialities from "../hooks/useSpecialities";
-import useRegions from "../hooks/useRegions";
 import { useAuth } from "../AuthProvider";
+import Speciality_API from "../API/Speciality_API";
+import Region_API from "../API/Region_API";
 
 const DoctorInfo = ({ navigation, route }) => {
   const { doctorSelected } = route.params || {};
@@ -31,34 +31,26 @@ const DoctorInfo = ({ navigation, route }) => {
   });
 
   const [message, setMessage] = useState(null);
+  const [loading, setloading] = useState(false);
 
-  const [specialitiesHook, get_Specialty_By_ID, loading] = useSpecialities();
-  const [regionsHook, get_Region_By_ID] = useRegions();
-
-  const { isLoggedIn } = useAuth();
+  // const { isLoggedIn } = useAuth();
 
   useEffect(() => {
-    const getSpecialtyById = async () => {
-      const specialtyById = await get_Specialty_By_ID(
-        specialitiesHook,
+    const getSpecialtyAndRegionById = async () => {
+      setloading(true);
+      const specialtyById = await Speciality_API.get_Speciality_By_Id(
         doctorSelected.speciality_id
       );
-      // console.log(specialtyById);
       setSpecialty(specialtyById);
-    };
-
-    const getRegionById = async () => {
-      const regionById = await get_Region_By_ID(
-        regionsHook,
+      const regionById = await Region_API.get_Region_By_Id(
         doctorSelected.region_id
       );
-      // console.log(regionById);
       setArea(regionById);
+      setloading(false);
     };
 
-    getSpecialtyById();
-    getRegionById();
-  }, [specialitiesHook]);
+    getSpecialtyAndRegionById();
+  }, []);
 
   const handleSetDate = () => {
     if (selectedDay.time !== null) {
@@ -98,7 +90,7 @@ const DoctorInfo = ({ navigation, route }) => {
               source={
                 doctorSelected.profile_image
                   ? {
-                      uri: `data:image/png;base64,${doctorSelected.profile_image}`,
+                      uri: doctorSelected.profile_image,
                     }
                   : images.doctor_default
               }

@@ -14,41 +14,62 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import useAccount from "../hooks/useAccount";
 import { useCallback, useEffect, useRef, useState } from "react";
 import useRegions from "../hooks/useRegions";
+import Account_API from "../API/Account_API";
+import { useFocusEffect } from "@react-navigation/native";
+import Speciality_API from "../API/Speciality_API";
+import Region_API from "../API/Region_API";
 
 const SpecialtyDetail = ({ specialty, navigation }) => {
-  const [doctorsHook, getDoctorsBySpecialty, get_Account_By_Id, loading, error] = useAccount();
-  const [regionsHook] = useRegions();
+  const [loading, setloading] = useState(false);
   const [doctorList, setDoctorList] = useState([]);
+  const [regionList, setRegionList] = useState([]);
+
+  const getRegionList = async () => {
+    try {
+      const allRegions = await Region_API.get_Region_List();
+      setRegionList(allRegions);
+      const initialDoctors = await fetchDoctorList();
+      setDoctorList(initialDoctors);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getRegionList();
+    }, [])
+  );
 
   const fetchDoctorList = useCallback(
     async (region = null) => {
       try {
-        // console.log("Fetching data for region:", region);
-        const doctorsBySpecialty = await getDoctorsBySpecialty(
-          doctorsHook,
-          specialty,
-          region
+        setloading(true);
+        const doctorsBySpecialty = await Account_API.get_Filter_Doctor_List(
+          specialty.name,
+          region?.name || null
         );
+        setloading(false);
         return Array.isArray(doctorsBySpecialty) ? doctorsBySpecialty : [];
       } catch (fetchError) {
         console.error("Error fetching doctor list:", fetchError);
         return [];
       }
     },
-    [specialty, doctorsHook]
+    [specialty]
   );
 
-  useEffect(() => {
-    const loadDoctors = async () => {
-      try {
-        const initialDoctors = await fetchDoctorList();
-        setDoctorList(initialDoctors);
-      } catch (error) {
-        console.error("Error loading initial doctor list:", error);
-      }
-    };
-    loadDoctors();
-  }, [fetchDoctorList]);
+  // useEffect(() => {
+  //   const loadDoctors = async () => {
+  //     try {
+  //       const initialDoctors = await fetchDoctorList();
+  //       setDoctorList(initialDoctors);
+  //     } catch (error) {
+  //       console.error("Error loading initial doctor list:", error);
+  //     }
+  //   };
+  //   loadDoctors();
+  // }, [fetchDoctorList]);
 
   const refRBSheet = useRef();
 
@@ -61,22 +82,14 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
     );
   }
 
-  if (error) {
-    return (
-      <View>
-        <Text style={{ color: "red" }}>{error}</Text>
-      </View>
-    );
-  }
-
   const handleSpecialityChange = async (region, specialty, sortBy) => {
     try {
       const filteredDoctors = await fetchDoctorList(region);
       const sortedDoctors = filteredDoctors.slice().sort((a, b) => {
         if (sortBy === "A-Z") {
-          return a.name.localeCompare(b.name);
+          return a.username.localeCompare(b.username);
         } else if (sortBy === "Z-A") {
-          return b.name.localeCompare(a.name);
+          return b.username.localeCompare(a.username);
         }
         return 0;
       });
@@ -121,9 +134,13 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
           data={doctorList}
           keyExtractor={(item) => item._id}
           ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-          renderItem={({ item }) => (
-            <DoctorItem item={item} navigation={navigation} />
-          )}
+          renderItem={({ item }) => {
+            const doctorToSend = {
+              ...item,
+              name: item.username,
+            };
+            return <DoctorItem item={doctorToSend} navigation={navigation} />;
+          }}
         />
       ) : (
         <Text>Không tìm thấy bác sĩ nào</Text> // Thêm thông báo nếu không có dữ liệu
@@ -132,7 +149,7 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
       <BottomSheet
         bottomSheetRef={refRBSheet}
         onSelected={handleSpecialityChange}
-        regionList={regionsHook}
+        regionList={regionList}
         height={330}
       />
     </SafeAreaView>
@@ -169,11 +186,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderColor: COLORS.silver,
     borderWidth: 0.5,
-    padding: 5,
     borderRadius: 5,
   },
   textInput: {
     flex: 1,
+    marginVertical: 1,
+    height: 35
   },
   btnSearch: {
     marginHorizontal: 8,

@@ -1,5 +1,5 @@
 import client from "./client";
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from "expo-file-system";
 
 const userSignup = async (user) => {
   try {
@@ -65,9 +65,7 @@ const get_Account_By_Email = async (email) => {
 
 const get_Account_By_Id = async (id) => {
   try {
-    // const mongoose = require('mongoose');
-    // const cleanedId = mongoose.Types.ObjectId(id);
-    const res = await client.get(`/acc/get-acc/${id}`);
+    const res = await client.post(`/acc/get-acc/${id}`);
     return res.data;
   } catch (error) {
     if (error.response) {
@@ -80,51 +78,21 @@ const get_Account_By_Id = async (id) => {
   }
 };
 
-const updateAccountInfo = async (
-  id,
-  username,
-  phone,
-  underlying_condition,
-  image
-) => {
+const get_Filter_Doctor_List = async (specialty, region) => {
   try {
-    const formData = new FormData();
-
-    // Thêm thông tin người dùng vào FormData
-    if (username) formData.append("username", username);
-    if (phone) formData.append("phone", phone);
-    if (underlying_condition)
-      formData.append("underlying_condition", underlying_condition);
-
-    // Nếu có ảnh, chuyển ảnh sang định dạng Blob để upload
-    if (image && image.uri) {
-      const fileUri = image.uri;
-      const fileName = image.fileName || "profile_image.jpeg";
-
-      // Lấy nội dung file từ URI
-      const file = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      // Tạo Blob từ file base64
-      const blob = new Blob([Buffer.from(file, "base64")], {
-        type: image.mimeType,
-      });
-
-      // Thêm ảnh vào FormData
-      formData.append("profile_image", blob, fileName);
-    }
-
-    // Gửi request lên server
-    const response = await axios.post(`/acc/update-acc-info/${id}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    console.log("Cập nhật thành công:", response.data);
+    const params = {
+      speciality: specialty,
+      region: region,
+    };
+    const res = await client.post("/acc/filter-doctor-list", params);
+    const data = res.data.filter((item) => !item.is_deleted);
+    return data;
   } catch (error) {
-    console.error("Lỗi khi cập nhật thông tin tài khoản:", error);
+    if (error.response) {
+      return error.response.data.error;
+    } else {
+      return error.message;
+    }
   }
 };
 
@@ -134,5 +102,5 @@ export default {
   get_Doctor_List,
   get_Account_By_Email,
   get_Account_By_Id,
-  updateAccountInfo
+  get_Filter_Doctor_List,
 };

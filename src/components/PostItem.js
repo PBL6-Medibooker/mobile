@@ -23,41 +23,37 @@ const QandAItem = ({ item, navigation }) => {
   const [isReplied, setIsReplied] = useState(false);
   const [comment, setComment] = useState(null);
 
-  const [doctorsHook, getDoctorsBySpecialtyAndRegion, loading] = useAccount();
   const { accountInfo } = useAuth();
-  const [postItem, setPostItem] = useState(item);
+  // const [postItem, setPostItem] = useState(item);
 
   const [replier, setReplier] = useState(null);
 
-  useEffect(() => {
-    const getReplierNameById = async () => {
-      if (postItem.post_comments && postItem.post_comments.length > 0) {
-        const replierRes = await Account_API.get_Account_By_Id(
-          postItem.post_comments[0]?.replier
-        );
-        setReplier(replierRes);
-      }
-    };
-    getReplierNameById();
-  }, [postItem]);
+  // useEffect(() => {
+  //   const getReplierNameById = async () => {
+  //     if (item.post_comments && item.post_comments.length > 0) {
+  //       const replierRes = await Account_API.get_Account_By_Id(
+  //         item.post_comments[0]?.replier
+  //       );
+  //       setReplier(replierRes);
+  //     }
+  //   };
+  //   getReplierNameById();
+  // }, [item]);
 
   const toggleShowFullText = () => {
-    navigation.navigate("QADetail", { QA: postItem, replier: replier });
+    navigation.navigate("QADetail", { QA: item });
   };
 
   const handleSendAnswer = async () => {
     try {
-      console.log(postItem._id, accountInfo.email, comment);
-
       const res = await Post_API.add_Comment(
-        postItem._id,
+        item._id,
         accountInfo.email,
         comment
       );
       console.log(res);
       if (typeof res === "object") {
-        console.log("success");
-        setPostItem(res);
+        navigation.navigate("Forum", { refresh: item._id });
         setIsViewAnswer(true);
         setIsReplied(false);
       }
@@ -69,27 +65,27 @@ const QandAItem = ({ item, navigation }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.question} onPress={toggleShowFullText}>
-        <Text style={styles.title}>{postItem?.post_title}</Text>
+        <Text style={styles.title}>{item?.post_title}</Text>
         <View style={styles.userInfo}>
           <AntDesign name="message1" size={18} color={COLORS.PersianGreen} />
-          <Text style={styles.userName}>{postItem?.user_id?.email}</Text>
+          <Text style={styles.userName}>{item?.user_id?.email}</Text>
         </View>
         <View style={styles.specialty}>
           <Text style={{ fontSize: 12 }}>
-            #{postItem?.speciality_id?.name?.replace(/\s/g, "")}
+            #{item?.speciality_id?.name?.replace(/\s/g, "")}
           </Text>
         </View>
         <Text style={styles.createdDate}>
-          {formatDistanceToNow(new Date(postItem.createdAt), {
+          {formatDistanceToNow(new Date(item.createdAt), {
             addSuffix: true,
             locale: vi,
           })}
         </Text>
         <Text style={styles.content} numberOfLines={7}>
-          {postItem?.post_content}
+          {item?.post_content}
         </Text>
 
-        {postItem?.post_comments?.length > 0 && (
+        {item?.post_comments?.length > 0 && (
           <Pressable
             onPress={() => {
               setIsViewAnswer(!isViewAnswer);
@@ -99,16 +95,15 @@ const QandAItem = ({ item, navigation }) => {
           </Pressable>
         )}
 
-        {postItem?.post_comments?.length === 0 &&
-          accountInfo?.__t === "Doctor" && (
-            <Pressable
-              onPress={() => {
-                setIsReplied(!isReplied);
-              }}
-              style={{ alignSelf: "flex-end" }}>
-              <Text style={styles.viewText}>Trả lời</Text>
-            </Pressable>
-          )}
+        {item?.post_comments?.length === 0 && (
+          <Pressable
+            onPress={() => {
+              setIsReplied(!isReplied);
+            }}
+            style={{ alignSelf: "flex-end" }}>
+            <Text style={styles.viewText}>Trả lời</Text>
+          </Pressable>
+        )}
       </TouchableOpacity>
 
       {isReplied && (
@@ -127,31 +122,33 @@ const QandAItem = ({ item, navigation }) => {
         </View>
       )}
 
-      {isViewAnswer && postItem?.post_comments?.length > 0 && (
+      {isViewAnswer && item?.post_comments?.length > 0 && (
         <View style={styles.answer}>
           <View style={styles.doctorInfo}>
             <Pressable>
               <Image
                 source={
-                  replier?.profile_image
-                    ? { uri: `data:image/png;base64,${replier?.profile_image}` }
-                    : images.doctor_default
+                  item?.post_comments[0]?.replier?.__t
+                    ? images.doctor_default
+                    : images.user_default
                 }
                 style={styles.image}
               />
             </Pressable>
             <View style={styles.doctorProfile}>
               <Pressable>
-                <Text>{replier?.username || "Bác sĩ"}</Text>
+                <Text>
+                  {item?.post_comments[0]?.replier?.username || "Bác sĩ"}
+                </Text>
               </Pressable>
-              <Text>Bác sĩ</Text>
+              {item?.post_comments[0]?.replier?.__t && <Text>Bác sĩ</Text>}
             </View>
           </View>
           <Text numberOfLines={4} style={styles.content}>
-            {postItem?.post_comments[0].comment_content}
+            {item?.post_comments[0].comment_content}
           </Text>
 
-          {postItem?.post_comments[0].comment_content.length > 100 && (
+          {item?.post_comments[0].comment_content.length > 100 && (
             <TouchableOpacity
               onPress={toggleShowFullText}
               style={{ alignSelf: "flex-start" }}>
@@ -275,11 +272,11 @@ const styles = StyleSheet.create({
   },
   createdDate: {
     fontSize: 12,
-    textAlign: 'right',
+    textAlign: "right",
     borderTopWidth: 1.5,
     borderColor: COLORS.Light20PersianGreen,
     paddingTop: 5,
     marginTop: 5,
-    color: COLORS.gray
-  }
+    color: COLORS.gray,
+  },
 });

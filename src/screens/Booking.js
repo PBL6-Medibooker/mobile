@@ -158,15 +158,15 @@ const Booking = ({ navigation, route }) => {
   };
 
   const handleSelectedFull = () => {
-    console.log(
-      area,
-      service,
-      specialty,
-      doctor,
-      medicalHistory,
-      healthStatus,
-      datePicker
-    );
+    // console.log(
+    //   area,
+    //   service,
+    //   specialty,
+    //   doctor,
+    //   medicalHistory,
+    //   healthStatus,
+    //   datePicker
+    // );
     const info = {
       region: area,
       specialty: specialty,

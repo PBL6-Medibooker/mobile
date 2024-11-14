@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Appointment_API from "../API/Appointment_API";
 import { useAuth } from "../AuthProvider";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
 import { AppointmentItem } from "../components";
 
 const Myappointment = ({ navigation }) => {
@@ -23,26 +23,28 @@ const Myappointment = ({ navigation }) => {
   const [appoinmentsComplete, setAppoinmentsComplete] = useState([]);
   const [appoinmentsCanceled, setAppoinmentsCanceled] = useState([]);
 
+  const route = useRoute();
+
+  const getAppointments = async () => {
+    try {
+      const appointments = await Appointment_API.get_Appointment_By_Status(
+        accountInfo._id
+      );
+      
+      setAppoinmentsCanceled(appointments?.cancelled);
+      setAppoinmentsComplete(appointments?.complete);
+      setAppoinmentsUpcoming(appointments?.upcoming);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách cuộc hẹn:", error);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      const getAppointments = async () => {
-        try {
-          const appointments = await Appointment_API.get_Appointment_By_Status(
-            accountInfo._id
-          );
-
-          setAppoinmentsCanceled(appointments.cancelled);
-          setAppoinmentsComplete(appointments.complete);
-          setAppoinmentsUpcoming(appointments.upcoming);
-        } catch (error) {
-          console.error("Lỗi khi lấy danh sách cuộc hẹn:", error);
-        }
-      };
-
       if (accountInfo && accountInfo._id) {
         getAppointments();
       }
-    }, [accountInfo])
+    }, [accountInfo, route.params?.refresh])
   );
 
   return (
@@ -97,7 +99,7 @@ const Myappointment = ({ navigation }) => {
 
       <ScrollView contentContainerStyle={styles.mainContainer}>
         {selectedFilter === "Cancelled" &&
-          appoinmentsCanceled.map((appointment) => (
+          appoinmentsCanceled?.map((appointment) => (
             <AppointmentItem
               key={appointment._id}
               appointmentKey={appointment._id}
@@ -107,7 +109,7 @@ const Myappointment = ({ navigation }) => {
             />
           ))}
         {selectedFilter === "Complete" &&
-          appoinmentsComplete.map((appointment) => (
+          appoinmentsComplete?.map((appointment) => (
             <AppointmentItem
               key={appointment._id}
               appointmentKey={appointment._id}
@@ -117,7 +119,7 @@ const Myappointment = ({ navigation }) => {
             />
           ))}
         {selectedFilter === "Upcoming" &&
-          appoinmentsUpcoming.map((appointment) => (
+          appoinmentsUpcoming?.map((appointment) => (
             <AppointmentItem
               key={appointment._id}
               appointmentKey={appointment._id}

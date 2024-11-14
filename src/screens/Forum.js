@@ -12,12 +12,12 @@ import { BottomSheet, HeaderBack } from "../components";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import useSpecialities from "../hooks/useSpecialities";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useAuth } from "../AuthProvider";
-import QandAItem from "../components/QandAItem";
-import { useFocusEffect } from "@react-navigation/native";
+import QandAItem from "../components/PostItem";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Post_API from "../API/Post_API";
 
 const Forum = ({ navigation }) => {
@@ -26,24 +26,29 @@ const Forum = ({ navigation }) => {
   const [specialitiesHook] = useSpecialities();
   const [postList, setPostList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
+  // const [refreshing, setRefreshing] = useState(false);
+
+  const [specialty, setSpecialty] = useState(null);
+  const [sortBy, setSortBy] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(null);
 
   const refRBSheet = useRef();
   const refScroll = useRef();
+
+  const route = useRoute();
 
   const getPosts = async () => {
     try {
       setLoading(true);
       const allPosts = await Post_API.get_All_Post();
-      // console.log(allPosts);
       setPostList([]);
       setPostList(allPosts);
       setLoading(false);
 
       // Scroll to top when data is refreshed
-      if (refScroll.current) {
-        refScroll.current.scrollToIndex({ index: 0, animated: true });
-      }
+      // if (refScroll.current) {
+      //   refScroll.current.scrollToIndex({ index: 0, animated: true });
+      // }
     } catch (error) {
       console.error(error);
       setLoading(false);
@@ -56,12 +61,51 @@ const Forum = ({ navigation }) => {
     }, [])
   );
 
+  const updatePostByID = async (id) => {
+    try {
+      const updatedPost = await Post_API.get_Post_By_Id(id);
+      if (updatedPost) {
+        setPostList((prevList) =>
+          prevList.map((post) =>
+            post._id === id ? updatedPost : post
+          )
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (route.params?.refresh) {
+      updatePostByID(route.params?.refresh)
+    }
+  }, [route.params?.refresh]);
+
   const handleSpecialityChange = async (region, specialty, sortBy) => {
     const filterPosts = await Post_API.get_Post_By_Specialty_Sort(
       specialty,
       sortBy
     );
     setPostList(filterPosts);
+    setSpecialty(specialty);
+    setSortBy(sortBy);
+    setSearchQuery(null);
+  };
+
+  const handleSearch = async (search_query) => {
+    setSearchQuery(search_query);
+    try {
+      const searchPosts = await Post_API.search_Post_By_Specialty_Sort(
+        search_query,
+        specialty,
+        sortBy
+      );
+      // console.log(searchPosts);
+      setPostList(searchPosts);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleAddPost = () => {
@@ -72,11 +116,11 @@ const Forum = ({ navigation }) => {
     }
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await getPosts();
-    setRefreshing(false);
-  };
+  // const onRefresh = async () => {
+  //   setRefreshing(true);
+  //   await getPosts();
+  //   setRefreshing(false);
+  // };
 
   const renderQandAItem = useCallback(
     ({ item }) => <QandAItem item={item} navigation={navigation} />,
@@ -95,7 +139,15 @@ const Forum = ({ navigation }) => {
             color={COLORS.silver}
             style={styles.btnSearch}
           />
-          <TextInput style={styles.textInput} placeholder="Search" />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Search"
+            value={searchQuery}
+            onChangeText={(query) => handleSearch(query)}
+            clearButtonMode="always"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
         </View>
 
         <TouchableOpacity
@@ -115,9 +167,11 @@ const Forum = ({ navigation }) => {
           renderItem={renderQandAItem}
           ListHeaderComponent={<View style={{ height: 10 }} />}
           ListFooterComponent={<View style={{ height: 15 }} />}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
+          maxToRenderPerBatch={5}
+          initialNumToRender={5}
+          // refreshControl={
+          //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          // }
         />
       ) : (
         <Text>Không có bài post nào</Text>
@@ -164,11 +218,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderColor: COLORS.silver,
     borderWidth: 0.5,
-    padding: 5,
     borderRadius: 5,
   },
   textInput: {
     flex: 1,
+    marginVertical: 1,
+    height: 35
   },
   btnSearch: {
     marginHorizontal: 8,

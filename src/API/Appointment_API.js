@@ -1,5 +1,8 @@
-import { parse } from "date-fns";
 import client from "./client";
+import {
+  parseAppointmentEndDate,
+  parseAppointmentStartDate,
+} from "../utils/ConvertDate";
 
 const add_Appointment = async (
   user_id,
@@ -36,9 +39,9 @@ const add_Appointment = async (
     return { status: "appointment", data: response.data };
   } catch (error) {
     if (error.response) {
-      console.log("Error response: ", error.response.data.error);
+      console.error("Error response: ", error.response.data.error);
     } else {
-      console.log("Error not response: ", error.message);
+      console.error("Error not response: ", error.message);
     }
     return null;
   }
@@ -46,7 +49,7 @@ const add_Appointment = async (
 
 const get_All_Appointment = async (user_id) => {
   try {
-    const response = await client.get("/appointment/get-all-client");
+    const response = await client.get("/appointment/get-all-appointment");
     const appointments = response.data;
     if (appointments && Array.isArray(appointments) && user_id) {
       const filteredAppointments = appointments.filter(
@@ -57,9 +60,9 @@ const get_All_Appointment = async (user_id) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.log("Error response: ", error.response.data.error);
+      console.error("Error response: ", error.response.data.error);
     } else {
-      console.log("Error not response: ", error.message);
+      console.error("Error not response: ", error.message);
     }
     return null;
   }
@@ -68,54 +71,74 @@ const get_All_Appointment = async (user_id) => {
 const get_Appointment_By_Status = async (user_id) => {
   try {
     const currentDate = new Date();
-    const response = await client.get("/appointment/get-all-client");
+    const response = await client.post("/appointment/get-all-appointment");
     const appointments = response.data;
+
     if (appointments && Array.isArray(appointments) && user_id) {
       const filteredAppointments = appointments.filter(
         (item) => item.user_id === user_id && item.is_deleted === false
       );
 
-      const upcoming = filteredAppointments.filter((appointment) => {
-        const datePart = appointment.appointment_day
-          .split(" ")
-          .slice(1)
-          .join(" ");
-        const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
-        return parsedDate > currentDate;
-      });
+      // Common sorting logic
+      const sortAppointments = (a, b) => {
+        const parsedDateA = parseAppointmentStartDate(a);
+        const parsedDateB = parseAppointmentStartDate(b);
+        return parsedDateA - parsedDateB;
+      };
 
-      const complete = filteredAppointments.filter((appointment) => {
-        const datePart = appointment.appointment_day
-          .split(" ")
-          .slice(1)
-          .join(" ");
-        const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
-        return parsedDate < currentDate;
-      });
+      const upcoming = [...filteredAppointments]
+        .filter(
+          (appointment) => parseAppointmentEndDate(appointment) > currentDate
+        )
+        .sort(sortAppointments);
 
-      const cancelled = appointments.filter(
-        (item) => item.user_id === user_id && item.is_deleted === true
-      );
+      const complete = [...filteredAppointments]
+        .filter(
+          (appointment) => parseAppointmentEndDate(appointment) < currentDate
+        )
+        .sort(sortAppointments);
+
+      const cancelled = [...appointments]
+        .filter((item) => item.user_id === user_id && item.is_deleted === true)
+        .sort(sortAppointments);
+        
       return { upcoming: upcoming, complete: complete, cancelled: cancelled };
     }
     return appointments;
   } catch (error) {
     if (error.response) {
-      console.log("Error response: ", error.response.data.error);
+      console.error("Error response: ", error.response.data.error);
     } else {
-      console.log("Error not response: ", error.message);
+      console.error("Error not response: ", error.message);
     }
     return null;
   }
 };
 
-const delete_Appointment = async (appointmentId) => {
+const soft_delete_Appointment = async (appointmentId) => {
   try {
-    const response = await client.get("/appointment/get-all-client");
+    const response = await client.post(
+      `/appointment/soft-delete-appointment/${appointmentId}`
+    );
+    return response.data;
   } catch (error) {
     if (error.response)
-      console.log("Error response: ", error.response.data.error);
-    else console.log("Error not response: ", error.message);
+      console.error("Error response: ", error.response.data.error);
+    else console.error("Error not response: ", error.message);
+    return null;
+  }
+};
+
+const restore_Appointment = async (appointmentId) => {
+  try {
+    const response = await client.post(
+      `/appointment/restore-appointment/${appointmentId}`
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response)
+      console.error("Error response: ", error.response.data.error);
+    else console.error("Error not response: ", error.message);
     return null;
   }
 };
@@ -124,4 +147,6 @@ export default {
   add_Appointment,
   get_All_Appointment,
   get_Appointment_By_Status,
+  restore_Appointment,
+  soft_delete_Appointment,
 };

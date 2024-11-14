@@ -84,9 +84,9 @@ const Register = ({ navigation }) => {
 
   const reqSignup = async () => {
     try {
-      if (specialtyDoctor) console.log("spec:", specialtyDoctor.value);
+      // if (specialtyDoctor) console.log("spec:", specialtyDoctor.value);
 
-      console.log(account);
+      // console.log(account);
 
       const res = await Account_API.userSignup(account);
 
