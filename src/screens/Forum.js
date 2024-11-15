@@ -12,7 +12,13 @@ import { BottomSheet, HeaderBack } from "../components";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import useSpecialities from "../hooks/useSpecialities";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useAuth } from "../AuthProvider";
@@ -66,9 +72,7 @@ const Forum = ({ navigation }) => {
       const updatedPost = await Post_API.get_Post_By_Id(id);
       if (updatedPost) {
         setPostList((prevList) =>
-          prevList.map((post) =>
-            post._id === id ? updatedPost : post
-          )
+          prevList.map((post) => (post._id === id ? updatedPost : post))
         );
       }
     } catch (error) {
@@ -78,7 +82,7 @@ const Forum = ({ navigation }) => {
 
   useEffect(() => {
     if (route.params?.refresh) {
-      updatePostByID(route.params?.refresh)
+      updatePostByID(route.params?.refresh);
     }
   }, [route.params?.refresh]);
 
@@ -127,6 +131,14 @@ const Forum = ({ navigation }) => {
     [navigation]
   );
 
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack navigation={navigation} title="Forum" />
@@ -174,7 +186,7 @@ const Forum = ({ navigation }) => {
           // }
         />
       ) : (
-        <Text>Không có bài post nào</Text>
+        <Text style={{marginHorizontal: 10, marginTop: 5}}>Không có bài post nào</Text>
       )}
 
       {!accountInfo?.__t && (
@@ -219,11 +231,11 @@ const styles = StyleSheet.create({
     borderColor: COLORS.silver,
     borderWidth: 0.5,
     borderRadius: 5,
+    height: 38
   },
   textInput: {
     flex: 1,
-    marginVertical: 1,
-    height: 35
+    paddingBottom: 8,
   },
   btnSearch: {
     marginHorizontal: 8,

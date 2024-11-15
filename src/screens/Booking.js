@@ -45,6 +45,7 @@ const Booking = ({ navigation, route }) => {
   const [regionsHook] = useRegions();
   const [doctorsHook, getDoctorsBySpecialtyAndRegion] = useAccount();
   const [doctors, setDoctors] = useState(null);
+  const [activeHours, setActiveHours] = useState({});
 
   const [openedDropdown, setOpenedDropdown] = useState(null);
 
@@ -66,10 +67,12 @@ const Booking = ({ navigation, route }) => {
           specialty?.name,
           area?.name
         );
-        const doctorsBySpecialtyAndRegion = doctors.map(({ username, ...rest }) => ({
-          name: username,
-          ...rest,
-        }))
+        const doctorsBySpecialtyAndRegion = doctors.map(
+          ({ username, ...rest }) => ({
+            name: username,
+            ...rest,
+          })
+        );
         setDoctors(doctorsBySpecialtyAndRegion);
       }
     };
@@ -85,10 +88,10 @@ const Booking = ({ navigation, route }) => {
     ) {
       // Đảm bảo dữ liệu đã tải xong
       const selectedRegion = regionsHook.find(
-        (item) => item._id === doctorSelected.region_id
+        (item) => item._id === doctorSelected.region_id._id
       );
       const selectedSpecialty = specialitiesHook.find(
-        (item) => item._id === doctorSelected.speciality_id
+        (item) => item._id === doctorSelected.speciality_id._id
       );
 
       if (selectedRegion && selectedSpecialty) {
@@ -98,6 +101,17 @@ const Booking = ({ navigation, route }) => {
       }
     }
   }, [doctorSelected, regionsHook, specialitiesHook]);
+
+  useEffect(() => {
+    const get_Doctor_Active_Hours = async () => {
+      const activeHours = await Account_API.get_Doctor_Active_Hour_List(
+        doctor._id
+      );
+      console.log(activeHours);
+      setActiveHours(activeHours)
+    };
+    get_Doctor_Active_Hours();
+  }, [doctor]);
 
   const handleFocus = (field) => {
     if (message === field) {
@@ -215,7 +229,7 @@ const Booking = ({ navigation, route }) => {
             <Text style={styles.text}>Chọn ngày - khung giờ khám</Text>
             <DatePicker
               value={datePicker}
-              schedule={doctor ? doctor.active_hours : null}
+              schedule={activeHours ? activeHours : null}
               onChange={setDatePicker}
               placeholder="Chọn ngày - khung giờ khám"
               disabled={!(area && specialty && doctor)}

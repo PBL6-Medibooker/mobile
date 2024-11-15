@@ -160,6 +160,7 @@ const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
               navigation.navigate("AppointmentDetail", {
                 doctor: doctor,
                 appoinment: item,
+                filter: filter,
               })
             }>
             <AntDesign style={styles.iconStyle} name="ellipsis1" size={24} />
@@ -252,7 +253,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 10,
-    resizeMode: 'cover'
+    resizeMode: "cover",
   },
   doctorInfo: {
     flex: 1,

@@ -26,10 +26,12 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
 
   const getRegionList = async () => {
     try {
+      setloading(true);
       const allRegions = await Region_API.get_Region_List();
       setRegionList(allRegions);
       const initialDoctors = await fetchDoctorList();
       setDoctorList(initialDoctors);
+      setloading(false);
     } catch (error) {
       console.error(error);
     }
@@ -41,31 +43,24 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
     }, [])
   );
 
-  const fetchDoctorList = useCallback(
-    async (region = null) => {
-      try {
-        setloading(true);
-        const doctorsBySpecialty = await Account_API.get_Filter_Doctor_List(
-          specialty.name,
-          region?.name || null
-        );
-        setloading(false);
-        return Array.isArray(doctorsBySpecialty) ? doctorsBySpecialty : [];
-      } catch (fetchError) {
-        console.error("Error fetching doctor list:", fetchError);
-        return [];
-      }
-    },
-    [specialty]
-  );
+  const fetchDoctorList = async (region) => {
+    try {
+      const doctorsBySpecialty = await Account_API.get_Filter_Doctor_List(
+        specialty?.name || null,
+        region?.name || null
+      );
+      return doctorsBySpecialty;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const refRBSheet = useRef();
 
   if (loading) {
     return (
-      <View style={{ flex: 1, alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#00ff00" />
-        <Text>Đang tải dữ liệu...</Text>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator size="large" color={COLORS.PersianGreen} />
       </View>
     );
   }
@@ -123,7 +118,9 @@ const SpecialtyDetail = ({ specialty, navigation }) => {
           }}
         />
       ) : (
-        <Text>Không tìm thấy bác sĩ nào</Text> // Thêm thông báo nếu không có dữ liệu
+        <Text style={{ marginHorizontal: 10, marginTop: 5 }}>
+          Không tìm thấy bác sĩ nào!
+        </Text> // Thêm thông báo nếu không có dữ liệu
       )}
 
       <BottomSheet
@@ -167,7 +164,7 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     marginVertical: 1,
-    height: 35
+    height: 35,
   },
   btnSearch: {
     marginHorizontal: 8,
@@ -184,6 +181,6 @@ const styles = StyleSheet.create({
   text: {
     color: COLORS.PersianGreen,
     fontSize: 16,
-    fontWeight: 'bold'
-  }
+    fontWeight: "bold",
+  },
 });

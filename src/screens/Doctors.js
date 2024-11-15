@@ -84,9 +84,8 @@ const Doctors = ({ navigation }) => {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#00ff00" />
-        <Text>Đang tải dữ liệu...</Text>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color={COLORS.PersianGreen} />
       </View>
     );
   }
@@ -128,7 +127,9 @@ const Doctors = ({ navigation }) => {
           ListHeaderComponent={<View style={{ height: 10 }} />}
         />
       ) : (
-        <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+        <Text style={{ marginHorizontal: 10, marginTop: 5 }}>
+          Không tìm thấy bác sĩ nào!
+        </Text>
       )}
 
       <BottomSheet

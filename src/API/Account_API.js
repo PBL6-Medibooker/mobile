@@ -96,6 +96,20 @@ const get_Filter_Doctor_List = async (specialty, region) => {
   }
 };
 
+const get_Doctor_Active_Hour_List = async (doctor_id) => {
+  try {
+    const res = await client.get(`/acc/active-hour-list/${doctor_id}`);
+    const data = res.data;
+    return data;
+  } catch (error) {
+    if (error.response) {
+      return error.response.data.error;
+    } else {
+      return error.message;
+    }
+  }
+};
+
 export default {
   userLogin,
   userSignup,
@@ -103,4 +117,5 @@ export default {
   get_Account_By_Email,
   get_Account_By_Id,
   get_Filter_Doctor_List,
+  get_Doctor_Active_Hour_List
 };

@@ -141,10 +141,15 @@ export const Articles = ({ navigation }) => {
             ListFooterComponent={<View style={{ height: 10 }} />}
           />
         ) : (
-          <Text>khoong cos data</Text>
+          <Text style={{ marginHorizontal: 10, marginTop: 5 }}>
+            Không có bài báo nào!
+          </Text>
         )
       ) : (
-        <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+        </View>
       )}
 
       <BottomSheet
@@ -184,11 +189,11 @@ const styles = StyleSheet.create({
     borderColor: COLORS.silver,
     borderWidth: 0.5,
     borderRadius: 5,
+    height: 38,
   },
   textInput: {
     flex: 1,
-    marginVertical: 1,
-    height: 35,
+    paddingBottom: 8,
   },
   btnSearch: {
     marginHorizontal: 8,

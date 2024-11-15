@@ -40,7 +40,7 @@ const Specialty = ({ navigation }) => {
       setloading(true);
       const allSpecialities = await Speciality_API.get_Speciality_List();
       setSpecialtyList(allSpecialities);
-      setloading(false)
+      setloading(false);
     } catch (error) {
       console.error(error);
     }
@@ -146,5 +146,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: "center",
     color: COLORS.black,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

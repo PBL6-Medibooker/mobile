@@ -160,6 +160,7 @@ const DoctorAppointmentItem = ({
                   navigation.navigate("DoctorAppointmentDetail", {
                     user: user,
                     appoinment: item,
+                    filter: filter
                   })
                 }>
                 <AntDesign

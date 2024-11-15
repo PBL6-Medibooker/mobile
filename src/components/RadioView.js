@@ -12,17 +12,23 @@ const RadioView = ({
     <View style={styles.radioContainer}>
       {options.map((option, index) => (
         <TouchableOpacity
+          disabled={option.status === "unavailable"}
           key={option.value}
           style={[
             styles.radioButton,
             selectedOption &&
               selectedOption.value === option.value &&
               styles.selectedButton,
-            index !== options.length - 1 && { marginBottom: 8 }, // Bo góc cho item cuối
+            index !== options.length - 1 && { marginBottom: 8 },
+            option?.status === "unavailable" && {
+              backgroundColor: COLORS.gray,
+            },
           ]}
           onPress={() => {
-            onSelect(option);
-            if (setMessage) setMessage(null);
+            if (option.status === "available") {
+              onSelect(option);
+              if (setMessage) setMessage(null);
+            }
           }}>
           <Text
             style={[
@@ -31,6 +37,7 @@ const RadioView = ({
               selectedOption &&
                 selectedOption.value === option.value &&
                 styles.selectedText,
+              option?.status === "unavailable" && { color: COLORS.black },
             ]}>
             {option.label}
           </Text>

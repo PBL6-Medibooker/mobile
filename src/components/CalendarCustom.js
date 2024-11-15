@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import moment from "moment";
 import { useAuth } from "../AuthProvider";
 import { parse } from "date-fns";
+import { formatToDDMMYYYY } from "../utils/ConvertDate";
 
 const darkTheme = {
   calendarBackground: COLORS.black,
@@ -46,19 +47,24 @@ const CalendarCustom = ({
     const currentDate = moment();
     const endOfMonth = moment().add(1, "month");
 
-    while (currentDate.isBefore(endOfMonth)) {
-      const currentDayOfWeek = currentDate.format("dddd");
+    // Kiểm tra xem schedule.active_hours có tồn tại và là mảng không
+    if (Array.isArray(schedule.active_hours)) {
+      while (currentDate.isBefore(endOfMonth)) {
+        const currentDayOfWeek = currentDate.format("dddd");
 
-      schedule.forEach((appointment) => {
-        if (appointment.day === currentDayOfWeek) {
-          marked[currentDate.format("YYYY-MM-DD")] = {
-            marked: true,
-            dotColor: COLORS.PersianGreen,
-          };
-        }
-      });
+        schedule.active_hours.forEach((appointment) => {
+          if (appointment.day === currentDayOfWeek) {
+            marked[currentDate.format("YYYY-MM-DD")] = {
+              marked: true,
+              dotColor: COLORS.PersianGreen,
+            };
+          }
+        });
 
-      currentDate.add(1, "day");
+        currentDate.add(1, "day");
+      }
+    } else {
+      console.error("schedule.active_hours is not an array or is missing");
     }
 
     setMarkedDates(marked);
@@ -90,19 +96,40 @@ const CalendarCustom = ({
     return true;
   };
 
+  const checkAppointmentLimit = () => {
+    const now = new Date();
+    const datePart = formatToDDMMYYYY(selectedDay.date);
+    const date = `${selectedDay.dayOfWeek} ${datePart}`;
+
+    // Kiểm tra xem fully_booked có tồn tại và là mảng không
+    if (Array.isArray(schedule.fully_booked)) {
+      const filter = schedule.fully_booked.filter((item) => item.date === date);
+      console.log(filter);
+
+      return filter.length > 0;
+    } else {
+      console.error("schedule.fully_booked is not an array or is missing");
+      return false; // Trả về false nếu dữ liệu không hợp lệ
+    }
+  };
+
   const activeHours = () => {
-    const hours = schedule
+    const appointmentLimitReached = checkAppointmentLimit();
+    const hours = schedule.active_hours
       .filter(
         (item) =>
-          item.hour_type === "appointment" &&
-          item.day === selectedDay.dayOfWeek &&
-          checkHour(item)
+          item.hour_type === "appointment" && item.day === selectedDay.dayOfWeek
       )
       .map((item) => ({
         value: item._id,
         label: `${item.start_time} - ${item.end_time}`,
         start_time: item.start_time,
         end_time: item.end_time,
+        status: appointmentLimitReached
+          ? "unavailable"
+          : checkHour(item)
+          ? "available"
+          : "unavailable", // Thêm status
       }));
     return hours;
   };
@@ -124,7 +151,9 @@ const CalendarCustom = ({
               ...selectedDay,
               dayOfWeek: dayOfWeek,
               date: date.dateString,
+              time: null,
             });
+
             if (setMessage) setMessage(null);
           } else {
             setMessage("* Không có lịch khám bệnh cho ngày này");
@@ -169,22 +198,22 @@ const CalendarCustom = ({
           ]}>
           Chọn khung giờ khám
         </Text>
-        <View  style={{}}>
-        {selectedDay.date !== null ? (
-          <RadioView
-            options={activeHours()} // Gọi hàm activeHours
-            selectedOption={selectedDay.time}
-            onSelect={(val) => {
-              if (isLoggedIn) {
-                setSelectedDay({ ...selectedDay, time: val });
-              } else navigation.navigate("Login");
-            }}
-            textColor={theme === "light" ? COLORS.black : COLORS.white}
-            setMessage={setMessage}
-          />
-        ) : (
-          <Text style={styles.textMessage}>Vui lòng chọn ngày trước</Text>
-        )}
+        <View style={{}}>
+          {selectedDay.date !== null ? (
+            <RadioView
+              options={activeHours()} // Gọi hàm activeHours
+              selectedOption={selectedDay.time}
+              onSelect={(val) => {
+                if (isLoggedIn) {
+                  setSelectedDay({ ...selectedDay, time: val });
+                } else navigation.navigate("Login");
+              }}
+              textColor={theme === "light" ? COLORS.black : COLORS.white}
+              setMessage={setMessage}
+            />
+          ) : (
+            <Text style={styles.textMessage}>Vui lòng chọn ngày trước</Text>
+          )}
         </View>
       </View>
     </View>

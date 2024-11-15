@@ -17,6 +17,7 @@ import { useAuth } from "../AuthProvider";
 import Speciality_API from "../API/Speciality_API";
 import Region_API from "../API/Region_API";
 import { useFocusEffect } from "@react-navigation/native";
+import Account_API from "../API/Account_API";
 
 const DoctorInfo = ({ navigation, route }) => {
   const { doctorSelected } = route.params || {};
@@ -24,6 +25,8 @@ const DoctorInfo = ({ navigation, route }) => {
   const [area, setArea] = useState(null);
   const [specialty, setSpecialty] = useState(null);
   const [healthStatus, setHealthStatus] = useState(null);
+  
+  const [activeHours, setActiveHours] = useState({});
 
   const [selectedDay, setSelectedDay] = useState({
     date: null,
@@ -36,16 +39,35 @@ const DoctorInfo = ({ navigation, route }) => {
 
   // const { isLoggedIn } = useAuth();
 
+  // useEffect(() => {
+  //   const get_Doctor_Active_Hours = async () => {
+  //     const activeHours = await Account_API.get_Doctor_Active_Hour_List(
+  //       doctor._id
+  //     );
+  //     console.log(activeHours);
+  //   };
+  //   get_Doctor_Active_Hours();
+  // }, [doctorSelected]);
+
   const getSpecialtyAndRegionById = async () => {
     setloading(true);
     const specialtyById = await Speciality_API.get_Speciality_By_Id(
-      doctorSelected?.speciality_id?._id ? doctorSelected.speciality_id._id : doctorSelected.speciality_id
+      doctorSelected?.speciality_id?._id
+        ? doctorSelected.speciality_id._id
+        : doctorSelected.speciality_id
     );
     setSpecialty(specialtyById);
     const regionById = await Region_API.get_Region_By_Id(
-      doctorSelected?.region_id?._id ? doctorSelected.region_id._id : doctorSelected.region_id
+      doctorSelected?.region_id?._id
+        ? doctorSelected.region_id._id
+        : doctorSelected.region_id
     );
     setArea(regionById);
+    const activeHours = await Account_API.get_Doctor_Active_Hour_List(
+      doctorSelected._id
+    );
+    console.log(activeHours);
+    setActiveHours(activeHours)
     setloading(false);
   };
 
@@ -124,7 +146,7 @@ const DoctorInfo = ({ navigation, route }) => {
 
           <CalendarCustom
             navigation={navigation}
-            schedule={doctorSelected.active_hours}
+            schedule={activeHours ? activeHours : null}
             setMessage={setMessage}
             setSelectedDay={(val) => {
               setSelectedDay(val);

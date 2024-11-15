@@ -71,6 +71,7 @@ const useArticles = () => {
     fourArticles,
     loading,
     getArticlesBySpecialty,
+    getArticlesByDoctor
   ];
 };
 

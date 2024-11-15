@@ -25,6 +25,7 @@ const ViewArticle = ({ navigation, route }) => {
     firstArticle,
     fourArticles,
     loading,
+    getArticlesBySpecialty,
     getArticlesByDoctor,
   ] = useArticles();
 
@@ -70,33 +71,34 @@ const ViewArticle = ({ navigation, route }) => {
           horizontal
           showsHorizontalScrollIndicator={false}
           style={{ marginLeft: 15 }}>
-          {articlesByDoctor.map((post) => (
-            <View key={post._id}>
-              <TouchableOpacity
-                style={styles.suggestedPost}
-                onPress={() =>
-                  navigation.push("ViewArticle", { post: post })
-                }>
-                <Image
-                  source={images.poster}
-                  style={styles.imageSuggestedPost}
-                />
-                <Text style={styles.titleSuggestedPost} numberOfLines={2}>
-                  {post.article_title}
-                </Text>
-                <View style={styles.dateSuggestedPostContainer}>
-                  <FontAwesome5
-                    name="calendar-alt"
-                    size={15}
-                    color={COLORS.gray}
+          {articlesByDoctor.length > 0 &&
+            articlesByDoctor.map((post) => (
+              <View key={post._id}>
+                <TouchableOpacity
+                  style={styles.suggestedPost}
+                  onPress={() =>
+                    navigation.push("ViewArticle", { post: post })
+                  }>
+                  <Image
+                    source={images.poster}
+                    style={styles.imageSuggestedPost}
                   />
-                  <Text style={styles.dateSuggestedPost}>
-                    {post.date_published}
+                  <Text style={styles.titleSuggestedPost} numberOfLines={2}>
+                    {post.article_title}
                   </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          ))}
+                  <View style={styles.dateSuggestedPostContainer}>
+                    <FontAwesome5
+                      name="calendar-alt"
+                      size={15}
+                      color={COLORS.gray}
+                    />
+                    <Text style={styles.dateSuggestedPost}>
+                      {post.date_published}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            ))}
         </ScrollView>
 
         <View style={{ height: 50 }} />

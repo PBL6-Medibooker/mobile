@@ -82,34 +82,50 @@ const DoctorAppointmentDetail = ({ navigation, route }) => {
             <Text style={styles.infoLabel}>Số điện thoại</Text>
             <Text style={styles.infoValue}>{user.phone}</Text>
           </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Ngày sinh</Text>
+            <Text style={styles.infoValue}>
+              {new Date(user.date_of_birth).toLocaleDateString("vi-VN")}
+            </Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Địa chỉ</Text>
+            <Text style={styles.infoValue}>{user.address}</Text>
+          </View>
         </View>
 
         {/* Thông tin bảo hiểm */}
         {appoinment?.insurance?.length > 0 && (
           <View style={styles.personalInfoContainer}>
             <Text style={styles.infoTitle}>Bảo hiểm</Text>
-            <View style={{backgroundColor: COLORS.Concrete, padding: 10, borderRadius: 20}}>
+            <View
+              style={{
+                backgroundColor: COLORS.Concrete,
+                padding: 10,
+                borderRadius: 20,
+                elevation: 2,
+              }}>
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Tên bảo hiểm:</Text>
-                <Text style={styles.infoLabel}>
+                <Text style={styles.infoInsurance}>Tên bảo hiểm:</Text>
+                <Text style={styles.infoInsurance}>
                   {appoinment.insurance[0].name}
                 </Text>
               </View>
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Số:</Text>
-                <Text style={styles.infoLabel}>
+                <Text style={styles.infoInsurance}>Số:</Text>
+                <Text style={styles.infoInsurance}>
                   {appoinment.insurance[0].number}
                 </Text>
               </View>
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Địa chỉ</Text>
-                <Text style={styles.infoLabel}>
+                <Text style={styles.infoInsurance}>Địa chỉ</Text>
+                <Text style={styles.infoInsurance}>
                   {appoinment.insurance[0].location}
                 </Text>
               </View>
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Ngày hết hạn</Text>
-                <Text style={styles.infoLabel}>
+                <Text style={styles.infoInsurance}>Ngày hết hạn</Text>
+                <Text style={styles.infoInsurance}>
                   {appoinment.insurance[0].exp_date}
                 </Text>
               </View>
@@ -243,6 +259,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.black,
     lineHeight: 22,
+  },
+  infoInsurance: {
+    fontSize: 14,
+    color: COLORS.black,
   },
 });
 
