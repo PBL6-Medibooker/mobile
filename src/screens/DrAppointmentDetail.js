@@ -12,7 +12,7 @@ import { useAuth } from "../AuthProvider";
 
 const DoctorAppointmentDetail = ({ navigation, route }) => {
   const { user, appoinment } = route.params;
-  const { accountInfo } = useAuth();
+  const { account } = useAuth();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,17 +24,17 @@ const DoctorAppointmentDetail = ({ navigation, route }) => {
           <View style={styles.doctorCard}>
             <Image
               source={
-                accountInfo?.profile_image
-                  ? { uri: accountInfo?.profile_image }
+                account?.profile_image
+                  ? { uri: account?.profile_image }
                   : images.doctor_default
               }
               style={styles.doctorImage}
             />
             <View style={styles.doctorDetails}>
-              <Text style={styles.doctorName}>{accountInfo.username}</Text>
+              <Text style={styles.doctorName}>{account.username}</Text>
               <Text style={styles.specialty}>
-                {accountInfo?.speciality_id?.name} khu vực{" "}
-                {accountInfo?.region_id?.name}
+                {account?.speciality_id?.name} khu vực{" "}
+                {account?.region_id?.name}
               </Text>
             </View>
           </View>

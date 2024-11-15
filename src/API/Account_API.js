@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import client from "./client";
 import * as FileSystem from "expo-file-system";
 
@@ -19,7 +20,13 @@ const userLogin = async (user) => {
   try {
     const response = await client.post("/acc/login", user);
 
-    return response.data;
+    const data = response.data;
+    if (data?.token) {
+      // console.log(data);
+      await AsyncStorage.setItem("user", JSON.stringify(data));
+      await AsyncStorage.setItem("myEmail", data.email);
+    }
+    return data;
   } catch (error) {
     if (error.response) {
       return error.response.data.error;
@@ -117,5 +124,5 @@ export default {
   get_Account_By_Email,
   get_Account_By_Id,
   get_Filter_Doctor_List,
-  get_Doctor_Active_Hour_List
+  get_Doctor_Active_Hour_List,
 };

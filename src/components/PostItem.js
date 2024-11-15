@@ -23,7 +23,7 @@ const QandAItem = ({ item, navigation }) => {
   const [isReplied, setIsReplied] = useState(false);
   const [comment, setComment] = useState(null);
 
-  const { accountInfo } = useAuth();
+  const { account } = useAuth();
   // const [postItem, setPostItem] = useState(item);
 
   const [replier, setReplier] = useState(null);
@@ -48,7 +48,7 @@ const QandAItem = ({ item, navigation }) => {
     try {
       const res = await Post_API.add_Comment(
         item._id,
-        accountInfo.email,
+        account.email,
         comment
       );
       console.log(res);

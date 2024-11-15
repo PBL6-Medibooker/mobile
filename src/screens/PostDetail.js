@@ -23,7 +23,7 @@ import Post_API from "../API/Post_API";
 const QADetail = ({ navigation, route }) => {
   const { QA } = route.params || {};
 
-  const { accountInfo } = useAuth();
+  const { account } = useAuth();
 
   const [post, setPost] = useState(QA);
   const [myAnswer, setMyAnswer] = useState(null);
@@ -32,7 +32,7 @@ const QADetail = ({ navigation, route }) => {
     try {
       const res = await Post_API.add_Comment(
         post._id,
-        accountInfo.email,
+        account.email,
         myAnswer
       );
       console.log(res);
@@ -75,7 +75,7 @@ const QADetail = ({ navigation, route }) => {
           post.post_comments.map((item) => (
             <PostAnswerItem
               item={item}
-              myAccountEmail={accountInfo?.email}
+              myAccountEmail={account?.email}
               key={item._id}
               answerKey={item._id}
               post_id={post._id}

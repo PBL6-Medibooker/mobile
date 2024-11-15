@@ -17,7 +17,7 @@ import { DoctorAppointmentItem } from "../components";
 
 const DoctorAppointment = ({ navigation }) => {
   const [selectedFilter, setSelectedFilter] = useState("Upcoming");
-  const { accountInfo } = useAuth();
+  const { account } = useAuth();
 
   const [appoinmentsUpcoming, setAppoinmentsUpcoming] = useState([]);
   const [appoinmentsComplete, setAppoinmentsComplete] = useState([]);
@@ -28,7 +28,7 @@ const DoctorAppointment = ({ navigation }) => {
   const getAppointments = async () => {
     try {
       const appointments = await Appointment_API.get_Doctor_Appointment_By_Status(
-        accountInfo._id
+        account._id
       );
       
       setAppoinmentsCanceled(appointments?.cancelled);
@@ -41,10 +41,10 @@ const DoctorAppointment = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      if (accountInfo && accountInfo._id) {
+      if (account && account._id) {
         getAppointments();
       }
-    }, [accountInfo, route.params?.refresh])
+    }, [account, route.params?.refresh])
   );
 
   return (

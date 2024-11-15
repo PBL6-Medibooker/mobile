@@ -22,7 +22,7 @@ import { useAuth } from "../AuthProvider";
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigation = () => {
-  const { isLoggedIn, accountInfo } = useAuth();
+  const { isLoggedIn, account } = useAuth();
 
   return (
     <Drawer.Navigator
@@ -75,7 +75,7 @@ const DrawerNavigation = () => {
               <MaterialIcons name="calendar-month" size={24} color={color} />
             ),
           }}
-          component={accountInfo?.__t === "Doctor" ? DoctorAppointment: Myappointment}
+          component={account?.__t === "Doctor" ? DoctorAppointment: Myappointment}
         />
       )}
 

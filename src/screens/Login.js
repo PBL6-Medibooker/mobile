@@ -25,12 +25,12 @@ const Login = ({ navigation }) => {
     password: "",
   });
 
-  const { login } = useAuth();
+  const { userLogin, isLoggedIn } = useAuth();
 
   useEffect(() => {
     const getLoginHistory = async () => {
-      const mail = await AsyncStorage.getItem("myEmail");
-      setAccount({ ...account, email: mail });
+      const userString = await AsyncStorage.getItem("myEmail");
+      setAccount({ ...account, email: userString });
     };
     getLoginHistory();
   }, []);
@@ -43,10 +43,7 @@ const Login = ({ navigation }) => {
           {
             text: "OK",
             onPress: async () => {
-              login(res.token);
-              await AsyncStorage.setItem("myEmail", res.email);
-              // console.log(res);
-
+              userLogin();
               navigation.navigate("Home");
             },
           },

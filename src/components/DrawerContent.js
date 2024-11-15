@@ -6,8 +6,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const DrawerContent = ({ navigation, isLoggedIn }) => {
   const [myAccount, setMyAccount] = useState(null);
-  const { accountInfo } = useAuth();
-  // const [, , accountInfo] = useAccount();
+  const { account } = useAuth();
+  // const [, , account] = useAccount();
 
   const handleManagerAccount = () => {
     if (!isLoggedIn) {
@@ -22,8 +22,8 @@ const DrawerContent = ({ navigation, isLoggedIn }) => {
       <Pressable onPress={() => handleManagerAccount()}>
         <Image
           source={
-            accountInfo?.profile_image
-              ? { uri: accountInfo.profile_image }
+            account?.profile_image
+              ? { uri: account.profile_image }
               : images.user_default
           }
           style={styles.image}
@@ -35,15 +35,15 @@ const DrawerContent = ({ navigation, isLoggedIn }) => {
           fontWeight: "bold",
           fontSize: 16,
         }}>
-        {isLoggedIn && accountInfo ? accountInfo.username : "Khách"}
+        {isLoggedIn && account ? account.username : "Khách"}
       </Text>
-      {isLoggedIn && accountInfo && (
+      {isLoggedIn && account && (
         <Text style={{ color: COLORS.black, fontSize: 12 }}>
-          {accountInfo.email}
+          {account.email}
         </Text>
       )}
 
-      {isLoggedIn && accountInfo?.__t && (
+      {isLoggedIn && account?.__t && (
         <Text style={{ color: COLORS.black, fontSize: 12 }}>(Bác sĩ)</Text>
       )}
       {!isLoggedIn && (

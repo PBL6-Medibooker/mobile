@@ -17,7 +17,7 @@ import Post_API from "../API/Post_API";
 import { useAuth } from "../AuthProvider";
 
 const AddPost = ({ navigation }) => {
-  const { accountInfo } = useAuth();
+  const { account } = useAuth();
   const [specialitiesHook] = useSpecialities();
 
   const [specialty, setSpecialty] = useState(null);
@@ -45,9 +45,9 @@ const AddPost = ({ navigation }) => {
     }
 
     isError(false);
-    // console.log(accountInfo.email, postTitle, postContent, specialty.name);
+    // console.log(account.email, postTitle, postContent, specialty.name);
     const res = await Post_API.add_New_Post(
-      accountInfo.email,
+      account.email,
       postTitle,
       postContent,
       specialty.name

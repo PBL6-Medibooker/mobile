@@ -24,7 +24,7 @@ import {
 import Appointment_API from "../API/Appointment_API";
 
 const VerifyBooking = ({ navigation, route }) => {
-  const { accountInfo } = useAuth();
+  const { account } = useAuth();
   const [insurance, setInsurance] = useState({
     name: null,
     number: null,
@@ -38,7 +38,7 @@ const VerifyBooking = ({ navigation, route }) => {
   const handleRegister = async () => {
     try {
       const add_appointment = await Appointment_API.add_Appointment(
-        accountInfo._id,
+        account._id,
         doctor._id,
         `${time.dayOfWeek} ${formatToDDMMYYYY(time.date)}`,
         time.time.start_time,
@@ -120,7 +120,7 @@ const VerifyBooking = ({ navigation, route }) => {
           <Text style={styles.infoTitle}>Thông tin cá nhân</Text>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Họ và Tên</Text>
-            <Text style={styles.infoValue}>{accountInfo.username}</Text>
+            <Text style={styles.infoValue}>{account.username}</Text>
           </View>
           {/* <View style={styles.infoRow}>
           <Text style={styles.infoLabel}>Tuổi</Text>
@@ -132,11 +132,11 @@ const VerifyBooking = ({ navigation, route }) => {
         </View> */}
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Email</Text>
-            <Text style={styles.infoValue}>{accountInfo.email}</Text>
+            <Text style={styles.infoValue}>{account.email}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Số điện thoại</Text>
-            <Text style={styles.infoValue}>{accountInfo.phone}</Text>
+            <Text style={styles.infoValue}>{account.phone}</Text>
           </View>
         </View>
 
@@ -189,11 +189,11 @@ const VerifyBooking = ({ navigation, route }) => {
         </View>
 
         {/* Tiền sử bệnh lý */}
-        {accountInfo.underlying_condition !== "none" && (
+        {account.underlying_condition !== "none" && (
           <View style={styles.problemContainer}>
             <Text style={styles.infoTitle}>Tiền sử bệnh lý</Text>
             <Text style={styles.problemText}>
-              - {accountInfo.underlying_condition}
+              - {account.underlying_condition}
             </Text>
           </View>
         )}

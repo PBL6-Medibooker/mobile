@@ -15,10 +15,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const Logout = () => {
   const navigation = useNavigation();
-  const { logout } = useAuth();
+  const { userLogout } = useAuth();
 
   const handleLogout = () => {
-    logout();
+    userLogout();
     console.log("Đã đăng xuất");
     navigation.navigate("Login");
   };

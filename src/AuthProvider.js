@@ -8,20 +8,26 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [storedToken, setStoredToken] = useState(null);
-  const [accountInfo, setAccountInfo] = useState(null);
+  const [user, setUser] = useState({});
+  const [account, setAccount] = useState({});
+  const [error, setError] = useState(null);
   const [loginPending, setLoginPending] = useState(false); //loading
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = await AsyncStorage.getItem("userToken");
-      if (token) {
-        setStoredToken(token);
-        console.log(token);
-        setIsLoggedIn(true);
-      }
-    };
+  const fetchToken = async () => {
+    const userString = await AsyncStorage.getItem("user");
+    const user = JSON.parse(userString);
+    if (user?.token) {
+      setUser(user);
+      console.log(user?.email);
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+      setUser({});
+      setAccount({})
+    }
+  };
 
+  useEffect(() => {
     fetchToken();
   }, []);
 
@@ -29,18 +35,24 @@ export const AuthProvider = ({ children }) => {
     const fetchAccountInfo = async () => {
       if (isLoggedIn) {
         try {
-          const myEmail = await AsyncStorage.getItem("myEmail");
-          if (!myEmail) {
-            console.log("No email found in AsyncStorage.");
-            return;
+          const accountData = await Account_API.get_Account_By_Email(
+            user?.email
+          );
+          setAccount(accountData);
+          setError(null);
+          if (user?.verified === true) console.log("Doctor");
+          if (user?.verified === false) {
+            console.log("Doctor not verify");
+            setAccount({});
+            setIsLoggedIn(false);
+            setError("Tài khoản chưa được xác thực!");
           }
-          const accountData = await Account_API.get_Account_By_Email(myEmail);
-          // console.log("acc login: ", accountData);
-          setAccountInfo(accountData);
         } catch (error) {
           console.error("Failed to fetch account info: ", error);
         }
-      } else setAccountInfo(null);
+      } else {
+        setAccount({})
+      }
     };
 
     fetchAccountInfo();
@@ -71,20 +83,15 @@ export const AuthProvider = ({ children }) => {
   //   }
   // };
 
-  const login = async (token) => {
-    try {
-      await AsyncStorage.setItem("userToken", token);
-      setStoredToken(token);
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error("Error logging in: ", error);
-    }
+  const userLogin = async () => {
+    await fetchToken();
   };
 
-  const logout = async () => {
+  const userLogout = async () => {
     try {
-      await AsyncStorage.removeItem("userToken");
-      setStoredToken(null);
+      await AsyncStorage.removeItem("user");
+      setUser({});
+      setAccount({});
       setIsLoggedIn(false);
     } catch (error) {
       console.error("Error logging out: ", error);
@@ -94,11 +101,12 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        storedToken,
-        login,
-        logout,
+        user,
+        userLogin,
+        userLogout,
         isLoggedIn,
-        accountInfo,
+        account,
+        error
       }}>
       {children}
     </AuthContext.Provider>

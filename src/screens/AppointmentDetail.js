@@ -13,7 +13,7 @@ import { parse } from "date-fns";
 
 const AppointmentDetail = ({ navigation, route }) => {
   const { doctor, appoinment, filter } = route.params;
-  const { accountInfo } = useAuth();
+  const { account } = useAuth();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -74,25 +74,25 @@ const AppointmentDetail = ({ navigation, route }) => {
           <Text style={styles.infoTitle}>Thông tin cá nhân</Text>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Họ và Tên</Text>
-            <Text style={styles.infoValue}>{accountInfo.username}</Text>
+            <Text style={styles.infoValue}>{account.username}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Email</Text>
-            <Text style={styles.infoValue}>{accountInfo.email}</Text>
+            <Text style={styles.infoValue}>{account.email}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Số điện thoại</Text>
-            <Text style={styles.infoValue}>{accountInfo.phone}</Text>
+            <Text style={styles.infoValue}>{account.phone}</Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Ngày sinh</Text>
             <Text style={styles.infoValue}>
-              {new Date(accountInfo.date_of_birth).toLocaleDateString("vi-VN")}
+              {new Date(account.date_of_birth).toLocaleDateString("vi-VN")}
             </Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Địa chỉ</Text>
-            <Text style={styles.infoValue}>{accountInfo.address}</Text>
+            <Text style={styles.infoValue}>{account.address}</Text>
           </View>
         </View>
 
@@ -136,11 +136,11 @@ const AppointmentDetail = ({ navigation, route }) => {
         )}
 
         {/* Tiền sử bệnh lý */}
-        {accountInfo.underlying_condition !== "none" && (
+        {account.underlying_condition !== "none" && (
           <View style={styles.problemContainer}>
             <Text style={styles.infoTitle}>Tiền sử bệnh lý</Text>
             <Text style={styles.problemText}>
-              - {accountInfo.underlying_condition}
+              - {account.underlying_condition}
             </Text>
           </View>
         )}

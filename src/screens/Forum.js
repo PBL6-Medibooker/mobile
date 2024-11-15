@@ -27,7 +27,7 @@ import { useFocusEffect, useRoute } from "@react-navigation/native";
 import Post_API from "../API/Post_API";
 
 const Forum = ({ navigation }) => {
-  const { accountInfo, isLoggedIn } = useAuth();
+  const { account, isLoggedIn } = useAuth();
 
   const [specialitiesHook] = useSpecialities();
   const [postList, setPostList] = useState([]);
@@ -189,7 +189,7 @@ const Forum = ({ navigation }) => {
         <Text style={{marginHorizontal: 10, marginTop: 5}}>Không có bài post nào</Text>
       )}
 
-      {!accountInfo?.__t && (
+      {!account?.__t && (
         <TouchableOpacity style={styles.addButton} onPress={handleAddPost}>
           <FontAwesome6 name="add" size={42} color={COLORS.white} />
         </TouchableOpacity>

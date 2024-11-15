@@ -20,11 +20,17 @@ import { ArticleItem, HeaderHome } from "../components";
 import { useAuth } from "../AuthProvider";
 import usePosts from "../hooks/usePosts";
 import useArticles from "../hooks/useArticles";
+import { useEffect } from "react";
 
 const Home = ({ navigation }) => {
-  const { storedToken, isLoggedIn } = useAuth();
+  const { storedToken, isLoggedIn, error } = useAuth();
   const [articlesHook, firstArticle, fourArticles, loading] = useArticles();
 
+  useEffect(() => {
+    if (!isLoggedIn && error !== null)
+      Alert.alert("Thông báo", error, [{ text: "OK" }]);
+  }, [error]);
+  
   const handleBooking = () => {
     if (!isLoggedIn) {
       Alert.alert("Thông báo", "Vui lòng đăng nhập để đăng kí lịch hẹn.", [
@@ -50,7 +56,9 @@ const Home = ({ navigation }) => {
         data={fourArticles}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item._id.toString()}
-        renderItem={({ item }) => <ArticleItem data={item} navigation={navigation} />}
+        renderItem={({ item }) => (
+          <ArticleItem data={item} navigation={navigation} />
+        )}
         ListHeaderComponent={() => (
           <>
             <HeaderHome
@@ -162,12 +170,18 @@ const Home = ({ navigation }) => {
                 onPress={() =>
                   navigation.navigate("ViewArticle", { post: firstArticle })
                 }>
-                <Image source={images.poster} style={styles.imageFirstArticle} />
+                <Image
+                  source={images.poster}
+                  style={styles.imageFirstArticle}
+                />
                 <Text style={styles.titleFirstArticle} numberOfLines={2}>
                   {firstArticle.article_title}
                 </Text>
                 <Text
-                  style={[styles.dateFirstArticle, { alignSelf: "flex-start" }]}>
+                  style={[
+                    styles.dateFirstArticle,
+                    { alignSelf: "flex-start" },
+                  ]}>
                   Đăng bởi: {firstArticle.doctor_id?.email}
                 </Text>
                 <View style={styles.dateFirstArticleContainer}>

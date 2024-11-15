@@ -17,7 +17,7 @@ import { useState } from "react";
 import Account_API from "../API/Account_API";
 
 const UserProfile = ({ navigation }) => {
-  const { storedToken, isLoggedIn, accountInfo } = useAuth();
+  const { storedToken, isLoggedIn, account } = useAuth();
 
   const [uriAvatar, setUriAvatar] = useState(null);
 
@@ -30,9 +30,9 @@ const UserProfile = ({ navigation }) => {
 
     // try {
     //   await Account_API.updateAccountInfo(
-    //     accountInfo._id,
-    //     accountInfo.usename,
-    //     accountInfo.phone,
+    //     account._id,
+    //     account.usename,
+    //     account.phone,
     //     "123",
     //     image
     //   );
@@ -52,9 +52,9 @@ const UserProfile = ({ navigation }) => {
               source={
                 uriAvatar
                   ? { uri: uriAvatar }
-                  : accountInfo?.profile_image
+                  : account?.profile_image
                   ? {
-                      uri: accountInfo.profile_image,
+                      uri: account.profile_image,
                     }
                   : images.user_default
               }
@@ -74,12 +74,12 @@ const UserProfile = ({ navigation }) => {
         <View
           style={[
             styles.myBasicInformation,
-            !accountInfo.__t && { paddingVertical: 5 },
+            !account?.__t && { paddingVertical: 5 },
           ]}>
-          <Text style={styles.text}>{accountInfo.username}</Text>
-          <Text style={styles.text}>{accountInfo.phone}</Text>
-          <Text style={styles.text}>{accountInfo.email}</Text>
-          {accountInfo.__t && (
+          <Text style={styles.text}>{account.username}</Text>
+          <Text style={styles.text}>{account.phone}</Text>
+          <Text style={styles.text}>{account.email}</Text>
+          {account?.__t && (
             <View style={styles.accountType}>
               <Text style={{ fontSize: 12 }}>Bác sĩ</Text>
             </View>
