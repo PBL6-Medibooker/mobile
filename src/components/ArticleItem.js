@@ -9,29 +9,32 @@ import {
 import { COLORS, images } from "../constants";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
-const ArticleItem = ({ data, navigation }) => (
-  <TouchableOpacity
-    style={styles.itemContainer}
-    onPress={() => navigation.navigate("ViewArticle", { post: data })}>
-    <View style={styles.imageButton}>
-      <Image source={images.poster} style={styles.image} />
-    </View>
-    <View style={styles.item}>
-      <View>
-        <Text style={styles.title} numberOfLines={2}>
-          {data.article_title}
+const ArticleItem = ({ data, navigation }) => {
+
+  return (
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => navigation.navigate("ViewArticle", { post: data })}>
+      <View style={styles.imageButton}>
+        <Image source={images.poster} style={styles.image} />
+      </View>
+      <View style={styles.item}>
+        <View>
+          <Text style={styles.title} numberOfLines={2}>
+            {data.article_title}
+          </Text>
+        </View>
+        <Text style={styles.content} numberOfLines={2} ellipsizeMode="tail">
+          {data.article_content}
         </Text>
+        <View style={styles.dateContainer}>
+          <FontAwesome5 name="calendar-alt" size={15} color={COLORS.gray} />
+          <Text style={styles.date}>{data.date_published}</Text>
+        </View>
       </View>
-      <Text style={styles.content} numberOfLines={2} ellipsizeMode="tail">
-        {data.article_content}
-      </Text>
-      <View style={styles.dateContainer}>
-        <FontAwesome5 name="calendar-alt" size={15} color={COLORS.gray} />
-        <Text style={styles.date}>{data.date_published}</Text>
-      </View>
-    </View>
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 export default ArticleItem;
 
@@ -76,7 +79,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1, // Let the content take up the available space
     marginTop: 5,
-    // marginEnd: 5,
     textAlign: "justify",
   },
   date: {

@@ -14,8 +14,12 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { windowWidth } from "../utils/Dimentions";
 import useArticles from "../hooks/useArticles";
 import { useEffect, useRef, useState } from "react";
+import { useFonts } from "expo-font";
+import useCustomFonts from "../hooks/useCustomFonts";
 
 const ViewArticle = ({ navigation, route }) => {
+  const loadingFonts = useCustomFonts()
+  
   const { post } = route.params || {};
 
   const [articlesByDoctor, setArticlesByDoctor] = useState([]);
@@ -131,8 +135,9 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   postContent: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: "justify",
+    fontFamily: 'Poppins_Regular'
   },
   postCreatedAt: {
     color: COLORS.gray,

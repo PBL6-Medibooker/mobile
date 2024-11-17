@@ -5,6 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "newArchEnabled": true,
+    "assets": ["./assets/fonts"],
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
     "splash": {

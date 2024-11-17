@@ -18,19 +18,22 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { articles } from "../utils/articles";
 import { ArticleItem, HeaderHome } from "../components";
 import { useAuth } from "../AuthProvider";
-import usePosts from "../hooks/usePosts";
 import useArticles from "../hooks/useArticles";
 import { useEffect } from "react";
+import { useFonts } from "expo-font";
+import useCustomFonts from "../hooks/useCustomFonts";
 
 const Home = ({ navigation }) => {
-  const { storedToken, isLoggedIn, error } = useAuth();
+  const fontsLoaded = useCustomFonts();
+
+  const { isLoggedIn, error } = useAuth();
   const [articlesHook, firstArticle, fourArticles, loading] = useArticles();
 
   useEffect(() => {
     if (!isLoggedIn && error !== null)
       Alert.alert("Thông báo", error, [{ text: "OK" }]);
   }, [error]);
-  
+
   const handleBooking = () => {
     if (!isLoggedIn) {
       Alert.alert("Thông báo", "Vui lòng đăng nhập để đăng kí lịch hẹn.", [
@@ -165,7 +168,7 @@ const Home = ({ navigation }) => {
                 Tin tức mới nhất:
               </Text>
 
-              <TouchableOpacity
+              {firstArticle && <TouchableOpacity
                 style={styles.firstArticleContainer}
                 onPress={() =>
                   navigation.navigate("ViewArticle", { post: firstArticle })
@@ -194,7 +197,7 @@ const Home = ({ navigation }) => {
                     {firstArticle.date_published}
                   </Text>
                 </View>
-              </TouchableOpacity>
+              </TouchableOpacity>}
 
               <TouchableOpacity
                 style={styles.showAll}
@@ -241,22 +244,26 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
+    paddingTop: 10,
     paddingHorizontal: 4,
     borderColor: COLORS.silver,
   },
   featureIcon: {
-    height: 40,
+    aspectRatio: 1,
     width: 40,
     backgroundColor: COLORS.PersianGreen,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 999,
-    marginBottom: 5,
+    // marginBottom: 5,
   },
   featureText: {
+    flex: 1,
     textAlign: "center",
     fontSize: 12,
+    fontFamily: "Poppins_Regular",
+    // textAlignVertical: "center",
+    marginVertical: 4,
   },
   text: {
     fontSize: 14,
