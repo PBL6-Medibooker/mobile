@@ -10,15 +10,13 @@ import {
 import Account_API from "../API/Account_API";
 import { COLORS, images } from "../constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import Speciality_API from "../API/Speciality_API";
-import Region_API from "../API/Region_API";
 import { formatDistanceToNow, parse } from "date-fns";
-import { it, vi } from "date-fns/locale";
 import {
   convertAppointmentDate,
   parseAppointmentEndDate,
 } from "../utils/ConvertDate";
 import Appointment_API from "../API/Appointment_API";
+import { useAuth } from "../AuthProvider";
 
 const DoctorAppointmentItem = ({
   appointmentKey,
@@ -26,15 +24,14 @@ const DoctorAppointmentItem = ({
   navigation,
   filter,
 }) => {
-  const [doctor, setDoctor] = useState({});
+  // const [doctor, setDoctor] = useState({});
+  const { account } = useAuth();
   const [user, setUser] = useState({});
 
   useEffect(() => {
     const getDoctorById = async () => {
       try {
-        const doctor = await Account_API.get_Account_By_Id(item.doctor_id);
-        setDoctor(doctor);
-        const userRes = await Account_API.get_Account_By_Id(item.user_id);
+        const userRes = await Account_API.get_Account_By_Id(item.user_id._id);
         setUser(userRes);
       } catch (error) {
         console.error(error);
@@ -46,36 +43,41 @@ const DoctorAppointmentItem = ({
 
   const checkHour = (appointment) => {
     const now = new Date();
-    const datePart = appointment.appointment_day.split(" ").slice(1).join(" ");
-    const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
 
-    if (
+    const datePart = appointment.appointment_day.split(" ")[1];
+    const parsedDate = parse(datePart, "yyyy-MM-dd", new Date());
+  
+    const isToday =
       parsedDate.getDate() === now.getDate() &&
       parsedDate.getMonth() === now.getMonth() &&
-      parsedDate.getFullYear() === now.getFullYear()
-    ) {
+      parsedDate.getFullYear() === now.getFullYear();
+  
+    if (isToday) {
       const [hour, minute] = appointment.appointment_time_start
         .split(":")
         .map(Number);
-
-      if (now.getHours() >= hour) return true;
+  
+      const appointmentTime = new Date();
+      appointmentTime.setHours(hour, minute, 0, 0);
+  
+      if (now >= appointmentTime) return true;
     }
-
+  
     return false;
   };
 
-  const restoreAppointment = async (appointment) => {
+  const completeAppointment = async (appointmentId) => {
     try {
-      const restore = await Appointment_API.restore_Appointment(
-        appointment._id
+      const cancel = await Appointment_API.soft_delete_Appointment(
+        appointmentId
       );
-      if (typeof restore === "object") {
-        Alert.alert("Thông báo", "Khôi phục lịch hẹn thành công.", [
+      if (typeof cancel === "object") {
+        Alert.alert("Thông báo", "Xác thực thành công.", [
           {
             text: "OK",
             onPress: () => {
               navigation.navigate("BookingHistory", {
-                refresh: `restore ${appointment._id}`,
+                refresh: `cancel ${appointmentId}`,
               });
             },
           },
@@ -86,13 +88,13 @@ const DoctorAppointmentItem = ({
     }
   };
 
-  const handleRestoreAppointment = () => {
-    Alert.alert("", "Bạn chắc chắn muốn khôi phục cuộc hẹn này?", [
+  const handleCompleteAppointment = () => {
+    Alert.alert("Thông báo", "Cuộc hẹn này đã được hoàn thành?", [
       { text: "No", style: "cancel" },
       {
         text: "Yes",
-        onPress: () => {
-          restoreAppointment(item);
+        onPress: async () => {
+          await completeAppointment(item._id);
         },
       },
     ]);
@@ -100,10 +102,10 @@ const DoctorAppointmentItem = ({
 
   const cancelAppointment = async (appointmentId) => {
     try {
-      const cancel = await Appointment_API.soft_delete_Appointment(
-        appointmentId
-      );
-      if (typeof cancel === "object") {
+      const cancel = await Appointment_API.canncel_Appointment(appointmentId);
+      if (typeof cancel === "object" && cancel?.message) {
+        console.log(cancel.message);
+
         Alert.alert("Thông báo", "Huỷ lịch hẹn thành công.", [
           {
             text: "OK",
@@ -114,6 +116,8 @@ const DoctorAppointmentItem = ({
             },
           },
         ]);
+      } else {
+        console.log(cancel);
       }
     } catch (error) {
       console.error(error);
@@ -160,7 +164,7 @@ const DoctorAppointmentItem = ({
                   navigation.navigate("DoctorAppointmentDetail", {
                     user: user,
                     appoinment: item,
-                    filter: filter
+                    filter: filter,
                   })
                 }>
                 <AntDesign
@@ -170,20 +174,9 @@ const DoctorAppointmentItem = ({
                 />
               </TouchableOpacity>
 
-              {/* {filter === "Upcoming" && (
-                <TouchableOpacity
-                  style={styles.iconButton}
-                  onPress={() => handleCancelAppointment()}>
-                  <AntDesign
-                    style={styles.iconStyle}
-                    name="closesquareo"
-                    size={24}
-                  />
-                </TouchableOpacity>
-              )} */}
             </View>
           </View>
-          {/* <View style={styles.separator} /> */}
+          
           {item?.health_issue && (
             <Text style={{ color: COLORS.gray, marginBottom: 5 }}>
               Tình trạng sức khoẻ: {item.health_issue}
@@ -197,34 +190,36 @@ const DoctorAppointmentItem = ({
               {convertAppointmentDate(item.appointment_day)}
             </Text>
           </View>
-          {filter === "Upcoming" && !checkHour(item) && (
-            <TouchableOpacity
-              onPress={() => handleCancelAppointment()}
-              style={styles.restoreButton}>
-              <AntDesign
-                name="closecircleo"
-                size={20}
-                color={COLORS.PersianGreen}
-                style={{ marginRight: 5 }}
-              />
-              <Text style={{ color: COLORS.PersianGreen }}>Cancel</Text>
-            </TouchableOpacity>
-          )}
-
-          {filter === "Cancelled" &&
-            parseAppointmentEndDate(item) > new Date() && (
+          
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              flexWrap: "wrap",
+            }}>
+            {filter === "Upcoming" && (
               <TouchableOpacity
-                onPress={() => handleRestoreAppointment()}
+                onPress={() => handleCancelAppointment()}
                 style={styles.restoreButton}>
-                <Text style={{ color: COLORS.PersianGreen }}>Khôi phục</Text>
+                <AntDesign
+                  name="closecircleo"
+                  size={20}
+                  color={COLORS.PersianGreen}
+                  style={{ marginRight: 5 }}
+                />
+                <Text style={{ color: COLORS.PersianGreen }}>Cancel</Text>
               </TouchableOpacity>
             )}
 
-          {filter === "Upcoming" && checkHour(item) && (
-            <View style={styles.restoreButton}>
-              <Text style={{ color: COLORS.PersianGreen }}>Đang diễn ra</Text>
-            </View>
-          )}
+            {filter === "Upcoming" && checkHour(item) && (
+              <TouchableOpacity
+                onPress={() => handleCompleteAppointment()}
+                style={[styles.restoreButton, { marginLeft: 5 }]}>
+                <Text style={{ color: COLORS.PersianGreen }}>Đang diễn ra</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </View>
     </View>

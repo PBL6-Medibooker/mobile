@@ -24,6 +24,7 @@ import ViewArticle from "./ViewArticle";
 import { Articles } from "./Articles";
 import AddPost from "./addPost";
 import DoctorAppointmentDetail from "./DrAppointmentDetail";
+import AddArticle from "./addArticle";
 
 export {
   Home,
@@ -52,4 +53,5 @@ export {
   AddPost,
   DoctorAppointment,
   DoctorAppointmentDetail,
+  AddArticle,
 };

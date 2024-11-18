@@ -71,7 +71,7 @@ const AddPost = ({ navigation }) => {
       isError(false);
     }
     if (field === "specialty") setOpenedDropdown(field);
-    else setOpenedDropdown(null)
+    else setOpenedDropdown(null);
   };
 
   return (
@@ -128,7 +128,7 @@ const AddPost = ({ navigation }) => {
                 <Text style={styles.message}>* Chưa nhập nội dung câu hỏi</Text>
               )}
               <Pressable
-                onPress={handleAddPost}
+                onPress={() => handleAddPost()}
                 style={({ pressed }) => [
                   {
                     backgroundColor: pressed

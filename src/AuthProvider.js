@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
     } else {
       setIsLoggedIn(false);
       setUser({});
-      setAccount({})
+      setAccount({});
     }
   };
 
@@ -38,6 +38,8 @@ export const AuthProvider = ({ children }) => {
           const accountData = await Account_API.get_Account_By_Email(
             user?.email
           );
+          // console.log(accountData);
+
           setAccount(accountData);
           setError(null);
           if (user?.verified === true) console.log("Doctor");
@@ -49,9 +51,11 @@ export const AuthProvider = ({ children }) => {
           }
         } catch (error) {
           console.error("Failed to fetch account info: ", error);
+          setAccount({});
+          setIsLoggedIn(false);
         }
       } else {
-        setAccount({})
+        setAccount({});
       }
     };
 
@@ -106,7 +110,8 @@ export const AuthProvider = ({ children }) => {
         userLogout,
         isLoggedIn,
         account,
-        error
+        error,
+        setAccount,
       }}>
       {children}
     </AuthContext.Provider>

@@ -3,6 +3,7 @@ import { CalendarCustom, HeaderBack } from "../components";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -22,10 +23,12 @@ import Account_API from "../API/Account_API";
 const DoctorInfo = ({ navigation, route }) => {
   const { doctorSelected } = route.params || {};
 
+  const { isLoggedIn } = useAuth();
+
   const [area, setArea] = useState(null);
   const [specialty, setSpecialty] = useState(null);
   const [healthStatus, setHealthStatus] = useState(null);
-  
+
   const [activeHours, setActiveHours] = useState({});
 
   const [selectedDay, setSelectedDay] = useState({
@@ -66,8 +69,8 @@ const DoctorInfo = ({ navigation, route }) => {
     const activeHours = await Account_API.get_Doctor_Active_Hour_List(
       doctorSelected._id
     );
-    console.log(activeHours);
-    setActiveHours(activeHours)
+    // console.log(activeHours);
+    setActiveHours(activeHours);
     setloading(false);
   };
 
@@ -145,7 +148,7 @@ const DoctorInfo = ({ navigation, route }) => {
           <Text style={styles.contentText}>doctor.bio.introduction</Text>
 
           <CalendarCustom
-            navigation={navigation}
+            // navigation={navigation}
             schedule={activeHours ? activeHours : null}
             setMessage={setMessage}
             setSelectedDay={(val) => {
@@ -179,7 +182,23 @@ const DoctorInfo = ({ navigation, route }) => {
 
           <Pressable
             onPress={() => {
-              handleSetDate();
+              if (isLoggedIn) handleSetDate();
+              else {
+              Alert.alert(
+                "Thông báo",
+                "Bạn cần đăng nhập để tiếp tục thao tác!",
+                [
+                  {
+                    text: "Để sau",
+                    style: "cancel",
+                  },
+                  {
+                    text: "OK",
+                    onPress: () => navigation.navigate("Login"),
+                  },
+                ]
+              );
+            }
             }}
             style={({ pressed }) => [
               {
@@ -269,5 +288,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     height: 100,
     marginBottom: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

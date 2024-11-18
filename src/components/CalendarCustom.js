@@ -36,7 +36,7 @@ const CalendarCustom = ({
   schedule,
   selectedDay,
   setSelectedDay,
-  navigation,
+  // navigation,
 }) => {
   const [markedDates, setMarkedDates] = useState({});
 
@@ -204,9 +204,7 @@ const CalendarCustom = ({
               options={activeHours()} // Gọi hàm activeHours
               selectedOption={selectedDay.time}
               onSelect={(val) => {
-                if (isLoggedIn) {
                   setSelectedDay({ ...selectedDay, time: val });
-                } else navigation.navigate("Login");
               }}
               textColor={theme === "light" ? COLORS.black : COLORS.white}
               setMessage={setMessage}

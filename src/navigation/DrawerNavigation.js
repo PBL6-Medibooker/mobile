@@ -92,7 +92,7 @@ const DrawerNavigation = () => {
         component={Forum}
       />
 
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="Noticed"
         options={{
           drawerLabel: "Thông báo",
@@ -107,7 +107,7 @@ const DrawerNavigation = () => {
           ),
         }}
         component={UserProfile}
-      />
+      /> */}
 
       {isLoggedIn ? (
         <>

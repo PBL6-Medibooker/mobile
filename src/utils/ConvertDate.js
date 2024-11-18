@@ -11,8 +11,8 @@ export const formatDate = (dateString) => {
 };
 
 export const formatAppoinmentDateToNTN = (dateString) => {
-  const datePart = dateString.split(" ").slice(1).join(" ");
-  const date = parse(datePart, "dd/MM/yyyy", new Date());
+  const datePart = dateString.split(" ")[1];
+  const date = parse(datePart, "yyyy-MM-dd", new Date());
 
   if (isNaN(date)) {
     throw new Error("Invalid date format");
@@ -62,8 +62,8 @@ export const formatToHHMMSS = (dateString) => {
 };
 
 export const convertAppointmentDate = (dateString) => {
-  const datePart = dateString.split(" ").slice(1).join(" ");
-  const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
+  const datePart = dateString.split(" ")[1];
+  const parsedDate = parse(datePart, "yyyy-MM-dd", new Date());
 
   if (isNaN(parsedDate)) {
     throw new Error("Invalid date format");
@@ -71,15 +71,9 @@ export const convertAppointmentDate = (dateString) => {
   return format(parsedDate, "eeee, dd/MM/yyyy", { locale: vi });
 };
 
-// export const convertAppointment = () => {
-//   const date = "Tuesday 19/11/2024";
-//   const parsedDate = parse(date, "eeee dd/MM/yyyy", new Date(), { locale: vi });
-//   const formatDate = format(parsedDate, "eeee dd/MM/yyyy", { locale: vi });
-//   console.log(formatDate);
-// };
 export const parseAppointmentStartDate = (appointment) => {
-  const datePart = appointment.appointment_day.split(" ").slice(1).join(" ");
-  const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
+  const datePart = appointment.appointment_day.split(" ")[1];
+  const parsedDate = parse(datePart, "yyyy-MM-dd", new Date());
 
   const [hour, minute] = appointment.appointment_time_start
     .split(":")
@@ -90,8 +84,8 @@ export const parseAppointmentStartDate = (appointment) => {
 };
 
 export const parseAppointmentEndDate = (appointment) => {
-  const datePart = appointment.appointment_day.split(" ").slice(1).join(" ");
-  const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
+  const datePart = appointment.appointment_day.split(" ")[1];
+  const parsedDate = parse(datePart, "yyyy-MM-dd", new Date());
 
   const [hour, minute] = appointment.appointment_time_end
     .split(":")

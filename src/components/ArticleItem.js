@@ -10,13 +10,17 @@ import { COLORS, images } from "../constants";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 const ArticleItem = ({ data, navigation }) => {
-
   return (
     <TouchableOpacity
       style={styles.itemContainer}
       onPress={() => navigation.navigate("ViewArticle", { post: data })}>
       <View style={styles.imageButton}>
-        <Image source={images.poster} style={styles.image} />
+        <Image
+          source={
+            data?.article_image ? { uri: data.article_image } : images.poster
+          }
+          style={styles.image}
+        />
       </View>
       <View style={styles.item}>
         <View>

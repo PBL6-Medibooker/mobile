@@ -13,7 +13,7 @@ import BottomSheet from "./BottomSheet";
 // import QandAItem from "./QandAItem";
 import AppointmentItem from "./AppointmentItem";
 import PostAnswerItem from "./PostAnswerItem";
-import DoctorAppointmentItem from "./DoctorAppointmentItem";
+import DoctorAppointmentItem from "./DrAppointmentItem";
 
 export {
   ArticleItem,

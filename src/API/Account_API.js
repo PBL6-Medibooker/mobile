@@ -117,6 +117,25 @@ const get_Doctor_Active_Hour_List = async (doctor_id) => {
   }
 };
 
+const update_Account = async (id, data) => {
+  try {
+    const res = await client.post(`/acc/update-acc-info/${id}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+    return res.data;
+  } catch (error) {
+    if (error.response) {
+      console.log("Error response: ", error.response.data.error);
+      return error.response.data.error;
+    } else {
+      console.log("Error not response: ", error.message);
+      return error.message;
+    }
+  }
+};
+
 export default {
   userLogin,
   userSignup,
@@ -125,4 +144,5 @@ export default {
   get_Account_By_Id,
   get_Filter_Doctor_List,
   get_Doctor_Active_Hour_List,
+  update_Account
 };

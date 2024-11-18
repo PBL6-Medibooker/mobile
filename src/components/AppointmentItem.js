@@ -10,13 +10,10 @@ import {
 import Account_API from "../API/Account_API";
 import { COLORS, images } from "../constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import Speciality_API from "../API/Speciality_API";
-import Region_API from "../API/Region_API";
 import { formatDistanceToNow, parse } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
   convertAppointmentDate,
-  parseAppointmentEndDate,
 } from "../utils/ConvertDate";
 import Appointment_API from "../API/Appointment_API";
 
@@ -26,7 +23,7 @@ const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
   useEffect(() => {
     const getDoctorById = async () => {
       try {
-        const doctor = await Account_API.get_Account_By_Id(item.doctor_id);
+        const doctor = await Account_API.get_Account_By_Id(item.doctor_id._id);
         setDoctor(doctor);
       } catch (error) {
         console.error(error);
@@ -38,64 +35,35 @@ const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
 
   const checkHour = (appointment) => {
     const now = new Date();
-    const datePart = appointment.appointment_day.split(" ").slice(1).join(" ");
-    const parsedDate = parse(datePart, "dd/MM/yyyy", new Date());
 
-    if (
+    const datePart = appointment.appointment_day.split(" ")[1];
+    const parsedDate = parse(datePart, "yyyy-MM-dd", new Date());
+  
+    const isToday =
       parsedDate.getDate() === now.getDate() &&
       parsedDate.getMonth() === now.getMonth() &&
-      parsedDate.getFullYear() === now.getFullYear()
-    ) {
+      parsedDate.getFullYear() === now.getFullYear();
+  
+    if (isToday) {
       const [hour, minute] = appointment.appointment_time_start
         .split(":")
         .map(Number);
-
-      if (now.getHours() >= hour) return true;
+  
+      const appointmentTime = new Date();
+      appointmentTime.setHours(hour, minute, 0, 0);
+  
+      if (now >= appointmentTime) return true;
     }
-
+  
     return false;
-  };
-
-  const restoreAppointment = async (appointment) => {
-    try {
-      const restore = await Appointment_API.restore_Appointment(
-        appointment._id
-      );
-      if (typeof restore === "object") {
-        Alert.alert("Thông báo", "Khôi phục lịch hẹn thành công.", [
-          {
-            text: "OK",
-            onPress: () => {
-              navigation.navigate("BookingHistory", {
-                refresh: `restore ${appointment._id}`,
-              });
-            },
-          },
-        ]);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleRestoreAppointment = () => {
-    Alert.alert("", "Bạn chắc chắn muốn khôi phục cuộc hẹn này?", [
-      { text: "No", style: "cancel" },
-      {
-        text: "Yes",
-        onPress: () => {
-          restoreAppointment(item);
-        },
-      },
-    ]);
   };
 
   const cancelAppointment = async (appointmentId) => {
     try {
-      const cancel = await Appointment_API.soft_delete_Appointment(
-        appointmentId
-      );
-      if (typeof cancel === "object") {
+      const cancel = await Appointment_API.canncel_Appointment(appointmentId);
+      if (typeof cancel === "object" && cancel?.message) {
+        console.log(cancel.message);
+
         Alert.alert("Thông báo", "Huỷ lịch hẹn thành công.", [
           {
             text: "OK",
@@ -106,6 +74,8 @@ const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
             },
           },
         ]);
+      } else {
+        console.log(cancel);
       }
     } catch (error) {
       console.error(error);
@@ -206,13 +176,6 @@ const AppointmentItem = ({ appointmentKey, item, navigation, filter }) => {
           })}
         </Text>
       </View>
-      {filter === "Cancelled" && parseAppointmentEndDate(item) > new Date() && (
-        <TouchableOpacity
-          onPress={() => handleRestoreAppointment()}
-          style={styles.restoreButton}>
-          <Text style={{ color: COLORS.PersianGreen }}>Khôi phục</Text>
-        </TouchableOpacity>
-      )}
 
       {filter === "Upcoming" && checkHour(item) && (
         <View style={styles.restoreButton}>

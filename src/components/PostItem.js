@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   Pressable,
   StyleSheet,
@@ -23,10 +24,10 @@ const QandAItem = ({ item, navigation }) => {
   const [isReplied, setIsReplied] = useState(false);
   const [comment, setComment] = useState(null);
 
-  const { account } = useAuth();
+  const { account, isLoggedIn } = useAuth();
   // const [postItem, setPostItem] = useState(item);
 
-  const [replier, setReplier] = useState(null);
+  // const [replier, setReplier] = useState(null);
 
   // useEffect(() => {
   //   const getReplierNameById = async () => {
@@ -45,20 +46,37 @@ const QandAItem = ({ item, navigation }) => {
   };
 
   const handleSendAnswer = async () => {
-    try {
-      const res = await Post_API.add_Comment(
-        item._id,
-        account.email,
-        comment
-      );
-      console.log(res);
-      if (typeof res === "object") {
-        navigation.navigate("Forum", { refresh: item._id });
-        setIsViewAnswer(true);
-        setIsReplied(false);
+    if (isLoggedIn && account?.email) {
+      try {
+        const res = await Post_API.add_Comment(
+          item._id,
+          account.email,
+          comment
+        );
+        console.log(res);
+        if (typeof res === "object") {
+          navigation.navigate("Forum", { refresh: item._id });
+          setIsViewAnswer(true);
+          setIsReplied(false);
+        }
+      } catch (error) {
+        console.error("error: ", error);
       }
-    } catch (error) {
-      console.error("error: ", error);
+    } else {
+      Alert.alert(
+        "Thông báo",
+        "Bạn cần đăng nhập để tiếp tục thao tác!",
+        [
+          {
+            text: "Để sau",
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Login"),
+          },
+        ]
+      );
     }
   };
 
@@ -257,8 +275,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     flex: 1,
     paddingHorizontal: 15,
-    height: 35,
+    height: 38,
     backgroundColor: COLORS.white,
+    paddingBottom: 5
   },
   sendButton: {
     backgroundColor: COLORS.PersianGreen,

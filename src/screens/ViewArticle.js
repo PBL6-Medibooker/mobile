@@ -1,5 +1,6 @@
 import {
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,13 +17,15 @@ import useArticles from "../hooks/useArticles";
 import { useEffect, useRef, useState } from "react";
 import { useFonts } from "expo-font";
 import useCustomFonts from "../hooks/useCustomFonts";
+import Account_API from "../API/Account_API";
 
 const ViewArticle = ({ navigation, route }) => {
-  const loadingFonts = useCustomFonts()
-  
+  const loadingFonts = useCustomFonts();
+
   const { post } = route.params || {};
 
   const [articlesByDoctor, setArticlesByDoctor] = useState([]);
+  const [content, setContent] = useState([]);
 
   const [
     articlesHook,
@@ -31,6 +34,7 @@ const ViewArticle = ({ navigation, route }) => {
     loading,
     getArticlesBySpecialty,
     getArticlesByDoctor,
+    filterArticles,
   ] = useArticles();
 
   // const scrollViewRef = useRef();
@@ -46,8 +50,23 @@ const ViewArticle = ({ navigation, route }) => {
     };
 
     getArticlesByDoctorEmail();
+
+    const lines = post?.article_content.split("\n");
+    setContent(lines);
     // scrollViewRef.current.scrollTo({ y: 0, animated: true });
   }, [post]);
+
+  const showDoctor = async () => {
+    try {
+      const accountData = await Account_API.get_Account_By_Email(
+        post?.doctor_id?.email
+      );
+      const doctorToSend = { ...accountData, name: accountData.username };
+      navigation.navigate("DoctorInfo", { doctorSelected: doctorToSend });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -61,10 +80,34 @@ const ViewArticle = ({ navigation, route }) => {
               Đăng lúc: {formatToHHMMSS(post.date_published)}{" "}
               {formatToDDMMYYYY(post.date_published)}
             </Text>
-            <Text style={styles.postContent}>{post.article_content}</Text>
-            <Text style={styles.postSpecialty}>
-              Bởi: {post.doctor_id.email}
-            </Text>
+
+            {content.length > 0 && (
+              <View>
+                {/* Hiển thị đoạn nội dung đầu tiên */}
+                <Text style={styles.postContent}>{content[0]}</Text>
+                {post?.article_image && (
+                  <Image
+                    source={{ uri: post.article_image }}
+                    style={styles.image}
+                  />
+                )}
+
+                {/* Bỏ qua đoạn đầu tiên và hiển thị các đoạn văn tiếp theo */}
+                {content.slice(1).map((item, index) => (
+                  <Text
+                    key={index}
+                    style={[styles.postContent, { marginBottom: 5 }]}>
+                    {item}
+                  </Text>
+                ))}
+              </View>
+            )}
+
+            <Pressable onPress={() => showDoctor()}>
+              <Text style={styles.postSpecialty}>
+                Bởi: {post.doctor_id.email}
+              </Text>
+            </Pressable>
           </View>
         ) : (
           <Text>Không nhận được dữ liệu</Text>
@@ -84,7 +127,11 @@ const ViewArticle = ({ navigation, route }) => {
                     navigation.push("ViewArticle", { post: post })
                   }>
                   <Image
-                    source={images.poster}
+                    source={
+                      post?.article_image
+                        ? { uri: post.article_image }
+                        : images.poster
+                    }
                     style={styles.imageSuggestedPost}
                   />
                   <Text style={styles.titleSuggestedPost} numberOfLines={2}>
@@ -133,11 +180,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 10,
     textAlign: "right",
+    marginTop: 15,
   },
   postContent: {
     fontSize: 14,
     textAlign: "justify",
-    fontFamily: 'Poppins_Regular'
+    fontFamily: "Poppins_Regular",
   },
   postCreatedAt: {
     color: COLORS.gray,
@@ -187,5 +235,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.gray,
     marginLeft: 5,
+  },
+  image: {
+    flex: 1,
+    aspectRatio: 5 / 3,
+    resizeMode: "cover",
+    marginVertical: 5,
   },
 });

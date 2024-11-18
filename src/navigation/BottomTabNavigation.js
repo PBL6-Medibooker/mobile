@@ -19,7 +19,7 @@ const Information_Specialty = ({ route, navigation }) => {
         screenName="Specialty"
       />
       <ScrollView showsVerticalScrollIndicator={false}>
-      <Text style={styles.descriptionSpecialty}>{specialty.description}</Text>
+        <Text style={styles.descriptionSpecialty}>{specialty.description}</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -57,9 +57,10 @@ export default BottomTabNavigation = ({ route, navigation }) => {
             iconName = "circle-info";
           } else if (route.name === "Bác sĩ") {
             iconName = "user-doctor";
-          } else if (route.name === "Dịch vụ") {
-            iconName = "briefcase-medical";
           }
+          // else if (route.name === "Dịch vụ") {
+          //   iconName = "briefcase-medical";
+          // }
           return <FontAwesome6 name={iconName} size={20} color={color} />;
         },
         tabBarActiveTintColor: COLORS.PersianGreen,
@@ -67,18 +68,20 @@ export default BottomTabNavigation = ({ route, navigation }) => {
         tabBarLabel: ({ focused, color }) => (
           <Text
             style={{
-              fontSize: 12,
+              fontSize: focused ? 14 : 12,
               fontWeight: focused ? "bold" : "normal",
               color: color,
-              marginBottom: 5
-            }}
-          >
+              marginBottom: 5,
+            }}>
             {route.name}
           </Text>
         ),
         tabBarStyle: {
-          height: 60
-        }
+          height: 65,
+          marginBottom: 10,
+          marginHorizontal: 10,
+          borderRadius: 20,
+        },
       })}>
       <Tab.Screen
         name="Giới thiệu"
@@ -90,11 +93,11 @@ export default BottomTabNavigation = ({ route, navigation }) => {
         component={DoctorList_Specialty}
         initialParams={{ specialty }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Dịch vụ"
         component={Services_Specialty}
         initialParams={{ specialty }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };
@@ -105,7 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
   },
   descriptionSpecialty: {
-    textAlign: 'justify',
-    margin: 15
-  }
+    textAlign: "justify",
+    margin: 15,
+  },
 });

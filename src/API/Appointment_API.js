@@ -70,15 +70,10 @@ const get_All_Appointment = async (user_id) => {
 
 const get_Appointment_By_Status = async (user_id) => {
   try {
-    const currentDate = new Date();
     const response = await client.post("/appointment/get-all-appointment");
     const appointments = response.data;
 
     if (appointments && Array.isArray(appointments) && user_id) {
-      const filteredAppointments = appointments.filter(
-        (item) => item.user_id === user_id && item.is_deleted === false
-      );
-
       // Common sorting logic
       const sortAppointments = (a, b) => {
         const parsedDateA = parseAppointmentStartDate(a);
@@ -86,23 +81,19 @@ const get_Appointment_By_Status = async (user_id) => {
         return parsedDateA - parsedDateB;
       };
 
-      const upcoming = [...filteredAppointments]
+      const upcoming = [...appointments]
         .filter(
-          (appointment) => parseAppointmentEndDate(appointment) > currentDate
+          (item) => item.user_id._id === user_id && item.is_deleted === false
         )
         .sort(sortAppointments);
 
-      const complete = [...filteredAppointments]
+      const complete = [...appointments]
         .filter(
-          (appointment) => parseAppointmentEndDate(appointment) < currentDate
+          (item) => item.user_id._id === user_id && item.is_deleted === true
         )
         .sort(sortAppointments);
 
-      const cancelled = [...appointments]
-        .filter((item) => item.user_id === user_id && item.is_deleted === true)
-        .sort(sortAppointments);
-        
-      return { upcoming: upcoming, complete: complete, cancelled: cancelled };
+      return { upcoming: upcoming, complete: complete };
     }
     return appointments;
   } catch (error) {
@@ -143,17 +134,28 @@ const restore_Appointment = async (appointmentId) => {
   }
 };
 
+const canncel_Appointment = async (appointmentId) => {
+  try {
+    const response = await client.post(
+      `/appointment/cancel-appointment/${appointmentId}`
+    );
+    // console.log(response.data);
+
+    return response.data;
+  } catch (error) {
+    if (error.response)
+      console.error("Error response: ", error.response.data.error);
+    else console.error("Error not response: ", error.message);
+    return null;
+  }
+};
+
 const get_Doctor_Appointment_By_Status = async (doctor_id) => {
   try {
-    const currentDate = new Date();
     const response = await client.post("/appointment/get-all-appointment");
     const appointments = response.data;
 
     if (appointments && Array.isArray(appointments) && doctor_id) {
-      const filteredAppointments = appointments.filter(
-        (item) => item.doctor_id === doctor_id && item.is_deleted === false
-      );
-
       // Common sorting logic
       const sortAppointments = (a, b) => {
         const parsedDateA = parseAppointmentStartDate(a);
@@ -161,23 +163,20 @@ const get_Doctor_Appointment_By_Status = async (doctor_id) => {
         return parsedDateA - parsedDateB;
       };
 
-      const upcoming = [...filteredAppointments]
+      const upcoming = [...appointments]
         .filter(
-          (appointment) => parseAppointmentEndDate(appointment) > currentDate
+          (item) =>
+            item.doctor_id._id === doctor_id && item.is_deleted === false
         )
         .sort(sortAppointments);
 
-      const complete = [...filteredAppointments]
+      const complete = [...appointments]
         .filter(
-          (appointment) => parseAppointmentEndDate(appointment) < currentDate
+          (item) => item.doctor_id._id === doctor_id && item.is_deleted === true
         )
         .sort(sortAppointments);
 
-      const cancelled = [...appointments]
-        .filter((item) => item.doctor_id === doctor_id && item.is_deleted === true)
-        .sort(sortAppointments);
-        
-      return { upcoming: upcoming, complete: complete, cancelled: cancelled };
+      return { upcoming: upcoming, complete: complete };
     }
     return appointments;
   } catch (error) {
@@ -196,5 +195,6 @@ export default {
   get_Appointment_By_Status,
   restore_Appointment,
   soft_delete_Appointment,
-  get_Doctor_Appointment_By_Status
+  get_Doctor_Appointment_By_Status,
+  canncel_Appointment,
 };

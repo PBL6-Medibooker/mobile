@@ -2,6 +2,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { HeaderBack, PostAnswerItem } from "../components";
 
 import {
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -23,18 +24,14 @@ import Post_API from "../API/Post_API";
 const QADetail = ({ navigation, route }) => {
   const { QA } = route.params || {};
 
-  const { account } = useAuth();
+  const { account, isLoggedIn } = useAuth();
 
   const [post, setPost] = useState(QA);
   const [myAnswer, setMyAnswer] = useState(null);
 
   const handleAddAnswer = async () => {
     try {
-      const res = await Post_API.add_Comment(
-        post._id,
-        account.email,
-        myAnswer
-      );
+      const res = await Post_API.add_Comment(post._id, account.email, myAnswer);
       console.log(res);
       if (typeof res === "object") {
         setPost(res);
@@ -100,7 +97,25 @@ const QADetail = ({ navigation, route }) => {
             onChangeText={(value) => setMyAnswer(value)}
           />
           <TouchableOpacity
-            onPress={() => handleAddAnswer()}
+            onPress={() => {
+              if (isLoggedIn && account?.email) handleAddAnswer();
+              else {
+                Alert.alert(
+                  "Thông báo",
+                  "Bạn cần đăng nhập để tiếp tục thao tác!",
+                  [
+                    {
+                      text: "Để sau",
+                      style: "cancel",
+                    },
+                    {
+                      text: "OK",
+                      onPress: () => navigation.navigate("Login"),
+                    },
+                  ]
+                );
+              }
+            }}
             style={{
               backgroundColor: COLORS.PersianGreen,
               marginVertical: 5,

@@ -21,7 +21,6 @@ const Myappointment = ({ navigation }) => {
 
   const [appoinmentsUpcoming, setAppoinmentsUpcoming] = useState([]);
   const [appoinmentsComplete, setAppoinmentsComplete] = useState([]);
-  const [appoinmentsCanceled, setAppoinmentsCanceled] = useState([]);
 
   const route = useRoute();
 
@@ -30,8 +29,7 @@ const Myappointment = ({ navigation }) => {
       const appointments = await Appointment_API.get_Appointment_By_Status(
         account._id
       );
-      
-      setAppoinmentsCanceled(appointments?.cancelled);
+
       setAppoinmentsComplete(appointments?.complete);
       setAppoinmentsUpcoming(appointments?.upcoming);
     } catch (error) {
@@ -80,34 +78,9 @@ const Myappointment = ({ navigation }) => {
             Complete
           </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.filterButton,
-            selectedFilter === "Cancelled" && styles.activeButton,
-          ]}
-          onPress={() => setSelectedFilter("Cancelled")}>
-          <Text
-            style={[
-              styles.filterButtonText,
-              selectedFilter === "Cancelled" && styles.activeButtonText,
-            ]}>
-            Cancelled
-          </Text>
-        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.mainContainer}>
-        {selectedFilter === "Cancelled" &&
-          appoinmentsCanceled?.map((appointment) => (
-            <AppointmentItem
-              key={appointment._id}
-              appointmentKey={appointment._id}
-              item={appointment}
-              navigation={navigation}
-              filter={selectedFilter}
-            />
-          ))}
         {selectedFilter === "Complete" &&
           appoinmentsComplete?.map((appointment) => (
             <AppointmentItem
@@ -142,15 +115,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     marginVertical: 10,
+    marginHorizontal: 10,
   },
   filterButton: {
     borderWidth: 1,
     borderColor: COLORS.PersianGreen,
     borderRadius: 20,
     paddingVertical: 5,
-    paddingHorizontal: 15,
     marginHorizontal: 5,
     backgroundColor: COLORS.white,
+    flex: 1,
   },
   activeButton: {
     backgroundColor: COLORS.PersianGreen,
@@ -158,6 +132,7 @@ const styles = StyleSheet.create({
   filterButtonText: {
     color: COLORS.PersianGreen,
     fontWeight: "bold",
+    textAlign: "center",
   },
   activeButtonText: {
     color: COLORS.white,

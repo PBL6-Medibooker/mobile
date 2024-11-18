@@ -24,6 +24,7 @@ import {
   Articles,
   AddPost,
   DoctorAppointmentDetail,
+  AddArticle,
 } from "../screens";
 import BottomTabNavigation from "./BottomTabNavigation";
 const Stack = createNativeStackNavigator();
@@ -53,8 +54,12 @@ const AppNavigation = () => {
         <Stack.Screen name="Myappointment" component={Myappointment} />
         <Stack.Screen name="Privacy" component={Privacy} />
         <Stack.Screen name="AppointmentDetail" component={AppointmentDetail} />
-        <Stack.Screen name="DoctorAppointmentDetail" component={DoctorAppointmentDetail} />
+        <Stack.Screen
+          name="DoctorAppointmentDetail"
+          component={DoctorAppointmentDetail}
+        />
         <Stack.Screen name="SettingAccount" component={SettingAccount} />
+        <Stack.Screen name="AddArticle" component={AddArticle} />
         <Stack.Screen
           name="SettingNotification"
           component={SettingNotification}

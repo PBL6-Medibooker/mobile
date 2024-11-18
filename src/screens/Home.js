@@ -15,24 +15,37 @@ import Entypo from "@expo/vector-icons/Entypo";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { articles } from "../utils/articles";
 import { ArticleItem, HeaderHome } from "../components";
 import { useAuth } from "../AuthProvider";
 import useArticles from "../hooks/useArticles";
-import { useEffect } from "react";
-import { useFonts } from "expo-font";
+import { useCallback, useEffect } from "react";
 import useCustomFonts from "../hooks/useCustomFonts";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Home = ({ navigation }) => {
   const fontsLoaded = useCustomFonts();
 
-  const { isLoggedIn, error } = useAuth();
-  const [articlesHook, firstArticle, fourArticles, loading] = useArticles();
+  const { isLoggedIn, error, account } = useAuth();
+  const [
+    articlesHook,
+    firstArticle,
+    fourArticles,
+    loading,
+    getArticlesBySpecialty,
+    getArticlesByDoctor,
+    filterArticles,
+  ] = useArticles();
 
   useEffect(() => {
     if (!isLoggedIn && error !== null)
       Alert.alert("Thông báo", error, [{ text: "OK" }]);
   }, [error]);
+
+  useFocusEffect(
+    useCallback(() => {
+      filterArticles();
+    }, [navigation])
+  );
 
   const handleBooking = () => {
     if (!isLoggedIn) {
@@ -76,21 +89,43 @@ const Home = ({ navigation }) => {
               <View style={styles.bookingFrame}>
                 <View style={styles.separate}></View>
 
-                <Pressable
-                  onPress={() => handleBooking()}
-                  style={({ pressed }) => [
-                    {
-                      backgroundColor: pressed
-                        ? COLORS.Light50PersianGreen
-                        : COLORS.PersianGreen,
-                    },
-                    styles.buttonContainer,
-                  ]}>
-                  <View style={styles.buttonIcon}>
-                    <Entypo name="calendar" size={24} color={COLORS.white} />
-                    <Text style={styles.text}>Đặt lịch khám bệnh</Text>
-                  </View>
-                </Pressable>
+                {isLoggedIn && account?.__t === "Doctor" ? (
+                  <Pressable
+                    onPress={() => navigation.navigate("AddArticle")}
+                    style={({ pressed }) => [
+                      {
+                        backgroundColor: pressed
+                          ? COLORS.Light50PersianGreen
+                          : COLORS.PersianGreen,
+                      },
+                      styles.buttonContainer,
+                    ]}>
+                    <View style={styles.buttonIcon}>
+                      <Entypo
+                        name="add-to-list"
+                        size={24}
+                        color={COLORS.white}
+                      />
+                      <Text style={styles.text}>Đăng tin tức mới</Text>
+                    </View>
+                  </Pressable>
+                ) : (
+                  <Pressable
+                    onPress={() => handleBooking()}
+                    style={({ pressed }) => [
+                      {
+                        backgroundColor: pressed
+                          ? COLORS.Light50PersianGreen
+                          : COLORS.PersianGreen,
+                      },
+                      styles.buttonContainer,
+                    ]}>
+                    <View style={styles.buttonIcon}>
+                      <Entypo name="calendar" size={24} color={COLORS.white} />
+                      <Text style={styles.text}>Đặt lịch khám bệnh</Text>
+                    </View>
+                  </Pressable>
+                )}
 
                 <View style={styles.separate}></View>
               </View>
@@ -107,7 +142,7 @@ const Home = ({ navigation }) => {
                   <Text style={styles.featureText}>Chuyên khoa</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => {}}
+                  onPress={() => navigation.navigate("Forum")}
                   style={[styles.featureButton, { borderRightWidth: 1 }]}>
                   <View style={styles.featureIcon}>
                     <FontAwesome5 name="blog" size={24} color={COLORS.white} />
@@ -168,36 +203,42 @@ const Home = ({ navigation }) => {
                 Tin tức mới nhất:
               </Text>
 
-              {firstArticle && <TouchableOpacity
-                style={styles.firstArticleContainer}
-                onPress={() =>
-                  navigation.navigate("ViewArticle", { post: firstArticle })
-                }>
-                <Image
-                  source={images.poster}
-                  style={styles.imageFirstArticle}
-                />
-                <Text style={styles.titleFirstArticle} numberOfLines={2}>
-                  {firstArticle.article_title}
-                </Text>
-                <Text
-                  style={[
-                    styles.dateFirstArticle,
-                    { alignSelf: "flex-start" },
-                  ]}>
-                  Đăng bởi: {firstArticle.doctor_id?.email}
-                </Text>
-                <View style={styles.dateFirstArticleContainer}>
-                  <FontAwesome5
-                    name="calendar-alt"
-                    size={18}
-                    color={COLORS.gray}
+              {firstArticle && (
+                <TouchableOpacity
+                  style={styles.firstArticleContainer}
+                  onPress={() =>
+                    navigation.navigate("ViewArticle", { post: firstArticle })
+                  }>
+                  <Image
+                    source={
+                      firstArticle?.article_image
+                        ? { uri: firstArticle.article_image }
+                        : images.poster
+                    }
+                    style={styles.imageFirstArticle}
                   />
-                  <Text style={styles.dateFirstArticle}>
-                    {firstArticle.date_published}
+                  <Text style={styles.titleFirstArticle} numberOfLines={2}>
+                    {firstArticle.article_title}
                   </Text>
-                </View>
-              </TouchableOpacity>}
+                  <Text
+                    style={[
+                      styles.dateFirstArticle,
+                      { alignSelf: "flex-start" },
+                    ]}>
+                    Đăng bởi: {firstArticle.doctor_id?.email}
+                  </Text>
+                  <View style={styles.dateFirstArticleContainer}>
+                    <FontAwesome5
+                      name="calendar-alt"
+                      size={18}
+                      color={COLORS.gray}
+                    />
+                    <Text style={styles.dateFirstArticle}>
+                      {firstArticle.date_published}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
 
               <TouchableOpacity
                 style={styles.showAll}
@@ -316,6 +357,7 @@ const styles = StyleSheet.create({
     color: COLORS.blue,
     textAlign: "justify",
     marginTop: 5,
+    textAlign: "left",
   },
   dateFirstArticleContainer: {
     flexDirection: "row",

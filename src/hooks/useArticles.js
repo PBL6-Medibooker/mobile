@@ -10,13 +10,13 @@ const useArticles = () => {
   const filterFirstArticle = (data) => {
     return data
       .slice()
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+      .sort((a, b) => new Date(b.date_published) - new Date(a.date_published))[0];
   };
 
   const filterFourArticles = (data) => {
     return data
       .slice()
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .sort((a, b) => new Date(b.date_published) - new Date(a.date_published))
       .slice(1, 5);
   };
 
@@ -71,7 +71,8 @@ const useArticles = () => {
     fourArticles,
     loading,
     getArticlesBySpecialty,
-    getArticlesByDoctor
+    getArticlesByDoctor,
+    filterArticles,
   ];
 };
 

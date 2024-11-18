@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   Pressable,
   StyleSheet,
@@ -9,9 +10,11 @@ import {
 import { COLORS, images } from "../constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useEffect } from "react";
+import { useAuth } from "../AuthProvider";
 
 const DoctorItem = ({ item, navigation }) => {
   // useEffect(() => console.log(item));
+  const { isLoggedIn, account } = useAuth();
   return (
     <View style={styles.doctorContainer} key={item._id}>
       <Pressable
@@ -40,7 +43,24 @@ const DoctorItem = ({ item, navigation }) => {
         </Pressable>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("Booking", { doctorSelected: item });
+            if (isLoggedIn && account?.email)
+              navigation.navigate("Booking", { doctorSelected: item });
+            else {
+              Alert.alert(
+                "Thông báo",
+                "Bạn cần đăng nhập để tiếp tục thao tác!",
+                [
+                  {
+                    text: "Để sau",
+                    style: "cancel",
+                  },
+                  {
+                    text: "OK",
+                    onPress: () => navigation.navigate("Login"),
+                  },
+                ]
+              );
+            }
           }}
           style={styles.makeAppointment}>
           <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
@@ -59,7 +79,7 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: COLORS.white,
     borderRadius: 10,
-    elevation: 2
+    elevation: 2,
   },
   imageContainer: {
     width: 80,

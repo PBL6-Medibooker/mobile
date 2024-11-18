@@ -37,10 +37,11 @@ const VerifyBooking = ({ navigation, route }) => {
 
   const handleRegister = async () => {
     try {
+      console.log(`${time.dayOfWeek} ${time.date}`);
       const add_appointment = await Appointment_API.add_Appointment(
         account._id,
         doctor._id,
-        `${time.dayOfWeek} ${formatToDDMMYYYY(time.date)}`,
+        `${time.dayOfWeek} ${time.date}`,
         time.time.start_time,
         time.time.end_time,
         healthStatus,

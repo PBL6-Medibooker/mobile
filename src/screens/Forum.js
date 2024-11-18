@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -114,7 +115,20 @@ const Forum = ({ navigation }) => {
 
   const handleAddPost = () => {
     if (!isLoggedIn) {
-      navigation.navigate("Login");
+      Alert.alert(
+        "Thông báo",
+        "Bạn cần đăng nhập để tiếp tục thao tác!",
+        [
+          {
+            text: "Để sau",
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Login"),
+          },
+        ]
+      );
     } else {
       navigation.navigate("AddPost");
     }

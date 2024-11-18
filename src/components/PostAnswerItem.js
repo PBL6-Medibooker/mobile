@@ -78,7 +78,14 @@ const PostAnswerItem = ({
         </TouchableOpacity>
         <View style={{ maxWidth: "86%" }}>
           <View style={styles.commentContainer}>
-            <Text style={styles.usernameComment}>{item.replier?.username}</Text>
+            <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+              <Text style={styles.usernameComment}>
+                {item.replier?.username}
+              </Text>
+              {item.replier?.__t && (
+                <Text style={{ fontSize: 12, marginLeft: 2 }}>(Bác sĩ)</Text>
+              )}
+            </View>
             {!edit && <Text style={styles.contentComment}>{content}</Text>}
           </View>
           {myAccountEmail === item?.replier?.email && !edit && (

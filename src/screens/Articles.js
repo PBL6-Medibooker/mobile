@@ -29,7 +29,10 @@ export const Articles = ({ navigation }) => {
     fourArticles,
     loading,
     getArticlesBySpecialty,
+    getArticlesByDoctor,
+    filterArticles,
   ] = useArticles();
+
   const [specialitiesHook] = useSpecialities();
 
   const [articleList, setArticleList] = useState([]);
@@ -119,7 +122,14 @@ export const Articles = ({ navigation }) => {
                   onPress={() =>
                     navigation.navigate("ViewArticle", { post: item })
                   }>
-                  <Image source={images.poster} style={styles.imagePost} />
+                  <Image
+                    source={
+                      item?.article_image
+                        ? { uri: item.article_image }
+                        : images.poster
+                    }
+                    style={styles.imagePost}
+                  />
                   <Text style={styles.titlePost} numberOfLines={2}>
                     {item.article_title}
                   </Text>
