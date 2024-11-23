@@ -12,7 +12,7 @@ const useRegions = () => {
         allRegions.slice().sort((a, b) => a.name.localeCompare(b.name))
       );
     } catch (error) {
-      console.error("Failed to fetch specialities:", error);
+      console.error("Failed to fetch regions:", error);
     }
   };
 

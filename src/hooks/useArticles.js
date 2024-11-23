@@ -8,16 +8,20 @@ const useArticles = () => {
   const [loading, isLoading] = useState(false);
 
   const filterFirstArticle = (data) => {
-    return data
-      .slice()
-      .sort((a, b) => new Date(b.date_published) - new Date(a.date_published))[0];
+    if (data?.length > 0)
+      return [...data].sort(
+        (a, b) => new Date(b.date_published) - new Date(a.date_published)
+      )[0];
+    return {};
   };
 
   const filterFourArticles = (data) => {
-    return data
-      .slice()
-      .sort((a, b) => new Date(b.date_published) - new Date(a.date_published))
-      .slice(1, 5);
+    if (data?.length > 0)
+      return [...data]
+        .sort((a, b) => new Date(b.date_published) - new Date(a.date_published))
+        .slice(1, 5);
+
+    return [];
   };
 
   const filterArticles = async () => {
@@ -29,7 +33,7 @@ const useArticles = () => {
       setFirstArticle(filterFirstArticle(allArticles));
       setFourArticles(filterFourArticles(allArticles));
     } catch (error) {
-      console.error("Failed to fetch specialities:", error);
+      console.error("Failed to fetch articles:", error);
     } finally {
       isLoading(false);
     }

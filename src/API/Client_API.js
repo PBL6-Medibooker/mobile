@@ -3,16 +3,13 @@ import client from "./client";
 const get_Client_By_User_Id = async (userID) => {
   try {
     const res = await client.get(`/client/get-client-by-userid/${userID}`);
-    // console.log("response: ", res.data);
+
     return res.data;
   } catch (error) {
-    if (error.response) {
-      console.log("Error response: ", error.response.data.error);
-      //   return error.response.data.error;
-    } else {
-      console.log("Error not response: ", error.message);
-      //   return error.message;
-    }
+    if (error.response)
+      console.error("Error get_Client_By_User_Id: ", error.response.data.error);
+    else console.error("Error get_Client_By_User_Id: ", error.message);
+
     return null;
   }
 };
@@ -28,14 +25,11 @@ const add_Client = async (userID, insurance) => {
     });
     return response.data;
   } catch (error) {
-    if (error.response) {
-        console.log("Error response: ", error.response.data.error);
-        //   return error.response.data.error;
-      } else {
-        console.log("Error not response: ", error.message);
-        //   return error.message;
-      }
-      return null;
+    if (error.response)
+      console.error("Error add_Client: ", error.response.data.error);
+    else console.error("Error add_Client: ", error.message);
+
+    return null;
   }
 };
 

@@ -4,6 +4,8 @@ import { HeaderBack, PostAnswerItem } from "../components";
 import {
   Alert,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,9 +19,8 @@ import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { it, tr, vi } from "date-fns/locale";
 import { useAuth } from "../AuthProvider";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { windowWidth } from "../utils/Dimentions";
 import Post_API from "../API/Post_API";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const QADetail = ({ navigation, route }) => {
   const { QA } = route.params || {};
@@ -32,7 +33,7 @@ const QADetail = ({ navigation, route }) => {
   const handleAddAnswer = async () => {
     try {
       const res = await Post_API.add_Comment(post._id, account.email, myAnswer);
-      console.log(res);
+      // console.log(res);
       if (typeof res === "object") {
         setPost(res);
         setMyAnswer(null);
@@ -42,62 +43,91 @@ const QADetail = ({ navigation, route }) => {
     }
   };
 
+  const handleDeleteAnswer = (id) => {
+    console.log(id);
+    const cmt = post.post_comments.filter((item) => item._id !== id);
+    setPost({ ...post, post_comments: cmt });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <HeaderBack navigation={navigation} backgroundColor={true} />
+      <KeyboardAvoidingView style={{ flex: 1 }} keyboardVerticalOffset={100}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <HeaderBack navigation={navigation} backgroundColor={true} />
 
-        <View style={styles.question}>
-          <Text style={styles.title}>{post.post_title}</Text>
-          <View style={styles.userInfo}>
-            <AntDesign name="message1" size={18} color={COLORS.PersianGreen} />
-            <Text style={styles.userName}>{post.user_id.email}</Text>
-          </View>
-          <View style={styles.specialty}>
-            <Text style={{ fontSize: 12 }}>
-              #{post.speciality_id?.name?.replace(/\s/g, "")}
+          <View style={styles.question}>
+            <Text style={styles.title}>{post.post_title}</Text>
+            <View style={styles.userInfo}>
+              <AntDesign
+                name="message1"
+                size={18}
+                color={COLORS.PersianGreen}
+              />
+              <Text style={styles.userName}>{post.user_id.email}</Text>
+            </View>
+            <View style={styles.specialty}>
+              <Text style={{ fontSize: 12 }}>
+                #{post.speciality_id?.name?.replace(/\s/g, "")}
+              </Text>
+            </View>
+            <Text style={styles.content}>{post.post_content}</Text>
+            <Text style={styles.createdDate}>
+              Đăng lúc:{" "}
+              {formatDistanceToNow(new Date(post.createdAt), {
+                addSuffix: true,
+                locale: vi,
+              })}
             </Text>
           </View>
-          <Text style={styles.content}>{post.post_content}</Text>
-          <Text style={styles.createdDate}>
-            Đăng lúc:{" "}
-            {formatDistanceToNow(new Date(post.createdAt), {
-              addSuffix: true,
-              locale: vi,
-            })}
-          </Text>
-        </View>
 
-        {post.post_comments?.length > 0 &&
-          post.post_comments.map((item) => (
-            <PostAnswerItem
-              item={item}
-              myAccountEmail={account?.email}
-              key={item._id}
-              answerKey={item._id}
-              post_id={post._id}
-              navigation={navigation}
-            />
-          ))}
+          {post.post_comments?.length > 0 &&
+            post.post_comments.map((item) => (
+              <PostAnswerItem
+                item={item}
+                myAccountEmail={account?.email}
+                key={item._id}
+                answerKey={item._id}
+                post_id={post._id}
+                navigation={navigation}
+                onDeleted={handleDeleteAnswer}
+              />
+            ))}
 
-        <View style={{ marginHorizontal: 15 }}>
-          <Text
-            style={{
-              fontSize: 16,
-              color: COLORS.PersianGreen,
-              marginVertical: 5,
-            }}>
-            Trả lời câu hỏi:
-          </Text>
+          <View style={{ height: 70 }} />
+        </ScrollView>
+
+        <View
+          style={{
+            flexDirection: "row",
+            paddingVertical: 6,
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            // borderWidth: 1,
+            backgroundColor: COLORS.white,
+            paddingHorizontal: 15,
+            alignItems: "center",
+            elevation: 3,
+          }}>
           <TextInput
-            multiline
-            numberOfLines={3}
-            style={styles.inputAnswer}
+            style={{
+              borderWidth: 1.5,
+              flex: 1,
+              borderRadius: 999,
+              borderColor: COLORS.silver,
+              // fontSize: 12,
+              paddingHorizontal: 15,
+              paddingVertical: 5,
+              height: 38
+            }}
+            placeholder="Nhập câu trả lời ..."
             value={myAnswer}
             onChangeText={(value) => setMyAnswer(value)}
           />
           <TouchableOpacity
             onPress={() => {
+              Keyboard.dismiss();
               if (isLoggedIn && account?.email) handleAddAnswer();
               else {
                 Alert.alert(
@@ -115,25 +145,16 @@ const QADetail = ({ navigation, route }) => {
                   ]
                 );
               }
-            }}
-            style={{
-              backgroundColor: COLORS.PersianGreen,
-              marginVertical: 5,
-              borderRadius: 10,
-              marginBottom: 30,
-              marginTop: 10,
             }}>
-            <Text
-              style={{
-                color: COLORS.white,
-                paddingVertical: 8,
-                textAlign: "center",
-              }}>
-              Gửi câu trả lời
-            </Text>
+            <Ionicons
+              name="send"
+              size={30}
+              color={COLORS.PersianGreen}
+              style={{ marginLeft: 6 }}
+            />
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

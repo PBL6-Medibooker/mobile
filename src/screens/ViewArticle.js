@@ -144,7 +144,8 @@ const ViewArticle = ({ navigation, route }) => {
                       color={COLORS.gray}
                     />
                     <Text style={styles.dateSuggestedPost}>
-                      {post.date_published}
+                      {formatToHHMMSS(post.date_published)}{" "}
+                      {formatToDDMMYYYY(post.date_published)}
                     </Text>
                   </View>
                 </TouchableOpacity>

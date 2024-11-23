@@ -79,6 +79,7 @@ export const UploadPDF = async () => {
     });
 
     if (!result.canceled && result.assets) {
+      console.log(result.assets[0]);
       return result.assets[0];
     } else if (result.canceled) {
       Alert.alert("Thông báo", "Người dùng đã hủy chọn tệp PDF.");

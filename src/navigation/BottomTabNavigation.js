@@ -64,7 +64,7 @@ export default BottomTabNavigation = ({ route, navigation }) => {
           return <FontAwesome6 name={iconName} size={20} color={color} />;
         },
         tabBarActiveTintColor: COLORS.PersianGreen,
-        tabBarInactiveTintColor: COLORS.gray,
+        tabBarInactiveTintColor: COLORS.black,
         tabBarLabel: ({ focused, color }) => (
           <Text
             style={{
@@ -77,11 +77,15 @@ export default BottomTabNavigation = ({ route, navigation }) => {
           </Text>
         ),
         tabBarStyle: {
-          height: 65,
-          marginBottom: 10,
-          marginHorizontal: 10,
-          borderRadius: 20,
+          height: 55,
+          position: "absolute",
+          bottom: 10,
+          left: 12,
+          right: 12,
+          borderRadius: 18,
+          backgroundColor: COLORS.Light20PersianGreen,
         },
+        // tab: COLORS.Light50PersianGreen
       })}>
       <Tab.Screen
         name="Giới thiệu"

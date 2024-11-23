@@ -39,9 +39,9 @@ const add_Appointment = async (
     return { status: "appointment", data: response.data };
   } catch (error) {
     if (error.response) {
-      console.error("Error response: ", error.response.data.error);
+      console.error("Error add appointment: ", error.response.data.error);
     } else {
-      console.error("Error not response: ", error.message);
+      console.error("Error add appointment: ", error.message);
     }
     return null;
   }
@@ -60,9 +60,9 @@ const get_All_Appointment = async (user_id) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error("Error response: ", error.response.data.error);
+      console.error("Error get appointments: ", error.response.data.error);
     } else {
-      console.error("Error not response: ", error.message);
+      console.error("Error get appointments: ", error.message);
     }
     return null;
   }
@@ -98,9 +98,15 @@ const get_Appointment_By_Status = async (user_id) => {
     return appointments;
   } catch (error) {
     if (error.response) {
-      console.error("Error response: ", error.response.data.error);
+      console.error(
+        "Error get appointment of user: ",
+        error.response.data.error
+      );
     } else {
-      console.error("Error not response: ", error.message);
+      console.error(
+        "Error get appointment of user: ",
+        error.message
+      );
     }
     return null;
   }
@@ -114,8 +120,8 @@ const soft_delete_Appointment = async (appointmentId) => {
     return response.data;
   } catch (error) {
     if (error.response)
-      console.error("Error response: ", error.response.data.error);
-    else console.error("Error not response: ", error.message);
+      console.error("Error delete appointment: ", error.response.data.error);
+    else console.error("Error delete appointment: ", error.message);
     return null;
   }
 };
@@ -128,8 +134,8 @@ const restore_Appointment = async (appointmentId) => {
     return response.data;
   } catch (error) {
     if (error.response)
-      console.error("Error response: ", error.response.data.error);
-    else console.error("Error not response: ", error.message);
+      console.error("Error restore appointment: ", error.response.data.error);
+    else console.error("Error restore appointment: ", error.message);
     return null;
   }
 };
@@ -144,8 +150,8 @@ const canncel_Appointment = async (appointmentId) => {
     return response.data;
   } catch (error) {
     if (error.response)
-      console.error("Error response: ", error.response.data.error);
-    else console.error("Error not response: ", error.message);
+      console.error("Error cancel appointment: ", error.response.data.error);
+    else console.error("Error cancel appointment: ", error.message);
     return null;
   }
 };
@@ -181,9 +187,9 @@ const get_Doctor_Appointment_By_Status = async (doctor_id) => {
     return appointments;
   } catch (error) {
     if (error.response) {
-      console.error("Error response: ", error.response.data.error);
+      console.error("Error get appointment of doctor: ", error.response.data.error);
     } else {
-      console.error("Error not response: ", error.message);
+      console.error("Error get appointment of doctor: ", error.message);
     }
     return null;
   }

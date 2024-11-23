@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Pressable,
@@ -18,12 +19,20 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Article_API from "../API/Article_API";
 import { UploadImageArticle } from "../utils/Upload";
 
-const AddArticle = ({ navigation }) => {
+const AddArticle = ({ navigation, route }) => {
+  const { status, article } = route.params || {};
+  const text = status === "add" ? "Đăng tin" : "Cập nhật";
+
   const { account } = useAuth();
 
-  const [articleTitle, setPostTitle] = useState(null);
-  const [articleContent, setArticleContent] = useState(null);
-  const [articleImage, setArticleImage] = useState({});
+  const [loadingStatus, setLoadingStatus] = useState(false);
+  const [articleTitle, setPostTitle] = useState(article?.article_title || null);
+  const [articleContent, setArticleContent] = useState(
+    article?.article_content || null
+  );
+  const [articleImage, setArticleImage] = useState(
+    article?.article_image ? { uri: article?.article_image } : {}
+  );
 
   const [error, isError] = useState(false);
   const [message, setMessage] = useState(null);
@@ -33,6 +42,50 @@ const AddArticle = ({ navigation }) => {
     console.log(image);
 
     if (image) setArticleImage(image);
+  };
+
+  const add_Article = async () => {
+    setLoadingStatus(true);
+    const res = await Article_API.add_Article(
+      account.email,
+      articleTitle,
+      articleContent,
+      articleImage
+    );
+    setLoadingStatus(false);
+
+    if (typeof res === "object") {
+      Alert.alert("Thông báo", "Thêm tin tức mới thành công.", [
+        {
+          text: "OK",
+          onPress: () => {
+            navigation.goBack();
+          },
+        },
+      ]);
+    } else Alert.alert("Thông báo", res, [{ text: "OK" }]);
+  };
+
+  const update_Article = async () => {
+    setLoadingStatus(true);
+    const res = await Article_API.update_Article(
+      article._id,
+      articleTitle,
+      articleContent,
+      articleImage
+    );
+    setLoadingStatus(false);
+
+    if (typeof res === "object") {
+      Alert.alert("Thông báo", "Cập nhật tin tức thành công.", [
+        {
+          text: "OK",
+          onPress: () => {
+            navigation.goBack();
+          },
+        },
+      ]);
+    } else Alert.alert("Thông báo", res, [{ text: "OK" }]);
   };
 
   const handleAddPost = async () => {
@@ -48,25 +101,8 @@ const AddArticle = ({ navigation }) => {
 
     isError(false);
     // console.log(account.email, articleTitle, articleContent, specialty.name);
-    const res = await Article_API.add_Article(
-      account.email,
-      articleTitle,
-      articleContent,
-      // specialty.name
-      articleImage
-    );
-
-    if (typeof res === "object") {
-      // console.log(res);
-      Alert.alert("Thông báo", "Thành công.", [
-        {
-          text: "OK",
-          onPress: () => {
-            navigation.navigate("Home");
-          },
-        },
-      ]);
-    } else Alert.alert("Thông báo", res, [{ text: "OK" }]);
+    if (status === "add") await add_Article();
+    else await update_Article();
   };
 
   const handleFocus = (field) => {
@@ -96,10 +132,10 @@ const AddArticle = ({ navigation }) => {
             )}
 
             <View>
-              <Text style={styles.specialtyLabel}>Đặt câu hỏi:</Text>
+              <Text style={styles.specialtyLabel}>Nội dung:</Text>
               <TextInput
                 style={styles.content}
-                numberOfLines={3}
+                numberOfLines={12}
                 multiline
                 onFocus={() => handleFocus("content")}
                 value={articleContent}
@@ -148,11 +184,28 @@ const AddArticle = ({ navigation }) => {
                 },
                 styles.button,
               ]}>
-              <Text style={styles.buttonText}>Đăng bài</Text>
+              <Text style={styles.buttonText}>{text}</Text>
             </Pressable>
           </View>
         </ScrollView>
       </View>
+
+      {loadingStatus && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -201,7 +254,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     color: COLORS.PersianGreen,
     padding: 8,
-    marginBottom: 40
+    marginBottom: 40,
   },
   buttonText: {
     color: COLORS.white,

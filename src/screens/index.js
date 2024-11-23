@@ -25,6 +25,8 @@ import { Articles } from "./Articles";
 import AddPost from "./addPost";
 import DoctorAppointmentDetail from "./DrAppointmentDetail";
 import AddArticle from "./addArticle";
+import MyArticles from "./MyArticle";
+import RecyclingBin from "./recyclingBin";
 
 export {
   Home,
@@ -54,4 +56,6 @@ export {
   DoctorAppointment,
   DoctorAppointmentDetail,
   AddArticle,
+  MyArticles,
+  RecyclingBin
 };

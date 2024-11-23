@@ -106,10 +106,6 @@ const styles = StyleSheet.create({
     textAlign: "justify",
     color: COLORS.PersianGreen,
   },
-  intro: {
-    fontSize: 13,
-    textAlign: "justify",
-  },
   infoContainer: {
     flex: 1,
   },

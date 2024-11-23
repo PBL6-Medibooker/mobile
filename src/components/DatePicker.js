@@ -114,10 +114,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderColor: COLORS.silver,
   },
-  disabledButton: {
-    // backgroundColor: COLORS.silver, // Change background color when disabled
-    // borderColor: COLORS.lightGray, // Change border color when disabled
-  },
   centeredView: {
     flex: 1,
     alignItems: "center",
@@ -130,12 +126,5 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     width: "90%",
-  },
-  textMessage: {
-    color: COLORS.black,
-    fontSize: 12,
-    backgroundColor: COLORS.Light20PersianGreen,
-    padding: 6,
-    borderRadius: 10,
   },
 });

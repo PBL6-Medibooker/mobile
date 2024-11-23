@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   StyleSheet,
   Text,
@@ -20,6 +21,7 @@ const PostAnswerItem = ({
   answerKey,
   post_id,
   navigation,
+  onDeleted,
 }) => {
   const [replier, setReplier] = useState(null);
   const [content, setContent] = useState(item.comment_content);
@@ -39,6 +41,36 @@ const PostAnswerItem = ({
     }
   };
 
+  const deleteAnswer = async () => {
+    try {
+      const updatePost = await Post_API.delete_Comment(post_id, item._id);
+      if (updatePost?.post) {
+        Alert.alert("Thông báo", "Đã xoá bình luận.", [
+          {
+            text: "OK",
+            onPress: async () => {
+              onDeleted(item._id);
+            },
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteAnswer = () => {
+    Alert.alert("", "Bạn có chắc chắn muốn xoá bình luận này không?", [
+      { text: "No", style: "cancel" },
+      {
+        text: "Yes",
+        onPress: async () => {
+          deleteAnswer();
+        },
+      },
+    ]);
+  };
+
   useEffect(() => {
     const getReplierNameById = async () => {
       if (item.replier?._id) {
@@ -53,7 +85,11 @@ const PostAnswerItem = ({
 
   return (
     <View style={styles.answer} key={answerKey}>
-      <View style={styles.doctorInfo}>
+      <View
+        style={[
+          styles.doctorInfo,
+          myAccountEmail !== item?.replier?.email && { marginRight: 5 },
+        ]}>
         <TouchableOpacity
           style={styles.imageContainer}
           onPress={() => {
@@ -76,7 +112,7 @@ const PostAnswerItem = ({
             style={styles.image}
           />
         </TouchableOpacity>
-        <View style={{ maxWidth: "86%" }}>
+        <View style={{ flex: 1 }}>
           <View style={styles.commentContainer}>
             <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
               <Text style={styles.usernameComment}>
@@ -88,13 +124,28 @@ const PostAnswerItem = ({
             </View>
             {!edit && <Text style={styles.contentComment}>{content}</Text>}
           </View>
-          {myAccountEmail === item?.replier?.email && !edit && (
-            <TouchableOpacity
-              style={styles.editIcon}
-              onPress={() => setEdit(true)}>
-              <FontAwesome name="edit" size={15} color={COLORS.gray} />
-            </TouchableOpacity>
-          )}
+          {/* {myAccountEmail === item?.replier?.email && !edit && (
+            <>
+              <TouchableOpacity
+                style={styles.editIcon}
+                onPress={() => setEdit(true)}>
+                <FontAwesome name="edit" size={15} color={COLORS.gray} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteIcon}
+                onPress={() => handleDeleteAnswer()}>
+                <FontAwesome name="trash" size={15} color={COLORS.gray} />
+              </TouchableOpacity>
+            </>
+          )} */}
+        </View>
+        <View style={{ marginLeft: 5, marginTop: 5 }}>
+          {!edit && <TouchableOpacity style={{marginBottom: 6}} onPress={() => setEdit(true)}>
+            <FontAwesome name="edit" size={18} color={COLORS.gray} />
+          </TouchableOpacity>}
+          <TouchableOpacity style={{}} onPress={() => handleDeleteAnswer()}>
+            <FontAwesome name="trash" size={20} color={COLORS.gray} />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -138,41 +189,8 @@ const PostAnswerItem = ({
 export default PostAnswerItem;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-  },
-  question: {
-    paddingHorizontal: 15,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.Light20PersianGreen,
-  },
-  title: {
-    fontSize: 17,
-    fontWeight: "bold",
-  },
-  userInfo: {
-    flexDirection: "row",
-    paddingVertical: 3,
-    alignItems: "center",
-  },
-  userName: {
-    color: COLORS.PersianGreen,
-    marginStart: 5,
-  },
   content: {
     textAlign: "justify",
-  },
-  specialty: {
-    paddingVertical: 2,
-    paddingHorizontal: 5,
-    backgroundColor: COLORS.Concrete,
-    borderRadius: 5,
-    borderWidth: 0.5,
-    borderColor: COLORS.gray,
-    alignSelf: "flex-start",
-    marginBottom: 5,
   },
   answer: {
     paddingHorizontal: 10,
@@ -202,13 +220,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginBottom: 10,
   },
-  createdDate: {
-    fontSize: 12,
-    textAlign: "right",
-    paddingTop: 5,
-    marginTop: 5,
-    color: COLORS.gray,
-  },
   commentContainer: {
     backgroundColor: COLORS.silver,
     padding: 8,
@@ -223,7 +234,9 @@ const styles = StyleSheet.create({
     bottom: -18,
     right: 0,
   },
-  contentComment: {},
+  contentComment: {
+    marginHorizontal: 2,
+  },
   inputAnswer: {
     borderWidth: 1,
     borderRadius: 15,
@@ -232,5 +245,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     textAlignVertical: "top",
+  },
+  deleteIcon: {
+    position: "absolute",
+    bottom: -17,
+    right: 20,
   },
 });

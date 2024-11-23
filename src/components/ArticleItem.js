@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { COLORS, images } from "../constants";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { formatToDDMMYYYY, formatToHHMMSS } from "../utils/ConvertDate";
 
 const ArticleItem = ({ data, navigation }) => {
   return (
@@ -33,7 +34,10 @@ const ArticleItem = ({ data, navigation }) => {
         </Text>
         <View style={styles.dateContainer}>
           <FontAwesome5 name="calendar-alt" size={15} color={COLORS.gray} />
-          <Text style={styles.date}>{data.date_published}</Text>
+          <Text style={styles.date}>
+            {formatToHHMMSS(data.date_published)}{" "}
+            {formatToDDMMYYYY(data.date_published)}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -44,11 +48,9 @@ export default ArticleItem;
 
 const styles = StyleSheet.create({
   itemContainer: {
-    borderBottomWidth: 1,
-    borderColor: COLORS.silver,
     marginHorizontal: 12,
     flexDirection: "row",
-    paddingVertical: 15,
+    paddingTop: 15,
   },
   imageButton: {
     height: 70,

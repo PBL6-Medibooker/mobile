@@ -21,6 +21,7 @@ import useArticles from "../hooks/useArticles";
 import { useCallback, useEffect } from "react";
 import useCustomFonts from "../hooks/useCustomFonts";
 import { useFocusEffect } from "@react-navigation/native";
+import { formatToDDMMYYYY, formatToHHMMSS } from "../utils/ConvertDate";
 
 const Home = ({ navigation }) => {
   const fontsLoaded = useCustomFonts();
@@ -72,6 +73,7 @@ const Home = ({ navigation }) => {
         data={fourArticles}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item._id.toString()}
+        ItemSeparatorComponent={() => <View style={styles.separateFlat} />}
         renderItem={({ item }) => (
           <ArticleItem data={item} navigation={navigation} />
         )}
@@ -89,43 +91,21 @@ const Home = ({ navigation }) => {
               <View style={styles.bookingFrame}>
                 <View style={styles.separate}></View>
 
-                {isLoggedIn && account?.__t === "Doctor" ? (
-                  <Pressable
-                    onPress={() => navigation.navigate("AddArticle")}
-                    style={({ pressed }) => [
-                      {
-                        backgroundColor: pressed
-                          ? COLORS.Light50PersianGreen
-                          : COLORS.PersianGreen,
-                      },
-                      styles.buttonContainer,
-                    ]}>
-                    <View style={styles.buttonIcon}>
-                      <Entypo
-                        name="add-to-list"
-                        size={24}
-                        color={COLORS.white}
-                      />
-                      <Text style={styles.text}>Đăng tin tức mới</Text>
-                    </View>
-                  </Pressable>
-                ) : (
-                  <Pressable
-                    onPress={() => handleBooking()}
-                    style={({ pressed }) => [
-                      {
-                        backgroundColor: pressed
-                          ? COLORS.Light50PersianGreen
-                          : COLORS.PersianGreen,
-                      },
-                      styles.buttonContainer,
-                    ]}>
-                    <View style={styles.buttonIcon}>
-                      <Entypo name="calendar" size={24} color={COLORS.white} />
-                      <Text style={styles.text}>Đặt lịch khám bệnh</Text>
-                    </View>
-                  </Pressable>
-                )}
+                <Pressable
+                  onPress={() => handleBooking()}
+                  style={({ pressed }) => [
+                    {
+                      backgroundColor: pressed
+                        ? COLORS.Light50PersianGreen
+                        : COLORS.PersianGreen,
+                    },
+                    styles.buttonContainer,
+                  ]}>
+                  <View style={styles.buttonIcon}>
+                    <Entypo name="calendar" size={24} color={COLORS.white} />
+                    <Text style={styles.text}>Đặt lịch khám bệnh</Text>
+                  </View>
+                </Pressable>
 
                 <View style={styles.separate}></View>
               </View>
@@ -163,17 +143,34 @@ const Home = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
               <View style={styles.featureRow}>
-                <TouchableOpacity
-                  style={[styles.featureButton, { borderRightWidth: 1 }]}>
-                  <View style={styles.featureIcon}>
-                    <FontAwesome5
-                      name="search"
-                      size={24}
-                      color={COLORS.white}
-                    />
-                  </View>
-                  <Text style={styles.featureText}>Tra cứu kết quả</Text>
-                </TouchableOpacity>
+                {isLoggedIn && account?.__t === "Doctor" ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate("MyArticle");
+                    }}
+                    style={[styles.featureButton, { borderRightWidth: 1 }]}>
+                    <View style={styles.featureIcon}>
+                      <MaterialIcons
+                        name="article"
+                        size={24}
+                        color={COLORS.white}
+                      />
+                    </View>
+                    <Text style={styles.featureText}>Tin tức của bạn</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={[styles.featureButton, { borderRightWidth: 1 }]}>
+                    <View style={styles.featureIcon}>
+                      <FontAwesome5
+                        name="search"
+                        size={24}
+                        color={COLORS.white}
+                      />
+                    </View>
+                    <Text style={styles.featureText}>Tra cứu kết quả</Text>
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity
                   style={[styles.featureButton, { borderRightWidth: 1 }]}>
                   <View style={styles.featureIcon}>
@@ -203,7 +200,7 @@ const Home = ({ navigation }) => {
                 Tin tức mới nhất:
               </Text>
 
-              {firstArticle && (
+              {firstArticle?.article_title && (
                 <TouchableOpacity
                   style={styles.firstArticleContainer}
                   onPress={() =>
@@ -234,7 +231,8 @@ const Home = ({ navigation }) => {
                       color={COLORS.gray}
                     />
                     <Text style={styles.dateFirstArticle}>
-                      {firstArticle.date_published}
+                      {formatToHHMMSS(firstArticle.date_published)}{" "}
+                      {formatToDDMMYYYY(firstArticle.date_published)}
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -374,5 +372,12 @@ const styles = StyleSheet.create({
     color: COLORS.blue,
     alignSelf: "flex-end",
     textDecorationLine: "underline",
+  },
+  separateFlat: {
+    height: 1,
+    backgroundColor: COLORS.silver,
+    marginHorizontal: 15,
+    borderRadius: 999,
+    marginTop: 15,
   },
 });

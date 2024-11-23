@@ -11,6 +11,7 @@ import {
   Login,
   Logout,
   Myappointment,
+  RecyclingBin,
   UserProfile,
 } from "../screens";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -75,7 +76,9 @@ const DrawerNavigation = () => {
               <MaterialIcons name="calendar-month" size={24} color={color} />
             ),
           }}
-          component={account?.__t === "Doctor" ? DoctorAppointment: Myappointment}
+          component={
+            account?.__t === "Doctor" ? DoctorAppointment : Myappointment
+          }
         />
       )}
 
@@ -108,6 +111,21 @@ const DrawerNavigation = () => {
         }}
         component={UserProfile}
       /> */}
+
+      {isLoggedIn && account?.__t === "Doctor" && (
+        <Drawer.Screen
+          name="RecyclingBin"
+          options={{
+            drawerLabel: "Thùng rác",
+            title: "RecyclingBin",
+            headerShadowVisible: false,
+            drawerIcon: ({ color }) => (
+              <MaterialIcons name="delete" size={24} color={color} />
+            ),
+          }}
+          component={RecyclingBin}
+        />
+      )}
 
       {isLoggedIn ? (
         <>

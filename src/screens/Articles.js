@@ -19,6 +19,7 @@ import useSpecialities from "../hooks/useSpecialities";
 import useArticles from "../hooks/useArticles";
 import { useFocusEffect } from "@react-navigation/native";
 import Article_API from "../API/Article_API";
+import { formatToDDMMYYYY, formatToHHMMSS } from "../utils/ConvertDate";
 
 export const Articles = ({ navigation }) => {
   const refRBSheet = useRef();
@@ -142,7 +143,10 @@ export const Articles = ({ navigation }) => {
                       size={18}
                       color={COLORS.gray}
                     />
-                    <Text style={styles.datePost}>{item.date_published}</Text>
+                    <Text style={styles.datePost}>
+                      {formatToHHMMSS(item.date_published)}{" "}
+                      {formatToDDMMYYYY(item.date_published)}
+                    </Text>
                   </View>
                 </TouchableOpacity>
               );

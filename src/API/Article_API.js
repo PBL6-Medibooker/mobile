@@ -2,13 +2,15 @@ import client from "./client";
 
 const get_All_Article = async () => {
   try {
-    const res = await client.get("/article/get-all-article");
+    const res = await client.post("/article/get-all-article", {
+      hidden_state: "false",
+    });
 
     return res.data;
   } catch (error) {
     if (error.response)
-      console.log("Error response: ", error.response.data.error);
-    else console.log("Error not response: ", error.message);
+      console.error("Error get articles: ", error.response.data.error);
+    else console.error("Error get articles: ", error.message);
 
     return null;
   }
@@ -16,27 +18,55 @@ const get_All_Article = async () => {
 
 const add_Article = async (email, title, content, image) => {
   try {
-    const data = new FormData()
-    data.append("email", email)
-    data.append("article_title", title)
-    data.append("article_content", content)
+    const data = new FormData();
+    data.append("email", email);
+    data.append("article_title", title);
+    data.append("article_content", content);
     data.append("article_img", {
       uri: image.uri,
       type: image.mimeType || "image/jpeg",
-      name: image.fileName || 'anh.jpg'
-    })
-    
+      name: image.fileName || "anh.jpg",
+    });
+
     const res = await client.post("/article/create-article", data, {
       headers: {
         "Content-Type": "multipart/form-data",
-      }
+      },
     });
 
     return res.data;
   } catch (error) {
     if (error.response)
-      console.log("Error response: ", error.response.data.error);
-    else console.log("Error not response: ", error.message);
+      console.error("Error add article: ", error.response.data.error);
+    else console.error("Error add article: ", error.message);
+
+    return null;
+  }
+};
+
+const update_Article = async (id, title, content, image) => {
+  try {
+    const data = new FormData();
+    // data.append("email", email);
+    data.append("article_title", title);
+    data.append("article_content", content);
+    data.append("article_img", {
+      uri: image.uri,
+      type: image.mimeType || "image/jpeg",
+      name: image.fileName || "anh.jpg",
+    });
+
+    const res = await client.post(`/article/update-article/${id}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    if (error.response)
+      console.error("Error update article: ", error.response.data.error);
+    else console.error("Error update article: ", error.message);
 
     return null;
   }
@@ -48,11 +78,33 @@ const getArticlesByDoctor = async (doctorEmail) => {
       email: doctorEmail,
     });
 
-    return res.data;
+    const data = res.data.filter((item) => !item.is_deleted);
+
+    return data;
   } catch (error) {
     if (error.response)
-      console.log("Error response: ", error.response.data.error);
-    else console.log("Error not response: ", error.message);
+      console.error("Error getArticlesByDoctor: ", error.response.data.error);
+    else console.error("Error getArticlesByDoctor: ", error.message);
+    return null;
+  }
+};
+
+const get_Deleted_Article_By_Doctor = async (doctorEmail) => {
+  try {
+    const res = await client.post("/article/get-all-article-by-doctor", {
+      email: doctorEmail,
+    });
+
+    const data = res.data.filter((item) => item.is_deleted);
+
+    return data;
+  } catch (error) {
+    if (error.response)
+      console.error(
+        "Error get_Deleted_Article_By_Doctor: ",
+        error.response.data.error
+      );
+    else console.error("Error get_Deleted_Article_By_Doctor: ", error.message);
     return null;
   }
 };
@@ -66,8 +118,11 @@ const getArticlesBySpecialty = async (specialtyName) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.log("Error response: ", error.response.data.error);
-    else console.log("Error not response: ", error.message);
+      console.error(
+        "Error getArticlesBySpecialty: ",
+        error.response.data.error
+      );
+    else console.error("Error getArticlesBySpecialty: ", error.message);
     return null;
   }
 };
@@ -89,8 +144,53 @@ const search_Article = async (search_query) => {
     return data;
   } catch (error) {
     if (error.response)
-      console.error("Error response: ", error.response.data.error);
-    else console.error("Error not response: ", error.message);
+      console.error("Error search_Article: ", error.response.data.error);
+    else console.error("Error search_Article: ", error.message);
+    return null;
+  }
+};
+
+const soft_Delete_Article = async (id) => {
+  try {
+    const res = await client.post("/article/soft-del-article", {
+      article_ids: [id],
+    });
+
+    return res.data;
+  } catch (error) {
+    if (error.response)
+      console.error("Error soft_Delete_Article: ", error.response.data.error);
+    else console.error("Error soft_Delete_Article: ", error.message);
+    return null;
+  }
+};
+
+const perma_Delete_Article = async (ids) => {
+  try {
+    const res = await client.post("/article/perma-del-article", {
+      article_ids: ids,
+    });
+
+    return res.data;
+  } catch (error) {
+    if (error.response)
+      console.error("Error perma_Delete_Article: ", error.response.data.error);
+    else console.error("Error perma_Delete_Article: ", error.message);
+    return null;
+  }
+};
+
+const restore_Article = async (ids) => {
+  try {
+    const res = await client.post("/article/restore-article", {
+      article_ids: ids,
+    });
+
+    return res.data;
+  } catch (error) {
+    if (error.response)
+      console.error("Error restore_Article: ", error.response.data.error);
+    else console.error("Error restore_Article: ", error.message);
     return null;
   }
 };
@@ -100,5 +200,10 @@ export default {
   getArticlesByDoctor,
   getArticlesBySpecialty,
   search_Article,
-  add_Article
+  add_Article,
+  update_Article,
+  get_Deleted_Article_By_Doctor,
+  soft_Delete_Article,
+  perma_Delete_Article,
+  restore_Article,
 };

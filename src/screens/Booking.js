@@ -43,7 +43,7 @@ const Booking = ({ navigation, route }) => {
 
   const [specialitiesHook] = useSpecialities();
   const [regionsHook] = useRegions();
-  const [doctorsHook, getDoctorsBySpecialtyAndRegion] = useAccount();
+  const [doctorsHook] = useAccount();
   const [doctors, setDoctors] = useState(null);
   const [activeHours, setActiveHours] = useState({});
 

@@ -12,7 +12,7 @@ const usePosts = () => {
 
       setPostsHook(allPosts);
     } catch (error) {
-      console.error("Failed to fetch specialities:", error);
+      console.error("Failed to fetch posts:", error);
     } finally {
       isLoading(false);
     }

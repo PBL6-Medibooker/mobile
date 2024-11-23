@@ -67,19 +67,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.PersianGreen,
     borderColor: COLORS.silver,
   },
-  firstButton: {
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderStartWidth: 1,
-  },
-  lastButton: {
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    borderEndWidth: 1,
-  },
   text: {
     flex: 1,
-    // color: COLORS.black,
     padding: 3,
     textAlign: "center",
   },

@@ -200,12 +200,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "bold",
   },
-  user: {
-    flexDirection: "row",
-    paddingVertical: 3,
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   userInfo: {
     flexDirection: "row",
     paddingVertical: 3,

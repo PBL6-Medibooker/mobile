@@ -288,10 +288,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  infoItem: {
-    fontSize: 14,
-    color: COLORS.gray,
-  },
   restoreButton: {
     flexDirection: "row",
     alignSelf: "flex-end",
@@ -300,12 +296,5 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.Light20PersianGreen,
     borderRadius: 999,
     marginTop: 5,
-  },
-  separator: {
-    height: 1.5,
-    backgroundColor: COLORS.Light20PersianGreen,
-    marginVertical: 5,
-    borderRadius: 999,
-    marginHorizontal: 15,
   },
 });
