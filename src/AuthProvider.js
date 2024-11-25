@@ -101,6 +101,33 @@ export const AuthProvider = ({ children }) => {
       console.error("Error logging out: ", error);
     }
   };
+  const Forgot_Pass = async (email) => {
+    try {
+      const res = await Account_API.ForgotPassword(email);
+      return res;
+    } catch (error) {
+      console.error("Error in forgot password:", error);
+      throw error;
+    }
+  };
+
+  const soft_deleteAccount = async(account_Ids) => {
+    try{
+      const response = await Account_API.softDeleteAccount(account_Ids);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+  
+  const perma_deleteAccount = async(account_Ids) => {
+    try {
+      const response = await Account_API.permaDeleteAccount(account_Ids);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
 
   return (
     <AuthContext.Provider
@@ -112,6 +139,9 @@ export const AuthProvider = ({ children }) => {
         account,
         error,
         setAccount,
+        Forgot_Pass,
+        soft_deleteAccount,
+        perma_deleteAccount,
       }}>
       {children}
     </AuthContext.Provider>

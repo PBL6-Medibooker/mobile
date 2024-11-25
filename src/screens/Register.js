@@ -88,7 +88,7 @@ const Register = ({ navigation }) => {
 
       // console.log(account);
 
-      const res = await Account_API.userSignup(account);
+      const res = await Account_API.userSignup(account, proofDoctor);
 
       if (typeof res === "object" && res.token) {
         Alert.alert("Thông báo", "Đăng ký tài khoản thành công.", [
@@ -118,6 +118,7 @@ const Register = ({ navigation }) => {
     if (pdf && pdf !== "isLoading") {
       setLoading(false);
       setUploadedFiles((prevFiles) => [...prevFiles, pdf]);
+      setProofDoctor(pdf);
     }
   };
   const handleRemoveFile = (index) => {
@@ -253,13 +254,13 @@ const Register = ({ navigation }) => {
 
           {account.is_doc === 1 && (
             <View>
-              <Text style={styles.label}>Chuyên khoa</Text>
+              {/* <Text style={styles.label}>Chuyên khoa</Text>
               <Dropdown
                 data={sortSpecialities}
                 onChange={setSpecialtyDoctor}
                 placeholder="Chọn chuyên khoa"
                 value={specialtyDoctor}
-              />
+              /> */}
 
               <View style={styles.import}>
                 <Text style={styles.label}>Minh chứng (nếu có)</Text>

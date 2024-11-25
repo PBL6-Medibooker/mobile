@@ -25,6 +25,10 @@ import { Articles } from "./Articles";
 import AddPost from "./addPost";
 import DoctorAppointmentDetail from "./DrAppointmentDetail";
 import AddArticle from "./addArticle";
+import UpdateDoctor from "./UpdateDoctor";
+import UpdateOther from "./UpdateOther";
+import Nhap from "./Nhap";
+import ForgetPassword from "./ForgetPassword";
 
 export {
   Home,
@@ -54,4 +58,8 @@ export {
   DoctorAppointment,
   DoctorAppointmentDetail,
   AddArticle,
+  UpdateDoctor,
+  UpdateOther,
+  Nhap,
+  ForgetPassword,
 };

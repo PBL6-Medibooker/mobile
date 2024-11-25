@@ -19,6 +19,7 @@ import Speciality_API from "../API/Speciality_API";
 import Region_API from "../API/Region_API";
 import { useFocusEffect } from "@react-navigation/native";
 import Account_API from "../API/Account_API";
+import Feather from '@expo/vector-icons/Feather';
 
 const DoctorInfo = ({ navigation, route }) => {
   const { doctorSelected } = route.params || {};
@@ -125,6 +126,12 @@ const DoctorInfo = ({ navigation, route }) => {
               style={styles.image}
             />
           </TouchableOpacity>
+          {/* <TouchableOpacity
+           activeOpacity={0.7}
+           onPress={() => { navigation.navigate("UpdateDoctor") }}
+           style={styles.updateProfile}>
+           <Feather name="edit-2" size={24} color={COLORS.black} />
+          </TouchableOpacity> */}
 
           <View style={styles.myBasicInformation}>
             <Text style={[styles.text, { fontWeight: "bold", fontSize: 16 }]}>
@@ -234,6 +241,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: COLORS.silver,
   },
+  
   image: {
     width: "100%",
     height: "100%",
@@ -288,6 +296,15 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     height: 100,
     marginBottom: 10,
+  },
+  updateProfile: {
+    position: "absolute",
+    top: 80,
+    start: 220,
+    backgroundColor: COLORS.white,
+    padding: 2,
+    borderRadius: 999,
+  
   },
   loadingContainer: {
     flex: 1,

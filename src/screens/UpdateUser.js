@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,83 +6,190 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { COLORS, images } from "../constants";
 import { UploadImage } from "../utils/Upload";
 import { HeaderBack } from "../components";
+import { useAuth } from "../AuthProvider";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Account_API from "../API/Account_API";
+
+
 
 const UpdateUser = ({ navigation }) => {
-  const [fullName, setFullName] = useState('Huệ Lê');
-  const [phoneNumber, setPhoneNumber] = useState('0343403432');
-  const [email, setEmail] = useState('lehue@gmail.com');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [uriAvatar, setUriAvatar] = useState(null);
+  const { storedToken, account, setAccount } = useAuth();
+
+  const [username, setUserName] = useState(account?.username || "");
+  const [phone, setPhoneNumber] = useState(account?.phone || "");
+  // const [email, setEmail] = useState(accountInfo?.email || ""); 
+  const [date_of_birth, setDateOfBirth] = useState(account?.date_of_birth || "");
+  const [address, setAddress] = useState(account?.address || "");
+  const [uriAvatar, setUriAvatar] = useState(account?.profile_image);
+  const [underlyingCondition, setUnderlyingCondition] = useState(account?.underlying_condition || "");
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleUploadImage = async () => {
     const image = await UploadImage();
     if (image) {
-      // console.log("image selected", image);
-      setUriAvatar(image.uri);
+      console.log("image selected", image);
+      setUriAvatar(image);
     }
   };
+
+
+
+
+  const handleSave = async () => {
+    console.log("HandleSave goi");
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("phone", phone);
+    formData.append("date_of_birth", date_of_birth);
+    formData.append("address", address);
+    // formData.append("email", email);
+    formData.append("underlying_condition", underlyingCondition);
+
+    if (uriAvatar) {
+      formData.append("profile_image", {
+        uri: uriAvatar,
+        type: "image/jpeg", // Thay đổi nếu bạn sử dụng định dạng ảnh khác
+        name: "anh.jpg", // Tên file
+      });
+    }
+    // Kiểm tra ID
+    const accountId = account._id;
+    console.log('account gg', accountId);
+    try {
+      const response = await Account_API.update_Account(accountId, formData);
+      if (response) {
+        Alert.alert("Cập nhật thành công");
+        
+
+        // update_acc_info(response);
+        console.log("Account log: ", response);
+        setAccount(response)
+        setUriAvatar(null)
+
+        // Hiển thị thông tin mới nhất
+        setUserName(response.username || "");
+        setPhoneNumber(response.phone || "");
+        setDateOfBirth(response.date_of_birth || "");
+        setAddress(response.address || "");
+        setUnderlyingCondition(response.underlying_condition || "");
+        // setUriAvatar(response.profile_image || null); // Sử dụng URL ảnh trực tiếp từ backend
+
+        // navigation.navigate("UserProfile");
+      } else {
+        Alert.alert("Cập nhật thất bại", response.error || "Vui lòng thử lại");
+      }
+    } catch (error) {
+      Alert.alert("Có lỗi xảy ra", "Vui lòng thử lại sau");
+    }
+  };
+
+  const onDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date_of_birth;
+    setShowDatePicker(false);
+
+    // Chuyển đổi ngày thành ISO 8601 và lưu vào state
+    if (currentDate) {
+      setDateOfBirth(currentDate.toISOString());
+    }
+  };
+
+  // useEffect(() => {
+  //   // Khi vào lại trang, cập nhật state từ accountInfo mới nhất
+  //   console.log("update");
+  //   setUserName(account?.username || "");
+  //   setPhoneNumber(account?.phone || "");
+  //   setDateOfBirth(account?.date_of_birth || "");
+  //   setAddress(account?.address || "");
+  //   setUnderlyingCondition(account?.underlying_condition || "");
+  //   // setUriAvatar(account.profile_image || null);
+  // }, [account]);
 
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack navigation={navigation} title="Chỉnh Sửa Hồ Sơ" />
       <View style={styles.content}>
-        <View style={styles.avatarContainer}>
-          <TouchableOpacity activeOpacity={0.85} onPress={handleUploadImage}>
+        <View style={styles.myAvatar}>
+          <TouchableOpacity activeOpacity={0.85}>
             <Image
-              source={uriAvatar ? { uri: uriAvatar } : images.user_default}
-              style={styles.avatarImage}
+              source={
+                uriAvatar
+                  ? { uri: uriAvatar }
+                  : account?.profile_image
+                    ? { uri: account.profile_image }
+                    : images.user_default
+              }
+              style={styles.image}
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.editAvatarButton}
+            activeOpacity={0.7}
             onPress={handleUploadImage}
-          >
+            style={styles.uploadAvatar}>
             <MaterialIcons name="photo-camera" size={22} color={COLORS.gray} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.form}>
-          <Text style={styles.label}>Họ và Tên</Text>
+          <Text style={styles.label}>Username</Text>
           <TextInput
             style={styles.input}
-            value={fullName}
-            onChangeText={setFullName}
+            value={username}
+            onChangeText={setUserName}
           />
 
           <Text style={styles.label}>Số Điện Thoại</Text>
           <TextInput
             style={styles.input}
-            value={phoneNumber}
+            value={phone}
             onChangeText={setPhoneNumber}
             keyboardType="phone-pad"
           />
 
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>Ngày sinh</Text>
+          <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+            <TextInput
+              style={styles.input}
+              value={date_of_birth ? new Date(date_of_birth).toLocaleDateString() : ""}
+              editable={false} // Làm cho TextInput không thể chỉnh sửa
+            />
+          </TouchableOpacity>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={date_of_birth ? new Date(date_of_birth) : new Date()}
+              mode="date"
+              display="default"
+              onChange={onDateChange}
+            />
+          )}
+
+
+          <Text style={styles.label}>Địa chỉ</Text>
           <TextInput
             style={styles.input}
-            value={email}
-            onChangeText={setEmail}
+            value={address}
+            onChangeText={setAddress}
             keyboardType="email-address"
           />
 
-          <Text style={styles.label}>Ngày Sinh</Text>
+          <Text style={styles.label}>Tình Trạng Bệnh</Text>
           <TextInput
             style={styles.input}
-            value={dateOfBirth}
-            onChangeText={setDateOfBirth}
-            placeholder="DD / MM / YYYY"
+            value={underlyingCondition}
+            onChangeText={setUnderlyingCondition}
           />
         </View>
 
-        <TouchableOpacity style={styles.saveButton}>
-          <Text style={styles.saveButtonText}>Lưu Thay Đổi</Text>
+        <TouchableOpacity style={styles.saveButton} onPress={() => handleSave()}>
+          <Text style={styles.saveButtonText}>Lưu</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -96,50 +203,43 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
-  header: {
-    backgroundColor: COLORS.PersianGreen,
-    padding: 15,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  headerTitle: {
-    fontSize: 20,
-    color: COLORS.white,
-    marginLeft: 10,
-  },
   content: {
     padding: 20,
   },
-  avatarContainer: {
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  avatarImage: {
+  myAvatar: {
     width: 120,
-    height: 120,
-    borderRadius: 60,
+    aspectRatio: 1,
+    resizeMode: "cover",
+    borderRadius: 40,
+    marginRight: 5,
     backgroundColor: COLORS.silver,
   },
-  editAvatarButton: {
+  image: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 40,
+  },
+  uploadAvatar: {
     position: "absolute",
-    bottom: 0,
-    right: 0,
+    top: 91,
+    start: 91,
     backgroundColor: COLORS.white,
-    padding: 5,
-    borderRadius: 15,
+    padding: 2,
+    borderRadius: 999,
   },
   form: {
     marginBottom: 20,
   },
   label: {
-    fontSize: 16,
-    color: COLORS.black,
-    marginBottom: 5,
+    fontSize: 15,
+    color: COLORS.PersianGreen,
+    marginBottom: 10,
+    fontWeight: "bold",
   },
   input: {
-    backgroundColor: COLORS.Light50PersianGreen,
+    backgroundColor: COLORS.white,
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 20,
     marginBottom: 15,
     borderColor: COLORS.silver,
     borderWidth: 1,

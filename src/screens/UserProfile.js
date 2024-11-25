@@ -7,13 +7,15 @@ import {
   View,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useAuth } from "../AuthProvider";
+import { useAuth} from "../AuthProvider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { HeaderBack } from "../components";
 import { COLORS, images } from "../constants";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { UploadImage } from "../utils/Upload";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+
 import Account_API from "../API/Account_API";
 
 const UserProfile = ({ navigation }) => {
@@ -27,19 +29,6 @@ const UserProfile = ({ navigation }) => {
       // console.log("image selected", image);
       setUriAvatar(image.uri);
     }
-
-    // try {
-    //   await Account_API.updateAccountInfo(
-    //     account._id,
-    //     account.usename,
-    //     account.phone,
-    //     "123",
-    //     image
-    //   );
-    //   // console.log(res);
-    // } catch (error) {
-    //   console.error("Lỗi khi cập nhật thông tin tài khoản:", error);
-    // }
   };
 
   return (
@@ -61,14 +50,6 @@ const UserProfile = ({ navigation }) => {
               style={styles.image}
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => {
-              handleUploadImage();
-            }}
-            style={styles.uploadAvatar}>
-            <MaterialIcons name="photo-camera" size={22} color={COLORS.gray} />
-          </TouchableOpacity>
         </View>
 
         <View
@@ -88,7 +69,17 @@ const UserProfile = ({ navigation }) => {
       </View>
 
       <View style={styles.mainContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate("UpdateUser")}>
+      <TouchableOpacity
+        onPress={() => {
+        if (account?.__t === "Doctor") {
+        // Điều hướng đến trang UpdateDoctor nếu là bác sĩ
+        navigation.navigate("UpdateDoctor");
+        } else {
+        // Điều hướng đến trang UpdateUser nếu không phải bác sĩ
+        navigation.navigate("UpdateUser");
+        }
+        }}
+        >
           <View style={styles.item}>
             <Ionicons name="person-outline" size={28} style={styles.iconItem} />
             <Text style={styles.textItem}>Chỉnh Sửa Hồ Sơ</Text>
