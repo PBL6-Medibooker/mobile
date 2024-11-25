@@ -107,19 +107,14 @@ const Register = ({ navigation }) => {
     }
   };
 
-  const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const handleUploadFile = async () => {
     setLoading(true);
     const pdf = await UploadPDF();
-    // setLoading(false);
     console.log("pdf", pdf);
 
-    if (pdf && pdf !== "isLoading") {
-      setLoading(false);
-      // setUploadedFiles((prevFiles) => [...prevFiles, pdf]);
-      setProofDoctor(pdf);
-    }
+    if (pdf && pdf !== "isLoading") setProofDoctor(pdf);
+    setLoading(false);
   };
   const handleRemoveFile = () => {
     // setUploadedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
