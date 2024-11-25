@@ -194,9 +194,6 @@ const upload_Doctor_Proof = async (id, proof) => {
   }
 };
 
-
-
-
 const ForgotPassword = async (email) => {
   try {
     const res = await client.post("/acc/forgot-pass", { email });
@@ -211,7 +208,8 @@ const ForgotPassword = async (email) => {
       return error.message;
     }
   }
-}; 
+};
+
 const ResetPassword = async (token, newPassword) => {
   try {
     const res = await client.post(`/acc/reset-password/${token}`, {
@@ -229,6 +227,7 @@ const ResetPassword = async (token, newPassword) => {
     }
   }
 };
+
 const softDeleteAccount = async (account_Ids) => {
   try {
     const res = await client.post("/acc/soft-delete-acc", {
@@ -243,6 +242,7 @@ const softDeleteAccount = async (account_Ids) => {
     }
   }
 };
+
 const permaDeleteAccount = async (account_Ids) => {
   try {
     const res = await client.post("/acc/perma-delete-acc", {
@@ -257,6 +257,7 @@ const permaDeleteAccount = async (account_Ids) => {
     }
   }
 };
+
 const change_password = async (email, newPassword) => {
   try {
     const res = await client.post("/acc/change-pass", {
@@ -264,20 +265,24 @@ const change_password = async (email, newPassword) => {
       new_password: newPassword,
     });
     console.log("Password change successful: ", res.data);
-    return res.data; 
+    return res.data;
   } catch (error) {
     if (error.response) {
       console.log("Error response: ", error.response.data.error);
       return error.response.data.error;
     } else {
       console.log("Error not response: ", error.message);
-      return error.message 
+      return error.message;
     }
   }
 };
+
 const addDoctorActiveHour = async (doctor_id, activeHour) => {
   try {
-    const response = await client.post(`/acc/add-active-hour/${doctor_id}`, activeHour);
+    const response = await client.post(
+      `/acc/add-active-hour/${doctor_id}`,
+      activeHour
+    );
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -289,7 +294,12 @@ const addDoctorActiveHour = async (doctor_id, activeHour) => {
     }
   }
 };
-const updateDoctorActiveHour = async (doctor_id, newActiveHour, oldActiveHour) => {
+
+const updateDoctorActiveHour = async (
+  doctor_id,
+  newActiveHour,
+  oldActiveHour
+) => {
   try {
     // Tạo payload gửi lên backend
     const payload = {
@@ -297,7 +307,10 @@ const updateDoctorActiveHour = async (doctor_id, newActiveHour, oldActiveHour) =
       ...oldActiveHour, // Bao gồm old_day, old_start_time, old_end_time, old_hour_type
     };
     // Gửi yêu cầu POST tới backend
-    const response = await client.post(`/acc/update-active-hour/${doctor_id}`, payload);
+    const response = await client.post(
+      `/acc/update-active-hour/${doctor_id}`,
+      payload
+    );
     // Trả về danh sách active_hours và thông tin đã thay đổi từ backend
     return response.data;
   } catch (error) {
@@ -310,10 +323,14 @@ const updateDoctorActiveHour = async (doctor_id, newActiveHour, oldActiveHour) =
     }
   }
 };
+
 const deleteDoctorActiveHour = async (doctor_id, activeHour) => {
   try {
     // Gửi yêu cầu DELETE tới backend với body chứa thông tin giờ làm việc cần xóa
-    const response = await client.post(`/acc/delete-active-hour/${doctor_id}`, activeHour);
+    const response = await client.post(
+      `/acc/delete-active-hour/${doctor_id}`,
+      activeHour
+    );
     // Trả về thông báo và danh sách active_hours sau khi xóa
     return response.data;
   } catch (error) {
@@ -326,6 +343,7 @@ const deleteDoctorActiveHour = async (doctor_id, activeHour) => {
     }
   }
 };
+
 const update_Doctor_Info = async (accountId, data) => {
   try {
     const res = await client.post(`/acc/update-doc-info/${accountId}`, data, {
@@ -345,17 +363,18 @@ const update_Doctor_Info = async (accountId, data) => {
     }
   }
 };
+
 const getDoctorProof = async (doctor_id) => {
   try {
     const res = await client.post(`/acc/get-proof/${doctor_id}`);
-    return res.data.proof; 
+    return res.data.proof;
   } catch (error) {
     if (error.response) {
       console.log("Error response: ", error.response.data.error);
       return error.response.data.error;
     } else {
       console.log("Error not response: ", error.message);
-      return error.message 
+      return error.message;
     }
   }
 };
@@ -379,5 +398,5 @@ export default {
   updateDoctorActiveHour,
   deleteDoctorActiveHour,
   update_Doctor_Info,
-  getDoctorProof
+  getDoctorProof,
 };
