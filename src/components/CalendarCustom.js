@@ -48,7 +48,7 @@ const CalendarCustom = ({
     const endOfMonth = moment().add(1, "month");
 
     // Kiểm tra xem schedule.active_hours có tồn tại và là mảng không
-    if (Array.isArray(schedule.active_hours)) {
+    if (schedule?.active_hours && Array.isArray(schedule.active_hours)) {
       while (currentDate.isBefore(endOfMonth)) {
         const currentDayOfWeek = currentDate.format("dddd");
 
@@ -63,8 +63,9 @@ const CalendarCustom = ({
 
         currentDate.add(1, "day");
       }
-    } else {
-      console.error("schedule.active_hours is not an array or is missing");
+    } 
+    else {
+      console.log("schedule.active_hours is not an array or is missing");
     }
 
     setMarkedDates(marked);
@@ -102,13 +103,13 @@ const CalendarCustom = ({
     const date = `${selectedDay.dayOfWeek} ${datePart}`;
 
     // Kiểm tra xem fully_booked có tồn tại và là mảng không
-    if (Array.isArray(schedule.fully_booked)) {
+    if (schedule?.fully_booked && Array.isArray(schedule.fully_booked)) {
       const filter = schedule.fully_booked.filter((item) => item.date === date);
       console.log(filter);
 
       return filter.length > 0;
     } else {
-      console.error("schedule.fully_booked is not an array or is missing");
+      console.log("schedule.fully_booked is not an array or is missing");
       return false; // Trả về false nếu dữ liệu không hợp lệ
     }
   };

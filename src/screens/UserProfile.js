@@ -61,14 +61,14 @@ const UserProfile = ({ navigation }) => {
               style={styles.image}
             />
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => {
               handleUploadImage();
             }}
             style={styles.uploadAvatar}>
             <MaterialIcons name="photo-camera" size={22} color={COLORS.gray} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <View
@@ -88,7 +88,16 @@ const UserProfile = ({ navigation }) => {
       </View>
 
       <View style={styles.mainContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate("UpdateUser")}>
+        <TouchableOpacity
+          onPress={() => {
+            if (account?.__t === "Doctor") {
+              // Điều hướng đến trang UpdateDoctor nếu là bác sĩ
+              navigation.navigate("UpdateDoctor");
+            } else {
+              // Điều hướng đến trang UpdateUser nếu không phải bác sĩ
+              navigation.navigate("UpdateUser");
+            }
+          }}>
           <View style={styles.item}>
             <Ionicons name="person-outline" size={28} style={styles.iconItem} />
             <Text style={styles.textItem}>Chỉnh Sửa Hồ Sơ</Text>
@@ -100,7 +109,7 @@ const UserProfile = ({ navigation }) => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate("Myappointment")}>
+        <TouchableOpacity onPress={() => navigation.navigate("BookingHistory")}>
           <View style={styles.item}>
             <Ionicons name="wallet-outline" size={28} style={styles.iconItem} />
             <Text style={styles.textItem}>Cuộc Hẹn Của Tôi</Text>

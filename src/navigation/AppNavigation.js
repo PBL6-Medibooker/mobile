@@ -26,6 +26,9 @@ import {
   DoctorAppointmentDetail,
   AddArticle,
   MyArticles,
+  UpdateDoctor,
+  UpdateOther,
+  ForgetPassword,
 } from "../screens";
 import BottomTabNavigation from "./BottomTabNavigation";
 const Stack = createNativeStackNavigator();
@@ -70,6 +73,9 @@ const AppNavigation = () => {
         <Stack.Screen name="ViewArticle" component={ViewArticle} />
         <Stack.Screen name="Articles" component={Articles} />
         <Stack.Screen name="AddPost" component={AddPost} />
+        <Stack.Screen name="UpdateDoctor" component={UpdateDoctor} />
+        <Stack.Screen name="UpdateOther" component={UpdateOther} />
+        <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
       </Stack.Navigator>
     </NavigationContainer>
   );

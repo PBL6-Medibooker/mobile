@@ -17,7 +17,7 @@ import Post_API from "../API/Post_API";
 const PostAnswerItem = ({
   item,
   myAccountEmail,
-  key,
+  // key,
   answerKey,
   post_id,
   navigation,

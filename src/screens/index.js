@@ -27,6 +27,9 @@ import DoctorAppointmentDetail from "./DrAppointmentDetail";
 import AddArticle from "./addArticle";
 import MyArticles from "./MyArticle";
 import RecyclingBin from "./recyclingBin";
+import UpdateDoctor from "./UpdateDoctor";
+import UpdateOther from "./UpdateOther";
+import ForgetPassword from "./ForgetPassword";
 
 export {
   Home,
@@ -57,5 +60,8 @@ export {
   DoctorAppointmentDetail,
   AddArticle,
   MyArticles,
-  RecyclingBin
+  RecyclingBin,
+  UpdateDoctor,
+  UpdateOther,
+  ForgetPassword
 };

@@ -91,21 +91,41 @@ const Home = ({ navigation }) => {
               <View style={styles.bookingFrame}>
                 <View style={styles.separate}></View>
 
-                <Pressable
-                  onPress={() => handleBooking()}
-                  style={({ pressed }) => [
-                    {
-                      backgroundColor: pressed
-                        ? COLORS.Light50PersianGreen
-                        : COLORS.PersianGreen,
-                    },
-                    styles.buttonContainer,
-                  ]}>
-                  <View style={styles.buttonIcon}>
-                    <Entypo name="calendar" size={24} color={COLORS.white} />
-                    <Text style={styles.text}>Đặt lịch khám bệnh</Text>
-                  </View>
-                </Pressable>
+                {isLoggedIn && account?.__t === "Doctor" ? (
+                  <Pressable
+                    onPress={() => {
+                      navigation.navigate("MyArticle");
+                    }}
+                    style={({ pressed }) => [
+                      {
+                        backgroundColor: pressed
+                          ? COLORS.Light50PersianGreen
+                          : COLORS.PersianGreen,
+                      },
+                      styles.buttonContainer,
+                    ]}>
+                    <View style={styles.buttonIcon}>
+                      <Entypo name="calendar" size={24} color={COLORS.white} />
+                      <Text style={styles.text}>Tin tức của bạn</Text>
+                    </View>
+                  </Pressable>
+                ) : (
+                  <Pressable
+                    onPress={() => handleBooking()}
+                    style={({ pressed }) => [
+                      {
+                        backgroundColor: pressed
+                          ? COLORS.Light50PersianGreen
+                          : COLORS.PersianGreen,
+                      },
+                      styles.buttonContainer,
+                    ]}>
+                    <View style={styles.buttonIcon}>
+                      <Entypo name="calendar" size={24} color={COLORS.white} />
+                      <Text style={styles.text}>Đặt lịch khám bệnh</Text>
+                    </View>
+                  </Pressable>
+                )}
 
                 <View style={styles.separate}></View>
               </View>

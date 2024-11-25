@@ -5,8 +5,7 @@ import { Alert } from "react-native";
 export const UploadImage = async () => {
   try {
     // Xin quyền truy cập thư viện ảnh
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted === false) {
       Alert.alert("Thông báo", "Quyền truy cập thư viện ảnh bị từ chối.");
       return null;
@@ -20,8 +19,8 @@ export const UploadImage = async () => {
     });
 
     if (!result.canceled) {
-      // console.log(result.assets[0]);
-      return result.assets[0]; // Trả về hình ảnh đã chọn
+      console.log(result.assets[0].uri);
+      return result.assets[0].uri; // Trả về hình ảnh đã chọn
     } else {
       console.log("User cancelled image picker.");
       return null;

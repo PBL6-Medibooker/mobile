@@ -34,8 +34,9 @@ const get_Post_By_Id = async (id) => {
 const get_Post_By_Specialty_Sort = async (specialty, sortBy) => {
   try {
     const posts = await get_All_Post();
+    // console.log(item);
     const filterPosts = specialty
-      ? posts.filter((item) => item.speciality_id._id === specialty._id)
+      ? posts.filter((item) => item?.speciality_id?._id === specialty?._id)
       : posts;
     if (Array.isArray(filterPosts)) {
       const sortPosts = filterPosts.slice().sort((a, b) => {
@@ -152,7 +153,7 @@ const search_Post_By_Specialty_Sort = async (
   try {
     const posts = await search_Post(search_query);
     const filterPosts = specialty
-      ? posts.filter((item) => item.speciality_id._id === specialty._id)
+      ? posts.filter((item) => item?.speciality_id?._id === specialty?._id)
       : posts;
     if (Array.isArray(filterPosts)) {
       const sortPosts = filterPosts.slice().sort((a, b) => {

@@ -7,16 +7,47 @@ import {
     TouchableOpacity
   } from "react-native";
   import React, { useState } from 'react';
+
+  import { useAuth} from "../AuthProvider";
+
+
   import { SafeAreaView } from "react-native-safe-area-context";
   import { HeaderBack } from "../components";
   import { COLORS} from "../constants";
   import { InputPassword } from "../components"
+  import Account_API from "../API/Account_API"; // Đường dẫn tùy thuộc vào cấu trúc thư mục của bạn
+
   
  
   const PasswordManage = ({ navigation }) => {
-    const [currentPassword, setCurrentPassword] = useState('');
+    const { account } = useAuth();
+    const email = account?.email;
+    
+    const [password, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    
+
+    const handleChangePassword = async () => {
+        if (newPassword !== confirmPassword) {
+            alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
+            return;
+        }
+    
+        // Thực hiện logic để thay đổi mật khẩu ở đây
+        console.log('Mật khẩu hiện tại:', password);
+        console.log('Mật khẩu mới:', newPassword);
+    
+        // Gửi yêu cầu đến API để thay đổi mật khẩu
+        try {
+            // Giả sử bạn có một hàm gọi API là changePassword
+            await Account_API.change_password(email, newPassword);
+            alert("Thay đổi mật khẩu thành công!");
+        } catch (error) {
+            console.error("Có lỗi xảy ra:", error);
+            alert("Không thể thay đổi mật khẩu. Vui lòng thử lại.");
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -25,7 +56,7 @@ import {
                 
                 <Text style={styles.label}>Mật khẩu hiện tại</Text>
                 <InputPassword
-                    value={currentPassword}
+                    value={password}
                     onChangeText={setCurrentPassword}
                 />
                 <Text style={styles.forgotPassword}>Forgot Password?</Text>
@@ -42,7 +73,9 @@ import {
                     onChangeText={setConfirmPassword}
                 />
 
+
             <Pressable
+            onPress={handleChangePassword}
               style={({pressed})  => [
               {
                 backgroundColor: pressed
@@ -92,6 +125,3 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-
-
-  
