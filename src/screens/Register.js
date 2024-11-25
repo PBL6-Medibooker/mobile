@@ -117,12 +117,13 @@ const Register = ({ navigation }) => {
 
     if (pdf && pdf !== "isLoading") {
       setLoading(false);
-      setUploadedFiles((prevFiles) => [...prevFiles, pdf]);
+      // setUploadedFiles((prevFiles) => [...prevFiles, pdf]);
       setProofDoctor(pdf);
     }
   };
-  const handleRemoveFile = (index) => {
-    setUploadedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  const handleRemoveFile = () => {
+    // setUploadedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setProofDoctor(null);
   };
 
   return (
@@ -274,7 +275,7 @@ const Register = ({ navigation }) => {
                 ) : null}
               </View>
 
-              {uploadedFiles.map((file, index) => (
+              {/* {uploadedFiles.map((file, index) => (
                 <View
                   key={index}
                   style={{ flexDirection: "row", alignItems: "center" }}>
@@ -291,7 +292,24 @@ const Register = ({ navigation }) => {
                     <Ionicons name="close" size={24} color={COLORS.gray} />
                   </TouchableOpacity>
                 </View>
-              ))}
+              ))} */}
+
+              {proofDoctor && (
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text style={{ fontSize: 20 }}>• </Text>
+                  <Text
+                    style={{
+                      textDecorationLine: "underline",
+                      color: COLORS.blue,
+                      marginEnd: 10,
+                    }}>
+                    {proofDoctor.name}
+                  </Text>
+                  <TouchableOpacity onPress={() => handleRemoveFile()}>
+                    <Ionicons name="close" size={24} color={COLORS.gray} />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           )}
 

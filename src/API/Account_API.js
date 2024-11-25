@@ -13,8 +13,8 @@ const userSignup = async (user, proof) => {
     if (proof)
       data.append("proof", {
         uri: proof.uri,
-        type: proof.mimeType || "image/jpeg",
-        name: proof.fileName || "anh.jpg",
+        type: proof.mimeType || "application/pdf",
+        name: proof.fileName || "document.pdf",
       });
 
     const response = await client.post("/acc/signup", data, {
@@ -26,10 +26,10 @@ const userSignup = async (user, proof) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error("Error sign up: ", error.response.data.error);
+      // console.error("Error sign up: ", error.response.data.error);
       return error.response.data.error;
     } else {
-      console.error("Error sign up: ", error.message);
+      // console.error("Error sign up: ", error.message);
       return error.message;
     }
   }
@@ -166,6 +166,34 @@ const update_Account = async (id, data) => {
   }
 };
 
+const upload_Doctor_Proof = async (id, proof) => {
+  try {
+    const data = new FormData();
+    if (proof) {
+      console.log(proof);
+      data.append("proof", {
+        uri: proof.uri,
+        type: proof.mimeType || "application/pdf",
+        name: proof.fileName || "document.pdf",
+      });
+    }
+    const res = await client.post(`/acc/upload-proof/${id}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Error update account: ", error.response.data.error);
+      return error.response.data.error;
+    } else {
+      console.error("Error update account: ", error.message);
+      return error.message;
+    }
+  }
+};
+
 export default {
   userLogin,
   userSignup,
@@ -175,4 +203,5 @@ export default {
   get_Filter_Doctor_List,
   get_Doctor_Active_Hour_List,
   update_Account,
+  upload_Doctor_Proof,
 };
