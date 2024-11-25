@@ -48,10 +48,10 @@ const userLogin = async (user) => {
     return data;
   } catch (error) {
     if (error.response) {
-      console.error("Error login: ", error.response.data.error);
+      // console.error("Error login: ", error.response.data.error);
       return error.response.data.error;
     } else {
-      console.error("Error login: ", error.message);
+      // console.error("Error login: ", error.message);
       return error.message;
     }
   }

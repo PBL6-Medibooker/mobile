@@ -22,11 +22,12 @@ const add_Article = async (email, title, content, image) => {
     data.append("email", email);
     data.append("article_title", title);
     data.append("article_content", content);
-    data.append("article_img", {
-      uri: image.uri,
-      type: image.mimeType || "image/jpeg",
-      name: image.fileName || "anh.jpg",
-    });
+    if (image?.uri)
+      data.append("article_image", {
+        uri: image.uri,
+        type: image.mimeType || "image/jpeg",
+        name: image.fileName || "anh.jpg",
+      });
 
     const res = await client.post("/article/create-article", data, {
       headers: {
@@ -38,7 +39,7 @@ const add_Article = async (email, title, content, image) => {
   } catch (error) {
     if (error.response)
       console.error("Error add article: ", error.response.data.error);
-    else console.error("Error add article: ", error.message);
+    else console.error("Error 1 add article: ", error.message);
 
     return null;
   }
@@ -47,14 +48,14 @@ const add_Article = async (email, title, content, image) => {
 const update_Article = async (id, title, content, image) => {
   try {
     const data = new FormData();
-    // data.append("email", email);
     data.append("article_title", title);
     data.append("article_content", content);
-    data.append("article_img", {
-      uri: image.uri,
-      type: image.mimeType || "image/jpeg",
-      name: image.fileName || "anh.jpg",
-    });
+    if (image?.uri)
+      data.append("article_image", {
+        uri: image.uri,
+        type: image.mimeType || "image/jpeg",
+        name: image.fileName || "anh.jpg",
+      });
 
     const res = await client.post(`/article/update-article/${id}`, data, {
       headers: {
@@ -168,7 +169,7 @@ const soft_Delete_Article = async (id) => {
 const perma_Delete_Article = async (ids) => {
   try {
     const res = await client.post("/article/perma-del-article", {
-      article_ids: ids,
+      article_Ids: ids,
     });
 
     return res.data;
