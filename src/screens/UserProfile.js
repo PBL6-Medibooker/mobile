@@ -153,7 +153,7 @@ const UserProfile = ({ navigation }) => {
           </View>
         </TouchableOpacity>
 
-        <View style={styles.item}>
+        {/* <View style={styles.item}>
           <MaterialIcons
             name="question-mark"
             size={28}
@@ -165,7 +165,7 @@ const UserProfile = ({ navigation }) => {
             size={28}
             color={COLORS.PersianGreen}
           />
-        </View>
+        </View> */}
 
         <TouchableOpacity onPress={() => navigation.navigate("Logout")}>
           <View style={styles.item}>

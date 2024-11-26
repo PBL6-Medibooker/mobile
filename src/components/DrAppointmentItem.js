@@ -104,7 +104,7 @@ const DoctorAppointmentItem = ({
     try {
       const cancel = await Appointment_API.canncel_Appointment(appointmentId);
       if (typeof cancel === "object" && cancel?.message) {
-        console.log(cancel.message);
+        // console.log(cancel.message);
 
         Alert.alert("Thông báo", "Huỷ lịch hẹn thành công.", [
           {

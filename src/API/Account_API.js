@@ -170,7 +170,7 @@ const upload_Doctor_Proof = async (id, proof) => {
   try {
     const data = new FormData();
     if (proof) {
-      console.log(proof);
+      // console.log(proof);
       data.append("proof", {
         uri: proof.uri,
         type: proof.mimeType || "application/pdf",
@@ -197,7 +197,7 @@ const upload_Doctor_Proof = async (id, proof) => {
 const ForgotPassword = async (email) => {
   try {
     const res = await client.post("/acc/forgot-pass", { email });
-    console.log("Forgot Password Response: ", res.data);
+    // console.log("Forgot Password Response: ", res.data);
     return res.data;
   } catch (error) {
     if (error.message) {
@@ -215,7 +215,7 @@ const ResetPassword = async (token, newPassword) => {
     const res = await client.post(`/acc/reset-password/${token}`, {
       new_password: newPassword,
     });
-    console.log("Reset Password Response:", res.data);
+    // console.log("Reset Password Response:", res.data);
     return res.data;
   } catch (error) {
     if (error.message) {
@@ -264,7 +264,7 @@ const change_password = async (email, newPassword) => {
       email: email,
       new_password: newPassword,
     });
-    console.log("Password change successful: ", res.data);
+    // console.log("Password change successful: ", res.data);
     return res.data;
   } catch (error) {
     if (error.response) {
@@ -326,6 +326,8 @@ const updateDoctorActiveHour = async (
 
 const deleteDoctorActiveHour = async (doctor_id, activeHour) => {
   try {
+    // console.log("activehour: ", activeHour);
+    
     // Gửi yêu cầu DELETE tới backend với body chứa thông tin giờ làm việc cần xóa
     const response = await client.post(
       `/acc/delete-active-hour/${doctor_id}`,
@@ -351,7 +353,7 @@ const update_Doctor_Info = async (accountId, data) => {
         "Content-Type": "application/json",
       },
     });
-    console.log("Doctor info updated successfully:", res.data);
+    // console.log("Doctor info updated successfully:", res.data);
     return res.data;
   } catch (error) {
     if (error.response) {

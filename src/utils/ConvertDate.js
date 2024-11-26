@@ -61,6 +61,15 @@ export const formatToHHMMSS = (dateString) => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
+export const formatToHHMM = (dateString) => {
+  const date = new Date(dateString);
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+};
+
 export const convertAppointmentDate = (dateString) => {
   const datePart = dateString.split(" ")[1];
   const parsedDate = parse(datePart, "yyyy-MM-dd", new Date());

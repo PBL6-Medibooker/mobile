@@ -111,7 +111,7 @@ const Register = ({ navigation }) => {
   const handleUploadFile = async () => {
     setLoading(true);
     const pdf = await UploadPDF();
-    console.log("pdf", pdf);
+    // console.log("pdf", pdf);
 
     if (pdf && pdf !== "isLoading") setProofDoctor(pdf);
     setLoading(false);

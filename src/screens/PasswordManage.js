@@ -33,11 +33,7 @@ import {
             alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
             return;
         }
-    
-        // Thực hiện logic để thay đổi mật khẩu ở đây
-        console.log('Mật khẩu hiện tại:', password);
-        console.log('Mật khẩu mới:', newPassword);
-    
+
         // Gửi yêu cầu đến API để thay đổi mật khẩu
         try {
             // Giả sử bạn có một hàm gọi API là changePassword

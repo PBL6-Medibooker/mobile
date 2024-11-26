@@ -99,7 +99,7 @@ import {
       <SafeAreaView style={styles.container}>
         <HeaderBack navigation={navigation} title="Cài Đặt" />
         <View style={styles.mainContainer}>
-          <View style={styles.item}>
+          {/* <View style={styles.item}>
             <Ionicons 
             name="notifications-outline" size={28} style={styles.iconItem} />
             <Text style={styles.textItem}>Cài Đặt Thông Báo</Text>
@@ -110,7 +110,7 @@ import {
               color={COLORS.PersianGreen}
             />
             </TouchableOpacity> 
-          </View>
+          </View> */}
   
           <View style={styles.item}>
             <MaterialIcons

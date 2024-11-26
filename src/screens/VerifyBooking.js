@@ -22,6 +22,7 @@ import {
   translateDayOfWeek,
 } from "../utils/ConvertDate";
 import Appointment_API from "../API/Appointment_API";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 const VerifyBooking = ({ navigation, route }) => {
   const { account } = useAuth();
@@ -35,9 +36,19 @@ const VerifyBooking = ({ navigation, route }) => {
   const { region, specialty, doctor, medicalHistory, healthStatus, time } =
     route.params;
 
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    // console.log(currentDate);
+    setShow(Platform.OS === 'ios'); // iOS giữ picker mở, Android sẽ đóng picker
+    setDate(currentDate);
+  };
+
   const handleRegister = async () => {
     try {
-      console.log(`${time.dayOfWeek} ${time.date}`);
+      // console.log(`${time.dayOfWeek} ${time.date}`);
       const add_appointment = await Appointment_API.add_Appointment(
         account._id,
         doctor._id,
@@ -186,6 +197,25 @@ const VerifyBooking = ({ navigation, route }) => {
                 setInsurance({ ...insurance, exp_date: val })
               }
             />
+          </View>
+
+          <View style={styles.infoRow}>
+            <TouchableOpacity
+              style={{
+                height: 20,
+                width: 20,
+                backgroundColor: COLORS.PersianGreen,
+              }}
+              onPress={() => setShow(!show)}
+            />
+            {show && (
+              <RNDateTimePicker
+                mode="date"
+                value={date}
+                display="spinner"
+                onChange={onChange}
+              />
+            )}
           </View>
         </View>
 

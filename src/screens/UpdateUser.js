@@ -35,7 +35,7 @@ const UpdateUser = ({ navigation }) => {
   const handleUploadImage = async () => {
     const image = await UploadImage();
     if (image) {
-      console.log("image selected", image);
+      // console.log("image selected", image);
       setUriAvatar(image);
     }
   };
@@ -44,7 +44,7 @@ const UpdateUser = ({ navigation }) => {
 
 
   const handleSave = async () => {
-    console.log("HandleSave goi");
+    // console.log("HandleSave goi");
     const formData = new FormData();
     formData.append("username", username);
     formData.append("phone", phone);
@@ -62,7 +62,7 @@ const UpdateUser = ({ navigation }) => {
     }
     // Kiểm tra ID
     const accountId = account._id;
-    console.log('account gg', accountId);
+    // console.log('account gg', accountId);
     try {
       const response = await Account_API.update_Account(accountId, formData);
       if (response) {
@@ -70,7 +70,7 @@ const UpdateUser = ({ navigation }) => {
         
 
         // update_acc_info(response);
-        console.log("Account log: ", response);
+        // console.log("Account log: ", response);
         setAccount(response)
         setUriAvatar(null)
 

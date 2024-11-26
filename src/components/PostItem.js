@@ -53,7 +53,7 @@ const QandAItem = ({ item, navigation }) => {
           account.email,
           comment
         );
-        console.log(res);
+        // console.log(res);
         if (typeof res === "object") {
           navigation.navigate("Forum", { refresh: item._id });
           setIsViewAnswer(true);

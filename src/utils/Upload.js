@@ -19,7 +19,7 @@ export const UploadImage = async () => {
     });
 
     if (!result.canceled) {
-      console.log(result.assets[0].uri);
+      // console.log(result.assets[0].uri);
       return result.assets[0].uri; // Trả về hình ảnh đã chọn
     } else {
       console.log("User cancelled image picker.");
