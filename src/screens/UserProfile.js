@@ -19,29 +19,6 @@ import Account_API from "../API/Account_API";
 const UserProfile = ({ navigation }) => {
   const { storedToken, isLoggedIn, account } = useAuth();
 
-  const [uriAvatar, setUriAvatar] = useState(null);
-
-  const handleUploadImage = async () => {
-    const image = await UploadImage();
-    if (image) {
-      // console.log("image selected", image);
-      setUriAvatar(image.uri);
-    }
-
-    // try {
-    //   await Account_API.updateAccountInfo(
-    //     account._id,
-    //     account.usename,
-    //     account.phone,
-    //     "123",
-    //     image
-    //   );
-    //   // console.log(res);
-    // } catch (error) {
-    //   console.error("Lỗi khi cập nhật thông tin tài khoản:", error);
-    // }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack navigation={navigation} title="My Profile" />
@@ -50,12 +27,8 @@ const UserProfile = ({ navigation }) => {
           <TouchableOpacity activeOpacity={0.85} onPress={() => {}}>
             <Image
               source={
-                uriAvatar
-                  ? { uri: uriAvatar }
-                  : account?.profile_image
-                  ? {
-                      uri: account.profile_image,
-                    }
+                account?.profile_image
+                  ? { uri: account.profile_image }
                   : images.user_default
               }
               style={styles.image}
@@ -198,7 +171,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.PersianGreen,
     flexDirection: "row",
     paddingVertical: 20,
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    paddingLeft: 10
   },
   myAvatar: {
     width: 120,

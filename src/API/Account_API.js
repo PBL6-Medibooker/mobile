@@ -10,7 +10,7 @@ const userSignup = async (user, proof) => {
     data.append("phone", user.phone);
     data.append("password", user.password);
     data.append("is_doc", user.is_doc);
-    if (proof)
+    if (proof?.uri)
       data.append("proof", {
         uri: proof.uri,
         type: proof.mimeType || "application/pdf",
@@ -169,7 +169,7 @@ const update_Account = async (id, data) => {
 const upload_Doctor_Proof = async (id, proof) => {
   try {
     const data = new FormData();
-    if (proof) {
+    if (proof?.uri) {
       // console.log(proof);
       data.append("proof", {
         uri: proof.uri,
@@ -327,7 +327,7 @@ const updateDoctorActiveHour = async (
 const deleteDoctorActiveHour = async (doctor_id, activeHour) => {
   try {
     // console.log("activehour: ", activeHour);
-    
+
     // Gửi yêu cầu DELETE tới backend với body chứa thông tin giờ làm việc cần xóa
     const response = await client.post(
       `/acc/delete-active-hour/${doctor_id}`,

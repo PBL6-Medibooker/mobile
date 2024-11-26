@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   textInput: {
     borderWidth: 1,
     borderColor: COLORS.silver,
-    paddingVertical: 4,
+    paddingVertical: 7,
     paddingHorizontal: 14,
     borderRadius: 999,
   },

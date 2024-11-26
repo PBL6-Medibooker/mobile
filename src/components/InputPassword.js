@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   textInput: {
-    paddingVertical: 4,
+    paddingVertical: 7,
     paddingStart: 14,
     flex: 1
   },

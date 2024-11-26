@@ -24,6 +24,8 @@ const options = [
   { label: "Người dùng", value: "user" },
 ];
 
+let MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
+
 const Register = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState(null);
   const [message, setMessage] = useState(null);
@@ -108,16 +110,26 @@ const Register = ({ navigation }) => {
   };
 
   const [isLoading, setLoading] = useState(false);
-  const handleUploadFile = async () => {
-    setLoading(true);
-    const pdf = await UploadPDF();
-    // console.log("pdf", pdf);
 
-    if (pdf && pdf !== "isLoading") setProofDoctor(pdf);
-    setLoading(false);
+  const handleUploadFile = async () => {
+    try {
+      setLoading(true);
+      const pdf = await UploadPDF();
+      if (pdf && pdf !== "isLoading") {
+        if (pdf.size > MAX_UPLOAD_SIZE) {
+          Alert.alert("Lỗi", "Kích thước file vượt quá giới hạn cho phép.");
+        } else {
+          setProofDoctor(pdf);
+        }
+      }
+    } catch (error) {
+      Alert.alert("Lỗi", "Không thể tải file. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
   };
+
   const handleRemoveFile = () => {
-    // setUploadedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
     setProofDoctor(null);
   };
 
@@ -358,7 +370,7 @@ const styles = StyleSheet.create({
   textInput: {
     borderWidth: 1,
     borderColor: COLORS.silver,
-    paddingVertical: 4,
+    paddingVertical: 7,
     paddingHorizontal: 14,
     borderRadius: 999,
   },

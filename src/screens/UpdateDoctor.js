@@ -9,22 +9,23 @@ import {
   Alert,
   ScrollView,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { COLORS, images } from "../constants";
 import { useAuth } from "../AuthProvider";
 import { HeaderBack } from "../components";
 import { UploadImage, UploadPDF } from "../utils/Upload";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Account_API from "../API/Account_API";
-import { id } from "date-fns/locale";
 import Speciality_API from "../API/Speciality_API";
 import Region_API from "../API/Region_API";
 import Dropdown from "../components/Dropdown";
-import UpdateOther from "./UpdateOther";
 import Feather from "@expo/vector-icons/Feather";
-import { Entypo, Ionicons } from "@expo/vector-icons";
+import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
+// import WebView from "react-native-webview";
+
+let MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
 
 const UpdateDoctor = ({ navigation, route }) => {
   const { storedToken, account, setAccount } = useAuth();
@@ -85,10 +86,6 @@ const UpdateDoctor = ({ navigation, route }) => {
       );
       const selectedRegion = regions.find((item) => item.name === region);
 
-      // console.log("Chuyên khoa nhập vào:", speciality);
-      // console.log("Khu vực nhập vào:", region);
-      // console.log("Chuyên khoa tìm được:", selectedSpeciality);
-      // console.log("Khu vực tìm được:", selectedRegion);
       // Kiểm tra nếu không tìm thấy
       if (!selectedSpeciality && !selectedRegion) {
         Alert.alert("Thông báo", "Vui lòng cập nhật chuyên khoa và khu vực.");
@@ -137,7 +134,7 @@ const UpdateDoctor = ({ navigation, route }) => {
           speciality_id: selectedSpeciality,
           region_id: selectedRegion,
         }));
-        if (proofDoctor) {
+        if (proofDoctor?.uri !== account?.proof) {
           const upload = await Account_API.upload_Doctor_Proof(
             accountId,
             proofDoctor
@@ -172,21 +169,37 @@ const UpdateDoctor = ({ navigation, route }) => {
 
   // upload PDF
   const [proofDoctor, setProofDoctor] = useState(
-    account?.proof ? { name: account?.proof } : null
+    account?.proof ? { name: "proof", uri: account?.proof } : null
   );
   const [isLoading, setLoading] = useState(false);
-  const handleUploadFile = async () => {
-    setLoading(true);
-    const pdf = await UploadPDF();
-    // console.log("pdf", pdf);
 
-    if (pdf && pdf !== "isLoading") setProofDoctor(pdf);
-    setLoading(false);
+  const handleUploadFile = async () => {
+    try {
+      setLoading(true);
+      const pdf = await UploadPDF();
+      if (pdf && pdf !== "isLoading") {
+        if (pdf.size > MAX_UPLOAD_SIZE) {
+          Alert.alert("Lỗi", "Kích thước file vượt quá giới hạn cho phép.");
+        } else {
+          setProofDoctor(pdf);
+        }
+      }
+    } catch (error) {
+      Alert.alert("Lỗi", "Không thể tải file. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
   };
+
   const handleRemoveFile = () => {
-    // setUploadedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
     setProofDoctor(null);
   };
+
+  // const handleOpenPDF = (url) => {
+  //   Linking.openURL(url).catch((err) =>
+  //     console.error("Failed to open PDF", err)
+  //   );
+  // };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -217,7 +230,7 @@ const UpdateDoctor = ({ navigation, route }) => {
             activeOpacity={0.7}
             onPress={() => navigation.navigate("UpdateOther")}
             style={styles.leftButton}>
-            <Feather name="edit-2" size={22} color={COLORS.gray} />
+            <Feather name="edit-2" size={18} color={COLORS.gray} />
           </TouchableOpacity>
         </View>
 
@@ -311,17 +324,25 @@ const UpdateDoctor = ({ navigation, route }) => {
           </View>
 
           {proofDoctor && (
-            <View style={{ flexDirection: "row", alignItems: "center", width: "90%" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                width: "90%",
+              }}>
               <Text style={{ fontSize: 20 }}>• </Text>
-              <Text
-                numberOfLines={1}
-                style={{
-                  textDecorationLine: "underline",
-                  color: COLORS.blue,
-                  marginEnd: 10,
-                }}>
-                {proofDoctor.name}
-              </Text>
+              <TouchableOpacity onPress={() => {}}>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    textDecorationLine: "underline",
+                    color: COLORS.blue,
+                    marginEnd: 10,
+                  }}>
+                  {proofDoctor.name}
+                </Text>
+              </TouchableOpacity>
+
               <TouchableOpacity onPress={() => handleRemoveFile()}>
                 <Ionicons name="close" size={24} color={COLORS.gray} />
               </TouchableOpacity>
@@ -366,18 +387,18 @@ const styles = StyleSheet.create({
   },
   uploadAvatar: {
     position: "absolute",
-    top: 91,
-    start: 91,
+    bottom: 1,
+    end: 1,
     backgroundColor: COLORS.white,
     padding: 2,
     borderRadius: 999,
   },
   leftButton: {
     position: "absolute",
-    top: 91,
-    left: 0,
+    bottom: 1,
+    start: 1,
     backgroundColor: COLORS.white,
-    padding: 2,
+    padding: 4,
     borderRadius: 999,
     elevation: 0,
   },

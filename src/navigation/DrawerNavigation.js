@@ -42,7 +42,7 @@ const DrawerNavigation = () => {
         drawerStyle: {
           marginTop: 32,
           backgroundColor: COLORS.white,
-          width: 253,
+          width: 250,
           borderTopRightRadius: 25,
           borderBottomRightRadius: 25,
         },

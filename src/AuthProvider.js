@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
           const accountData = await Account_API.get_Account_By_Email(
             user?.email
           );
-          console.log(accountData);
+          // console.log(accountData);
 
           setAccount(accountData);
           setError(null);
