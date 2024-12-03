@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,6 +23,9 @@ import {
   translateDayOfWeek,
 } from "../utils/ConvertDate";
 import Appointment_API from "../API/Appointment_API";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
+import { format } from "date-fns";
+import { vi } from "date-fns/locale";
 
 const VerifyBooking = ({ navigation, route }) => {
   const { account } = useAuth();
@@ -35,9 +39,21 @@ const VerifyBooking = ({ navigation, route }) => {
   const { region, specialty, doctor, medicalHistory, healthStatus, time } =
     route.params;
 
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    const ddmmyy = format(currentDate, "dd/MM/yyyy", { locale: vi });
+    console.log(ddmmyy);
+    setShow(false); // iOS giữ picker mở, Android sẽ đóng picker
+    setDate(currentDate);
+    setInsurance({ ...insurance, exp_date: ddmmyy });
+  };
+
   const handleRegister = async () => {
     try {
-      console.log(`${time.dayOfWeek} ${time.date}`);
+      // console.log(`${time.dayOfWeek} ${time.date}`);
       const add_appointment = await Appointment_API.add_Appointment(
         account._id,
         doctor._id,
@@ -176,7 +192,7 @@ const VerifyBooking = ({ navigation, route }) => {
               }
             />
           </View>
-          <View style={styles.infoRow}>
+          {/* <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Ngày hết hạn:</Text>
             <TextInput
               style={styles.textInput}
@@ -186,6 +202,32 @@ const VerifyBooking = ({ navigation, route }) => {
                 setInsurance({ ...insurance, exp_date: val })
               }
             />
+          </View> */}
+
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Ngày hết hạn:</Text>
+            <TouchableWithoutFeedback onPress={() => setShow(true)}>
+              <View style={styles.selectedExp}>
+                <TextInput
+                  style={{
+                    marginVertical: 1,
+                    paddingVertical: 1,
+                    paddingHorizontal: 5,
+                  }}
+                  placeholder="12/12/2025"
+                  value={insurance.exp_date}
+                  editable={false}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+            {show && (
+              <RNDateTimePicker
+                mode="date"
+                value={date}
+                display="spinner"
+                onChange={onChange}
+              />
+            )}
           </View>
         </View>
 
@@ -325,6 +367,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 5,
+    paddingVertical: 2,
   },
   infoLabel: {
     fontSize: 16,
@@ -389,5 +432,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     color: COLORS.PersianGreen,
     padding: 8,
+  },
+  selectedExp: {
+    borderBottomWidth: 1,
+    borderColor: COLORS.gray,
+    width: "65%",
   },
 });

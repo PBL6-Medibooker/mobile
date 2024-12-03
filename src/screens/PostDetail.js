@@ -44,7 +44,7 @@ const QADetail = ({ navigation, route }) => {
   };
 
   const handleDeleteAnswer = (id) => {
-    console.log(id);
+    //console.log(id);
     const cmt = post.post_comments.filter((item) => item._id !== id);
     setPost({ ...post, post_comments: cmt });
   };

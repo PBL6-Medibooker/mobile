@@ -25,7 +25,7 @@ const SoftDeleteAccount = () => {
                         setIsDeleting(true);
                         try {
                             const response = await Account_API.softDeleteAccount(account_Ids);
-                            Alert.alert("Thông báo", "Tài khoản đã được xóa mềm.", [{
+                            Alert.alert("Thông báo", "Tài khoản đã được xóa.", [{
                                 
                                     text: "OK",
                                     onPress: () => {

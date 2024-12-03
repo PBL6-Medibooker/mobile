@@ -40,18 +40,6 @@ const DoctorInfo = ({ navigation, route }) => {
   const [message, setMessage] = useState(null);
   const [loading, setloading] = useState(false);
 
-  // const { isLoggedIn } = useAuth();
-
-  // useEffect(() => {
-  //   const get_Doctor_Active_Hours = async () => {
-  //     const activeHours = await Account_API.get_Doctor_Active_Hour_List(
-  //       doctor._id
-  //     );
-  //     console.log(activeHours);
-  //   };
-  //   get_Doctor_Active_Hours();
-  // }, [doctorSelected]);
-
   const getSpecialtyAndRegionById = async () => {
     setloading(true);
     const specialtyById = await Speciality_API.get_Speciality_By_Id(
@@ -105,6 +93,8 @@ const DoctorInfo = ({ navigation, route }) => {
     );
   }
 
+  
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -141,10 +131,10 @@ const DoctorInfo = ({ navigation, route }) => {
           <Text style={styles.titleText}>Giới thiệu</Text>
           <Text style={styles.contentText}>{doctorSelected.bio}</Text>
 
-          <Text style={styles.titleText}>Lĩnh vực chuyên môn</Text>
+          <Text style={styles.titleText}>Quá trình công tác</Text>
           <Text style={styles.contentText}>doctor.bio.introduction</Text>
 
-          <Text style={styles.titleText}>Thành viên hiệp hội</Text>
+          <Text style={styles.titleText}>Quá trình học tập</Text>
           <Text style={styles.contentText}>doctor.bio.introduction</Text>
 
           <CalendarCustom
@@ -215,6 +205,8 @@ const DoctorInfo = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
+
+
 
 export default DoctorInfo;
 

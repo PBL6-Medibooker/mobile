@@ -10,7 +10,7 @@ const userSignup = async (user, proof) => {
     data.append("phone", user.phone);
     data.append("password", user.password);
     data.append("is_doc", user.is_doc);
-    if (proof)
+    if (proof?.uri)
       data.append("proof", {
         uri: proof.uri,
         type: proof.mimeType || "application/pdf",
@@ -166,11 +166,39 @@ const update_Account = async (id, data) => {
   }
 };
 
+// const upload_Doctor_Proof = async (id, proof) => {
+//   try {
+//     const data = new FormData();
+//     if (proof?.uri) {
+//       // console.log(proof);
+//       data.append("proof", {
+//         uri: proof.uri,
+//         type: proof.mimeType || "application/pdf",
+//         name: proof.fileName || "document.pdf",
+//       });
+//     }
+//     const res = await client.post(`/acc/upload-proof/${id}`, data, {
+//       headers: {
+//         "Content-Type": "multipart/form-data",
+//       },
+//     });
+//     return res.data;
+//   } catch (error) {
+//     if (error.response) {
+//       console.error("Error update account: ", error.response.data.error);
+//       return error.response.data.error;
+//     } else {
+//       console.error("Error update account: ", error.message);
+//       return error.message;
+//     }
+//   }
+// };
+
 const upload_Doctor_Proof = async (id, proof) => {
   try {
     const data = new FormData();
-    if (proof) {
-      console.log(proof);
+    if (proof?.uri) {
+      // console.log(proof);
       data.append("proof", {
         uri: proof.uri,
         type: proof.mimeType || "application/pdf",
@@ -194,28 +222,45 @@ const upload_Doctor_Proof = async (id, proof) => {
   }
 };
 
+// const ForgotPassword = async (email) => {
+//   try {
+//     const res = await client.post("/acc/forgot-pass", { email });
+//     // console.log("Forgot Password Response: ", res.data);
+//     return { success: true, data: res.data };
+//   } catch (error) {
+//     if (error.message) {
+//       console.log("Error response:", error.response.data.error);
+//       return error.response.data.error;
+//     } else {
+//       console.log("Error not response:", error.message);
+//       return error.message;
+//     }
+//   }
+// };
+
 const ForgotPassword = async (email) => {
   try {
     const res = await client.post("/acc/forgot-pass", { email });
-    console.log("Forgot Password Response: ", res.data);
-    return res.data;
+    return { success: true, data: res.data };
   } catch (error) {
-    if (error.message) {
-      console.log("Error response:", error.response.data.error);
-      return error.response.data.error;
-    } else {
-      console.log("Error not response:", error.message);
-      return error.message;
+    let errorMessage = "An unexpected error occurred";
+
+    if (error.response && error.response.data && error.response.data.error) {
+      errorMessage = error.response.data.error;
+    } else if (error.message) {
+      errorMessage = error.message;
     }
+    return { success: false, error: errorMessage };
   }
 };
+
 
 const ResetPassword = async (token, newPassword) => {
   try {
     const res = await client.post(`/acc/reset-password/${token}`, {
       new_password: newPassword,
     });
-    console.log("Reset Password Response:", res.data);
+    // console.log("Reset Password Response:", res.data);
     return res.data;
   } catch (error) {
     if (error.message) {
@@ -264,7 +309,7 @@ const change_password = async (email, newPassword) => {
       email: email,
       new_password: newPassword,
     });
-    console.log("Password change successful: ", res.data);
+    // console.log("Password change successful: ", res.data);
     return res.data;
   } catch (error) {
     if (error.response) {
@@ -326,6 +371,8 @@ const updateDoctorActiveHour = async (
 
 const deleteDoctorActiveHour = async (doctor_id, activeHour) => {
   try {
+    // console.log("activehour: ", activeHour);
+
     // Gửi yêu cầu DELETE tới backend với body chứa thông tin giờ làm việc cần xóa
     const response = await client.post(
       `/acc/delete-active-hour/${doctor_id}`,
@@ -351,7 +398,7 @@ const update_Doctor_Info = async (accountId, data) => {
         "Content-Type": "application/json",
       },
     });
-    console.log("Doctor info updated successfully:", res.data);
+    // console.log("Doctor info updated successfully:", res.data);
     return res.data;
   } catch (error) {
     if (error.response) {

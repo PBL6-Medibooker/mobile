@@ -22,6 +22,7 @@ import { useCallback, useEffect } from "react";
 import useCustomFonts from "../hooks/useCustomFonts";
 import { useFocusEffect } from "@react-navigation/native";
 import { formatToDDMMYYYY, formatToHHMMSS } from "../utils/ConvertDate";
+import { TextInput } from "react-native-gesture-handler";
 
 const Home = ({ navigation }) => {
   const fontsLoaded = useCustomFonts();
@@ -132,7 +133,8 @@ const Home = ({ navigation }) => {
             </View>
 
             <View style={styles.featureFrame}>
-              <View style={[styles.featureRow, { borderBottomWidth: 1 }]}>
+            {/* <View style={[styles.featureRow, { borderBottomWidth: 1 }]}> */}
+              <View style={styles.featureRow}>  
                 <TouchableOpacity
                   onPress={() => navigation.navigate("Specialty")}
                   style={[styles.featureButton, { borderRightWidth: 1 }]}>
@@ -162,7 +164,7 @@ const Home = ({ navigation }) => {
                   <Text style={styles.featureText}>Bác sĩ</Text>
                 </TouchableOpacity>
               </View>
-              <View style={styles.featureRow}>
+              {/* <View style={styles.featureRow}>
                 {isLoggedIn && account?.__t === "Doctor" ? (
                   <TouchableOpacity
                     onPress={() => {
@@ -212,7 +214,7 @@ const Home = ({ navigation }) => {
                   </View>
                   <Text style={styles.featureText}>Hướng dẫn</Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
             </View>
 
             <View style={{ paddingHorizontal: 15 }}>
@@ -257,6 +259,8 @@ const Home = ({ navigation }) => {
                   </View>
                 </TouchableOpacity>
               )}
+
+              <TextInput  />
 
               <TouchableOpacity
                 style={styles.showAll}

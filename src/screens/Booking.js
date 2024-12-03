@@ -87,12 +87,16 @@ const Booking = ({ navigation, route }) => {
       specialitiesHook.length > 0
     ) {
       // Đảm bảo dữ liệu đã tải xong
-      const selectedRegion = regionsHook.find(
-        (item) => item._id === doctorSelected.region_id._id
-      );
-      const selectedSpecialty = specialitiesHook.find(
-        (item) => item._id === doctorSelected.speciality_id._id
-      );
+      let selectedRegion = null;
+      let selectedSpecialty = null;
+      if (doctorSelected?.region_id?._id)
+        selectedRegion = regionsHook.find(
+          (item) => item._id === doctorSelected?.region_id?._id
+        );
+      if (doctorSelected?.speciality_id?._id)
+        selectedSpecialty = specialitiesHook.find(
+          (item) => item._id === doctorSelected?.speciality_id?._id
+        );
 
       if (selectedRegion && selectedSpecialty) {
         setArea(selectedRegion);
@@ -108,7 +112,7 @@ const Booking = ({ navigation, route }) => {
         doctor._id
       );
       console.log(activeHours);
-      setActiveHours(activeHours)
+      setActiveHours(activeHours);
     };
     get_Doctor_Active_Hours();
   }, [doctor]);

@@ -105,7 +105,7 @@ const CalendarCustom = ({
     // Kiểm tra xem fully_booked có tồn tại và là mảng không
     if (schedule?.fully_booked && Array.isArray(schedule.fully_booked)) {
       const filter = schedule.fully_booked.filter((item) => item.date === date);
-      console.log(filter);
+      //console.log(filter);
 
       return filter.length > 0;
     } else {
