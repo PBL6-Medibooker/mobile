@@ -102,25 +102,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // const Forgot_Pass = async (email) => {
+  //   try {
+  //     const res = await Account_API.ForgotPassword(email);
+  //     if (!res.success) return { error: res.error };
+  //     return res.data;
+  //   } catch (error) {
+  //     console.error("Error in forgot password:", error);
+  //     throw error;
+  //   }
+  // };
+
   const Forgot_Pass = async (email) => {
-    try {
-      const res = await Account_API.ForgotPassword(email);
-      return res;
-    } catch (error) {
-      console.error("Error in forgot password:", error);
-      throw error;
+    const response = await Account_API.ForgotPassword(email);
+    if (!response.success) {
+      return { error: response.error };
     }
+    return response.data;
   };
-  const soft_deleteAccount = async(account_Ids) => {
-    try{
+
+  
+  const soft_deleteAccount = async (account_Ids) => {
+    try {
       const response = await Account_API.softDeleteAccount(account_Ids);
       return response;
     } catch (error) {
       throw error;
     }
   };
-  
-  const perma_deleteAccount = async(account_Ids) => {
+
+  const perma_deleteAccount = async (account_Ids) => {
     try {
       const response = await Account_API.permaDeleteAccount(account_Ids);
       return response;
@@ -141,7 +152,7 @@ export const AuthProvider = ({ children }) => {
         setAccount,
         Forgot_Pass,
         soft_deleteAccount,
-        perma_deleteAccount
+        perma_deleteAccount,
       }}>
       {children}
     </AuthContext.Provider>

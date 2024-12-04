@@ -197,16 +197,16 @@ const upload_Doctor_Proof = async (id, proof) => {
 const ForgotPassword = async (email) => {
   try {
     const res = await client.post("/acc/forgot-pass", { email });
-    // console.log("Forgot Password Response: ", res.data);
-    return res.data;
+    return { success: true, data: res.data };
   } catch (error) {
-    if (error.message) {
-      console.log("Error response:", error.response.data.error);
-      return error.response.data.error;
-    } else {
-      console.log("Error not response:", error.message);
-      return error.message;
+    let errorMessage = "An unexpected error occurred";
+ 
+    if (error.response && error.response.data && error.response.data.error) {
+      errorMessage = error.response.data.error;
+    } else if (error.message) {
+      errorMessage = error.message;
     }
+    return { success: false, error: errorMessage };
   }
 };
 
@@ -218,13 +218,15 @@ const ResetPassword = async (token, newPassword) => {
     // console.log("Reset Password Response:", res.data);
     return res.data;
   } catch (error) {
+    let errorMessage = ""
     if (error.message) {
       console.log("Error response:", error.response.data.error);
-      return error.response.data.error;
+      errorMessage = error.response.data.error;
     } else {
       console.log("Error not response:", error.message);
-      return error.message;
+      errorMessage = error.message;
     }
+    return {success: false, error: errorMessage}
   }
 };
 
