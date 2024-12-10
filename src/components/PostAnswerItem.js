@@ -10,7 +10,6 @@ import {
 import { COLORS, images } from "../constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useEffect, useState } from "react";
-import { useAuth } from "../AuthProvider";
 import Account_API from "../API/Account_API";
 import Post_API from "../API/Post_API";
 

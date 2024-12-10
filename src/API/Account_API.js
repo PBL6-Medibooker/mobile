@@ -200,7 +200,7 @@ const ForgotPassword = async (email) => {
     return { success: true, data: res.data };
   } catch (error) {
     let errorMessage = "An unexpected error occurred";
- 
+
     if (error.response && error.response.data && error.response.data.error) {
       errorMessage = error.response.data.error;
     } else if (error.message) {
@@ -218,7 +218,7 @@ const ResetPassword = async (token, newPassword) => {
     // console.log("Reset Password Response:", res.data);
     return res.data;
   } catch (error) {
-    let errorMessage = ""
+    let errorMessage = "";
     if (error.message) {
       console.log("Error response:", error.response.data.error);
       errorMessage = error.response.data.error;
@@ -226,7 +226,7 @@ const ResetPassword = async (token, newPassword) => {
       console.log("Error not response:", error.message);
       errorMessage = error.message;
     }
-    return {success: false, error: errorMessage}
+    return { success: false, error: errorMessage };
   }
 };
 
@@ -383,6 +383,23 @@ const getDoctorProof = async (doctor_id) => {
   }
 };
 
+const getUserProfile = async (token) => {
+  try {
+    const res = await client.get("/acc/get-user-profile", {
+      headers: { "Authorization": `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    if (error.response) {
+      console.log("Error response: ", error.response.data.error);
+      return error.response.data.error;
+    } else {
+      console.log("Error not response: ", error.message);
+      return error.message;
+    }
+  }
+};
+
 export default {
   userLogin,
   userSignup,
@@ -403,4 +420,5 @@ export default {
   deleteDoctorActiveHour,
   update_Doctor_Info,
   getDoctorProof,
+  getUserProfile,
 };

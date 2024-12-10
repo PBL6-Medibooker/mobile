@@ -16,6 +16,9 @@ export const AuthProvider = ({ children }) => {
   const fetchToken = async () => {
     const userString = await AsyncStorage.getItem("user");
     const user = JSON.parse(userString);
+
+    console.log(user);
+    
     if (user?.token) {
       setUser(user);
       console.log(user?.email);
@@ -35,12 +38,14 @@ export const AuthProvider = ({ children }) => {
     const fetchAccountInfo = async () => {
       if (isLoggedIn) {
         try {
-          const accountData = await Account_API.get_Account_By_Email(
-            user?.email
-          );
-          // console.log(accountData);
+          if (!user || !user.token) return null
 
-          setAccount(accountData);
+          const accountData = await Account_API.getUserProfile(
+            user?.token
+          );
+          console.log(accountData.user);
+
+          setAccount(accountData.user);
           setError(null);
           if (user?.verified === true) console.log("Doctor");
           if (user?.verified === false) {
@@ -50,7 +55,7 @@ export const AuthProvider = ({ children }) => {
             setError("Tài khoản chưa được xác thực!");
           }
         } catch (error) {
-          console.error("Failed to fetch account info: ", error);
+          console.log("Failed to fetch account info: ", error);
           setAccount({});
           setIsLoggedIn(false);
         }
@@ -61,31 +66,6 @@ export const AuthProvider = ({ children }) => {
 
     fetchAccountInfo();
   }, [isLoggedIn]);
-
-  // const fetchUser = async () => {
-  //   setLoginPending(true);
-  //   const token = await AsyncStorage.getItem("userToken");
-  //   if (token !== null) {
-  //     const res = await client.get("acc/get-acc", {
-  //       headers: {
-  //         Authorization: `JWT ${token}`,
-  //       },
-  //     });
-
-  //     if (res.data) {
-  //       setAccountInfo(res.data);
-  //       setIsLoggedIn(true);
-  //     } else {
-  //       setAccountInfo(null);
-  //       setIsLoggedIn(false);
-  //     }
-  //     setLoginPending(false);
-  //   } else {
-  //     setAccountInfo(null);
-  //     setIsLoggedIn(false);
-  //     setLoginPending(false);
-  //   }
-  // };
 
   const userLogin = async () => {
     await fetchToken();
@@ -98,7 +78,7 @@ export const AuthProvider = ({ children }) => {
       setAccount({});
       setIsLoggedIn(false);
     } catch (error) {
-      console.error("Error logging out: ", error);
+      console.log("Error logging out: ", error);
     }
   };
 

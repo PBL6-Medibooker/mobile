@@ -321,8 +321,8 @@ import Account_API from "../API/Account_API";
  
 const DoctorInfo = ({ navigation, route }) => {
   const { doctorSelected } = route.params || {};
-  const { storedToken, account, setAccount } = useAuth();
-  const { isLoggedIn } = useAuth();
+  const { account, isLoggedIn } = useAuth();
+  
   const [area, setArea] = useState(null);
   const [specialty, setSpecialty] = useState(null);
   const [healthStatus, setHealthStatus] = useState(null);
