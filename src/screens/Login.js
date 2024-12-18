@@ -25,7 +25,7 @@ const Login = ({ navigation }) => {
     password: "",
   });
 
-  const { userLogin, isLoggedIn } = useAuth();
+  const { userLogin, isLoggedIn, error } = useAuth();
 
   useEffect(() => {
     const getLoginHistory = async () => {
@@ -38,16 +38,19 @@ const Login = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       const res = await Account_API.userLogin(account);
-      if (typeof res === "object" && res.token && res.role === "user") {
-        Alert.alert("Thông báo", "Đăng nhập thành công.", [
-          {
-            text: "OK",
-            onPress: async () => {
-              userLogin();
-              navigation.navigate("Home");
+      if (typeof res === "object" && res.token) {
+        await userLogin();
+
+        if (error) Alert.alert("Lỗi", error, [{ text: "OK" }]);
+        else
+          Alert.alert("Thông báo", "Đăng nhập thành công.", [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("Home");
+              },
             },
-          },
-        ]);
+          ]);
       } else {
         Alert.alert("Lỗi", res, [{ text: "OK" }]);
       }
@@ -109,7 +112,8 @@ const Login = ({ navigation }) => {
             <Text style={styles.loginText}>Đăng nhập</Text>
           </Pressable>
 
-          <TouchableOpacity onPress = {() => navigation.navigate("ForgetPassword")}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ForgetPassword")}>
             <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
           </TouchableOpacity>
         </View>

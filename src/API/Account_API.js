@@ -114,7 +114,7 @@ const get_Filter_Doctor_List = async (specialty, region) => {
       speciality: specialty,
       region: region,
     };
-    const res = await client.post("/acc/filter-doctor-list", params);
+    const res = await client.post("/doc/filter-doctor-list", params);
     const data = res.data.filter((item) => !item.is_deleted);
     return data;
   } catch (error) {
@@ -133,7 +133,7 @@ const get_Filter_Doctor_List = async (specialty, region) => {
 
 const get_Doctor_Active_Hour_List = async (doctor_id) => {
   try {
-    const res = await client.get(`/acc/active-hour-list/${doctor_id}`);
+    const res = await client.get(`/doc/active-hour-list/${doctor_id}`);
     const data = res.data;
     return data;
   } catch (error) {
@@ -177,7 +177,7 @@ const upload_Doctor_Proof = async (id, proof) => {
         name: proof.fileName || "document.pdf",
       });
     }
-    const res = await client.post(`/acc/upload-proof/${id}`, data, {
+    const res = await client.post(`/doc/upload-proof/${id}`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -282,7 +282,7 @@ const change_password = async (email, newPassword) => {
 const addDoctorActiveHour = async (doctor_id, activeHour) => {
   try {
     const response = await client.post(
-      `/acc/add-active-hour/${doctor_id}`,
+      `/doc/add-active-hour/${doctor_id}`,
       activeHour
     );
     return response.data;
@@ -310,7 +310,7 @@ const updateDoctorActiveHour = async (
     };
     // Gửi yêu cầu POST tới backend
     const response = await client.post(
-      `/acc/update-active-hour/${doctor_id}`,
+      `/doc/update-active-hour/${doctor_id}`,
       payload
     );
     // Trả về danh sách active_hours và thông tin đã thay đổi từ backend
@@ -332,7 +332,7 @@ const deleteDoctorActiveHour = async (doctor_id, activeHour) => {
 
     // Gửi yêu cầu DELETE tới backend với body chứa thông tin giờ làm việc cần xóa
     const response = await client.post(
-      `/acc/delete-active-hour/${doctor_id}`,
+      `/doc/delete-active-hour/${doctor_id}`,
       activeHour
     );
     // Trả về thông báo và danh sách active_hours sau khi xóa
@@ -350,7 +350,7 @@ const deleteDoctorActiveHour = async (doctor_id, activeHour) => {
 
 const update_Doctor_Info = async (accountId, data) => {
   try {
-    const res = await client.post(`/acc/update-doc-info/${accountId}`, data, {
+    const res = await client.post(`/doc/update-doc-info/${accountId}`, data, {
       headers: {
         "Content-Type": "application/json",
       },

@@ -38,10 +38,10 @@ const Home = ({ navigation }) => {
     filterArticles,
   ] = useArticles();
 
-  useEffect(() => {
-    if (!isLoggedIn && error !== null)
-      Alert.alert("Thông báo", error, [{ text: "OK" }]);
-  }, [error]);
+  // useEffect(() => {
+  //   if (!isLoggedIn && error !== null)
+  //     Alert.alert("Thông báo", error, [{ text: "OK" }]);
+  // }, [error]);
 
   useFocusEffect(
     useCallback(() => {

@@ -38,6 +38,7 @@ const Register = ({ navigation }) => {
     password: "",
     is_doc: null,
   });
+  const [loadingStatus, setLoadingStatus] = useState(false);
 
   const [specialtyDoctor, setSpecialtyDoctor] = useState(null);
   const [proofDoctor, setProofDoctor] = useState(null);
@@ -86,21 +87,23 @@ const Register = ({ navigation }) => {
 
   const reqSignup = async () => {
     try {
-      // if (specialtyDoctor) console.log("spec:", specialtyDoctor.value);
-
-      // console.log(account);
-
+      setLoadingStatus(true);
       const res = await Account_API.userSignup(account, proofDoctor);
+      setLoadingStatus(false);
 
       if (typeof res === "object" && res.token) {
-        Alert.alert("Thông báo", "Đăng ký tài khoản thành công.", [
-          {
-            text: "OK",
-            onPress: () => {
-              navigation.navigate("Login");
+        Alert.alert(
+          "Thông báo",
+          "Đăng ký tài khoản thành công. Vui lòng kiểm tra email để xác thực tài khoản.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("Login");
+              },
             },
-          },
-        ]);
+          ]
+        );
       } else {
         Alert.alert("Lỗi", res, [{ text: "OK" }]);
       }
@@ -135,6 +138,23 @@ const Register = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+      {loadingStatus && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+        </View>
+      )}
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled={true}>

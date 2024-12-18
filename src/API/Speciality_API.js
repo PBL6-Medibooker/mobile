@@ -2,7 +2,7 @@ import client from "./client";
 
 const get_Speciality_List = async () => {
   try {
-    const response = await client.get("/special/get-speciality-list", {
+    const response = await client.post("/special/get-speciality-list", {
       hidden_state: "false",
     });
     return response.data;
@@ -17,8 +17,10 @@ const get_Speciality_List = async () => {
 
 const get_Speciality_By_Id = async (id) => {
   try {
-    const specialities = await get_Speciality_List(); // `/special/get-speciality/${id}`
-    return specialities.find((item) => item._id === id);
+    const response = await client.post(`/special/get-speciality/${id}`)
+    // const specialities = await get_Speciality_List(); // `/special/get-speciality/${id}`
+    // return specialities.find((item) => item._id === id);
+    return response.data
   } catch (error) {
     console.error("get_Speciality_By_Id", error);
   }

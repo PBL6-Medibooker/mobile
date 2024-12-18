@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
     const user = JSON.parse(userString);
 
     console.log(user);
-    
+
     if (user?.token) {
       setUser(user);
       console.log(user?.email);
@@ -36,31 +36,43 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchAccountInfo = async () => {
+      setError(null);
       if (isLoggedIn) {
         try {
-          if (!user || !user.token) return null
+          if (!user || !user.token) return null;
 
-          const accountData = await Account_API.getUserProfile(
-            user?.token
-          );
-          console.log(accountData.user);
+          const accountData = await Account_API.getUserProfile(user?.token);
 
-          setAccount(accountData.user);
-          setError(null);
-          if (user?.verified === true) console.log("Doctor");
-          if (user?.verified === false) {
-            console.log("Doctor not verify");
+          const acc = accountData.user;
+          // console.log(accountData.user);
+          if (acc?.verified === false) {
             setAccount({});
             setIsLoggedIn(false);
             setError("Tài khoản chưa được xác thực!");
+          } else {
+            setAccount(accountData.user);
+            setIsLoggedIn(true);
+            setError(null);
           }
+
+          // setAccount(accountData.user);
+          // setError(null);
+          // if (user?.verified === true) console.log("Doctor");
+          // if (user?.verified === false) {
+          //   console.log("Doctor not verify");
+          //   setAccount({});
+          //   setIsLoggedIn(false);
+          //   setError("Tài khoản chưa được xác thực!");
+          // }
         } catch (error) {
           console.log("Failed to fetch account info: ", error);
           setAccount({});
+          setError(error);
           setIsLoggedIn(false);
         }
       } else {
         setAccount({});
+        setError(null);
       }
     };
 
@@ -101,7 +113,6 @@ export const AuthProvider = ({ children }) => {
     return response.data;
   };
 
-  
   const soft_deleteAccount = async (account_Ids) => {
     try {
       const response = await Account_API.softDeleteAccount(account_Ids);
