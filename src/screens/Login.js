@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Pressable,
@@ -18,12 +19,11 @@ import { InputPassword } from "../components";
 import Account_API from "../API/Account_API";
 
 const Login = ({ navigation }) => {
-  // const [message, setMessage] = useState(null);
-  // const [isVerified, setIsVerified] = useState(false);
   const [account, setAccount] = useState({
     email: "",
     password: "",
   });
+  const [loadingStatus, setLoadingStatus] = useState(false);
 
   const { userLogin, isLoggedIn, error } = useAuth();
 
@@ -37,9 +37,11 @@ const Login = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
+      setLoadingStatus(true);
       const res = await Account_API.userLogin(account);
       if (typeof res === "object" && res.token) {
         await userLogin();
+        setLoadingStatus(false);
 
         if (error) Alert.alert("Lỗi", error, [{ text: "OK" }]);
         else
@@ -52,6 +54,7 @@ const Login = ({ navigation }) => {
             },
           ]);
       } else {
+        setLoadingStatus(false);
         Alert.alert("Lỗi", res, [{ text: "OK" }]);
       }
     } catch (error) {
@@ -61,6 +64,23 @@ const Login = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {loadingStatus && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+        </View>
+      )}
+
       <View style={styles.backButtonContainer}>
         <TouchableOpacity style={styles.backButton}>
           <Ionicons

@@ -8,6 +8,7 @@ import {
   View,
   FlatList,
   Alert,
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, images } from "../constants";
@@ -22,7 +23,6 @@ import { useCallback, useEffect } from "react";
 import useCustomFonts from "../hooks/useCustomFonts";
 import { useFocusEffect } from "@react-navigation/native";
 import { formatToDDMMYYYY, formatToHHMMSS } from "../utils/ConvertDate";
-import { TextInput } from "react-native-gesture-handler";
 
 const Home = ({ navigation }) => {
   const fontsLoaded = useCustomFonts();

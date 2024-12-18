@@ -16,17 +16,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, images } from "../constants";
 import { HeaderBack } from "../components";
 import Account_API from "../API/Account_API";
-import { UploadImage } from "../utils/Upload";
 import { useAuth } from "../AuthProvider";
 import { Picker } from "@react-native-picker/picker";
-import moment from "moment";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { formatToHHMM } from "../utils/ConvertDate";
 import { parse } from "date-fns";
 
 const UpdateOther = ({ navigation }) => {
-  const { storedToken, account, setAccount } = useAuth();
-  const [imageFile, setImageFile] = useState(account?.proof);
+  const { account } = useAuth();
   const [selectedDay, setSelectedDay] = useState("Monday");
   const [activeHours, setActiveHours] = useState([]);
   const [showModal, setShowModal] = useState(false);
