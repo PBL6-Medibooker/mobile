@@ -23,7 +23,6 @@ import Region_API from "../API/Region_API";
 import Dropdown from "../components/Dropdown";
 import Feather from "@expo/vector-icons/Feather";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
-// import WebView from "react-native-webview";
 
 let MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
 
@@ -38,15 +37,14 @@ const UpdateDoctor = ({ navigation, route }) => {
   const [address, setAddress] = useState(account?.address || "");
   const [speciality, setSpeciality] = useState(account?.speciality || "");
   const [region, setRegion] = useState(account?.region || "");
+  
   const [bio, setBio] = useState(account?.bio || "");
+
   const [uriAvatar, setUriAvatar] = useState(account?.profile_image);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [specialities, setSpecialities] = useState([]);
   const [regions, setRegions] = useState([]);
   const [openedDropdown, setOpenedDropdown] = useState(null);
-
-  
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,8 +64,8 @@ const UpdateDoctor = ({ navigation, route }) => {
           );
           if (currentSpeciality) setSpeciality(currentSpeciality.name);
           if (currentRegion) setRegion(currentRegion.name);
-          // } else {
-          //   Alert.alert("Vui lòng cập nhật thông tin chuyên khoa và khu vực.");
+          } else {
+            Alert.alert("Vui lòng cập nhật thông tin chuyên khoa và khu vực.");
         }
       } catch (error) {
         console.error("Lỗi khi tải dữ liệu:", error);
@@ -86,7 +84,7 @@ const UpdateDoctor = ({ navigation, route }) => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      
+  
       const selectedSpeciality = specialities.find(
         (item) => item.name === speciality
       );
@@ -118,12 +116,10 @@ const UpdateDoctor = ({ navigation, route }) => {
           name: "avatar.jpg",
         });
       }
-  
       const accountId = account._id;
-  
+
       // Cập nhật thông tin tài khoản
       const accountResponse = await Account_API.update_Account(accountId, formData);
-  
       if (!accountResponse) throw new Error("Cập nhật thông tin thất bại");
   
       // Cập nhật thông tin bác sĩ
@@ -134,7 +130,6 @@ const UpdateDoctor = ({ navigation, route }) => {
       });
   
       if (!doctorResponse) throw new Error("Cập nhật thông tin bác sĩ thất bại");
-  
       // Cập nhật thông tin account (không xử lý trường proof ở đây)
       setAccount((prev) => ({
         ...prev,
@@ -160,7 +155,6 @@ const UpdateDoctor = ({ navigation, route }) => {
           });
       }
   
-      // Hiển thị thông báo thành công
       Alert.alert("Thành công", "Thông tin bác sĩ đã được cập nhật.");
       navigation.goBack();
     } catch (error) {
@@ -307,16 +301,18 @@ const UpdateDoctor = ({ navigation, route }) => {
             expanded={openedDropdown === "region"}
             setExpanded={setOpenedDropdown}
           />
-          {/* <TextInput style={styles.input} value={region} onChangeText={setRegion} /> */}
-          <Text style={styles.label}>Giới thiệu</Text>
-          <TextInput
-            style={styles.textarea}
-            value={bio}
-            onChangeText={setBio}
-            multiline
-            numberOfLines={4}
-            // placeholder="Nhập giới thiệu###Nhập quá trình công tác###Nhập quá trình học tập"
-          />
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Giới thiệu</Text>
+            <TextInput
+              style={styles.textarea}
+              value={bio}
+              onChangeText={(text) => setBio(text)}
+              multiline
+              placeholder="Giới thiệu về bác sĩ"
+              textAlignVertical="top"
+            />
+          </View>
 
           <View style={styles.import}>
             <Text style={styles.label}>Minh chứng (nếu có)</Text>
@@ -403,6 +399,13 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 40,
   },
+  textInput: {
+    height: 40,
+    borderColor: COLORS.gray,
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingLeft: 8,
+  },
   uploadAvatar: {
     position: "absolute",
     bottom: 1,
@@ -410,6 +413,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     padding: 2,
     borderRadius: 999,
+  },
+  sectionTitle: {
+    color: COLORS.PersianGreen,
+    fontWeight: "bold",
+    marginTop: 5,
+    marginBottom: 1,
+  },
+  section: {
+    padding: 1,
   },
   leftButton: {
     position: "absolute",
@@ -454,10 +466,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     padding: 12,
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 4,
     borderColor: COLORS.silver,
     borderWidth: 1,
     height: 120,
+    marginTop: 5,
   },
   import: {
     flexDirection: "row",

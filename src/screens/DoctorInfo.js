@@ -22,15 +22,12 @@ import Account_API from "../API/Account_API";
 
 const DoctorInfo = ({ navigation, route }) => {
   const { doctorSelected } = route.params || {};
-
+  const { storedToken, account, setAccount } = useAuth();
   const { isLoggedIn } = useAuth();
-
   const [area, setArea] = useState(null);
   const [specialty, setSpecialty] = useState(null);
   const [healthStatus, setHealthStatus] = useState(null);
-
   const [activeHours, setActiveHours] = useState({});
-
   const [selectedDay, setSelectedDay] = useState({
     date: null,
     dayOfWeek: null,
@@ -39,6 +36,10 @@ const DoctorInfo = ({ navigation, route }) => {
 
   const [message, setMessage] = useState(null);
   const [loading, setloading] = useState(false);
+  const [bio, setBio] = useState({});
+  // const [introduce, setIntroduce] = useState(account?.introduce || "");
+  // const [workProcess, setWorkProcess] = useState(account?.workProcess ||"");
+  // const [educationProcess, setEducationProcess] = useState(account?.educationProcess ||"");
 
   const getSpecialtyAndRegionById = async () => {
     setloading(true);
@@ -60,7 +61,38 @@ const DoctorInfo = ({ navigation, route }) => {
     // console.log(activeHours);
     setActiveHours(activeHours);
     setloading(false);
-  };
+  }
+  
+  function splitText(text) {
+    const validText = text || '';
+    const sections = validText.split(/(?=GIỚI THIỆU|QUÁ TRÌNH CÔNG TÁC|QUÁ TRÌNH HỌC TẬP)/g);
+   
+    const result = {
+        introduction: '',
+        workExperience: '',
+        education: ''
+    };
+
+    sections.forEach(section => {
+        if (section.startsWith('GIỚI THIỆU')) {
+            result.introduction = section.replace('GIỚI THIỆU', '').trim();
+        } else if (section.startsWith('QUÁ TRÌNH CÔNG TÁC')) {
+            result.workExperience = section.replace('QUÁ TRÌNH CÔNG TÁC', '').trim();
+        } else if (section.startsWith('QUÁ TRÌNH HỌC TẬP')) {
+            result.education = section.replace('QUÁ TRÌNH HỌC TẬP', '').trim();
+        }
+    });
+
+    return result;
+  }
+
+ useEffect(() => {
+    if (account?.bio) {
+     setBio(splitText(account.bio));
+  
+    }
+  }, [account?.bio]);
+
 
   useFocusEffect(
     useCallback(() => {
@@ -92,8 +124,6 @@ const DoctorInfo = ({ navigation, route }) => {
       </SafeAreaView>
     );
   }
-
-  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -129,13 +159,13 @@ const DoctorInfo = ({ navigation, route }) => {
 
         <View style={styles.mainContainer}>
           <Text style={styles.titleText}>Giới thiệu</Text>
-          <Text style={styles.contentText}>{doctorSelected.bio}</Text>
+          <Text style={styles.contentText}>{bio.introduction}</Text>
 
           <Text style={styles.titleText}>Quá trình công tác</Text>
-          <Text style={styles.contentText}>doctor.bio.introduction</Text>
+          <Text style={styles.contentText}>{bio.workExperience}</Text>
 
           <Text style={styles.titleText}>Quá trình học tập</Text>
-          <Text style={styles.contentText}>doctor.bio.introduction</Text>
+          <Text style={styles.contentText}>{bio.education}</Text>
 
           <CalendarCustom
             // navigation={navigation}
@@ -148,7 +178,6 @@ const DoctorInfo = ({ navigation, route }) => {
             selectedDay={selectedDay}
             theme="light"
           />
-
           {message && (
             <View style={{ flexDirection: "row", justifyContent: "center" }}>
               <Text style={{ color: "red", textAlign: "center" }}>
@@ -156,7 +185,6 @@ const DoctorInfo = ({ navigation, route }) => {
               </Text>
             </View>
           )}
-
           {selectedDay.time !== null && (
             <View>
               <Text style={styles.textHealth}>Tình trạng sức khoẻ</Text>
@@ -169,7 +197,6 @@ const DoctorInfo = ({ navigation, route }) => {
               />
             </View>
           )}
-
           <Pressable
             onPress={() => {
               if (isLoggedIn) handleSetDate();
@@ -205,8 +232,6 @@ const DoctorInfo = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
-
-
 
 export default DoctorInfo;
 
@@ -287,3 +312,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+

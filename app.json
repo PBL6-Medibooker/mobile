@@ -5,7 +5,9 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "newArchEnabled": true,
-    "assets": ["./assets/fonts"],
+    "assets": [
+      "./assets/fonts"
+    ],
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
@@ -17,13 +19,20 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.thanhthao2508.MedibookerApp"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "08e6bbda-b05a-48e2-9f8b-7381fa0984ba"
+      }
     }
   }
 }
