@@ -17,7 +17,7 @@ const get_Speciality_List = async () => {
 
 const get_Speciality_By_Id = async (id) => {
   try {
-    const response = await client.post(`/special/get-speciality/${id}`)
+    const response = await client.get(`/special/get-speciality/${id}`)
     // const specialities = await get_Speciality_List(); // `/special/get-speciality/${id}`
     // return specialities.find((item) => item._id === id);
     return response.data
