@@ -7,8 +7,8 @@ const get_Client_By_User_Id = async (userID) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error get_Client_By_User_Id: ", error.response.data.error);
-    else console.error("Error get_Client_By_User_Id: ", error.message);
+      console.log("Error get_Client_By_User_Id: ", error.response.data.error);
+    else console.log("Error get_Client_By_User_Id: ", error.message);
 
     return null;
   }
@@ -26,8 +26,8 @@ const add_Client = async (userID, insurance) => {
     return response.data;
   } catch (error) {
     if (error.response)
-      console.error("Error add_Client: ", error.response.data.error);
-    else console.error("Error add_Client: ", error.message);
+      console.log("Error add_Client: ", error.response.data.error);
+    else console.log("Error add_Client: ", error.message);
 
     return null;
   }

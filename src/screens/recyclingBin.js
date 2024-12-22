@@ -11,15 +11,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS, images } from "../constants";
-import Entypo from "@expo/vector-icons/Entypo";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ArticleItem, HeaderBack, HeaderHome } from "../components";
 import { useAuth } from "../AuthProvider";
-import useArticles from "../hooks/useArticles";
 import { useCallback, useEffect, useState } from "react";
-import useCustomFonts from "../hooks/useCustomFonts";
 import { useFocusEffect } from "@react-navigation/native";
 import Article_API from "../API/Article_API";
 
@@ -62,54 +58,67 @@ const RecyclingBin = ({ navigation }) => {
     const articleIds = myArticles
       .filter((item) => item.checked)
       .map((item) => item._id);
-    Alert.alert("", "Bạn có chắc chắn muốn xoá chúng vĩnh viễn không?", [
-      { text: "No", style: "cancel" },
-      {
-        text: "Yes",
-        onPress: async () => {
-          try {
-            const deleteArticle = await Article_API.perma_Delete_Article(
-              articleIds
-            );
-            if (deleteArticle?.modifiedCount > 0) {
-              // Alert.alert("Thông báo", "Tin tức đã được chuyển vào thùng rác.")
-              showTemporaryNotification("Tin tức đã được xoá!");
-              setMyArticles(myArticles.filter((item) => !item.checked));
-            } else {
-              showTemporaryNotification(res);
+    if (articleIds.length > 0)
+      Alert.alert("", "Bạn có chắc chắn muốn xoá chúng vĩnh viễn không?", [
+        { text: "No", style: "cancel" },
+        {
+          text: "Yes",
+          onPress: async () => {
+            try {
+              const deleteArticle = await Article_API.perma_Delete_Article(
+                articleIds
+              );
+              if (deleteArticle?.modifiedCount > 0) {
+                // Alert.alert("Thông báo", "Tin tức đã được chuyển vào thùng rác.")
+                showTemporaryNotification("Tin tức đã được xoá!");
+                setMyArticles(myArticles.filter((item) => !item.checked));
+              } else {
+                showTemporaryNotification(res);
+              }
+            } catch (error) {
+              console.error(error);
             }
-          } catch (error) {
-            console.error(error);
-          }
+          },
         },
-      },
-    ]);
+      ]);
+    else
+      Alert.alert("Thông báo", "Vui lòng chọn bài báo cần xoá!", [
+        { text: "OK" },
+      ]);
   };
 
   const handle_Restore_Article = async () => {
     const articleIds = myArticles
       .filter((item) => item.checked)
       .map((item) => item._id);
-    Alert.alert("", "Bạn có chắc chắn muốn khôi phục chúng không?", [
-      { text: "No", style: "cancel" },
-      {
-        text: "Yes",
-        onPress: async () => {
-          try {
-            const deleteArticle = await Article_API.restore_Article(articleIds);
-            if (deleteArticle?.modifiedCount > 0) {
-              // Alert.alert("Thông báo", "Tin tức đã được chuyển vào thùng rác.")
-              showTemporaryNotification("Tin tức đã được khôi phục!");
-              setMyArticles(myArticles.filter((item) => !item.checked));
-            } else {
-              showTemporaryNotification(res);
+      
+    if (articleIds.length > 0)
+      Alert.alert("", "Bạn có chắc chắn muốn khôi phục chúng không?", [
+        { text: "No", style: "cancel" },
+        {
+          text: "Yes",
+          onPress: async () => {
+            try {
+              const deleteArticle = await Article_API.restore_Article(
+                articleIds
+              );
+              if (deleteArticle?.modifiedCount > 0) {
+                // Alert.alert("Thông báo", "Tin tức đã được chuyển vào thùng rác.")
+                showTemporaryNotification("Tin tức đã được khôi phục!");
+                setMyArticles(myArticles.filter((item) => !item.checked));
+              } else {
+                showTemporaryNotification(res);
+              }
+            } catch (error) {
+              console.error(error);
             }
-          } catch (error) {
-            console.error(error);
-          }
+          },
         },
-      },
-    ]);
+      ]);
+    else
+      Alert.alert("Thông báo", "Vui lòng chọn bài báo muốn khôi phục!", [
+        { text: "OK" },
+      ]);
   };
 
   const toggleCheckbox = (id) => {

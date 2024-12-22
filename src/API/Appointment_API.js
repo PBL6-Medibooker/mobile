@@ -39,11 +39,13 @@ const add_Appointment = async (
     return { status: "appointment", data: response.data };
   } catch (error) {
     if (error.response) {
-      console.error("Error add appointment: ", error.response.data.error);
+      console.log("Error add appointment: ", error.response.data.error);
+      return { error: error.response.data.error };
     } else {
-      console.error("Error add appointment: ", error.message);
+      console.log("Error add appointment: ", error.message);
+      return { error: error.message };
     }
-    return null;
+    // return null;
   }
 };
 
@@ -60,9 +62,9 @@ const get_All_Appointment = async (user_id) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error("Error get appointments: ", error.response.data.error);
+      console.log("Error get appointments: ", error.response.data.error);
     } else {
-      console.error("Error get appointments: ", error.message);
+      console.log("Error get appointments: ", error.message);
     }
     return null;
   }
@@ -98,15 +100,9 @@ const get_Appointment_By_Status = async (user_id) => {
     return appointments;
   } catch (error) {
     if (error.response) {
-      console.error(
-        "Error get appointment of user: ",
-        error.response.data.error
-      );
+      console.log("Error get appointment of user: ", error.response.data.error);
     } else {
-      console.error(
-        "Error get appointment of user: ",
-        error.message
-      );
+      console.log("Error get appointment of user: ", error.message);
     }
     return null;
   }
@@ -120,8 +116,8 @@ const soft_delete_Appointment = async (appointmentId) => {
     return response.data;
   } catch (error) {
     if (error.response)
-      console.error("Error delete appointment: ", error.response.data.error);
-    else console.error("Error delete appointment: ", error.message);
+      console.log("Error delete appointment: ", error.response.data.error);
+    else console.log("Error delete appointment: ", error.message);
     return null;
   }
 };
@@ -134,8 +130,8 @@ const restore_Appointment = async (appointmentId) => {
     return response.data;
   } catch (error) {
     if (error.response)
-      console.error("Error restore appointment: ", error.response.data.error);
-    else console.error("Error restore appointment: ", error.message);
+      console.log("Error restore appointment: ", error.response.data.error);
+    else console.log("Error restore appointment: ", error.message);
     return null;
   }
 };
@@ -150,8 +146,46 @@ const canncel_Appointment = async (appointmentId) => {
     return response.data;
   } catch (error) {
     if (error.response)
-      console.error("Error cancel appointment: ", error.response.data.error);
-    else console.error("Error cancel appointment: ", error.message);
+      console.log("Error cancel appointment: ", error.response.data.error);
+    else console.log("Error cancel appointment: ", error.message);
+    return null;
+  }
+};
+
+const get_Appointment_Of_Doctor = async (doctor_id) => {
+  try {
+    const response = await client.post(
+      `/appointment/get-appointment-by-doctor/${doctor_id}`
+    );
+    const appointments = response.data;
+
+    if (appointments && Array.isArray(appointments)) {
+      const sortAppointments = (a, b) => {
+        const parsedDateA = parseAppointmentStartDate(a);
+        const parsedDateB = parseAppointmentStartDate(b);
+        return parsedDateA - parsedDateB;
+      };
+
+      const upcoming = [...appointments]
+        .filter((item) => !item.is_deleted)
+        .sort(sortAppointments);
+
+      const complete = [...appointments]
+        .filter((item) => item.is_deleted)
+        .sort(sortAppointments);
+
+      return { upcoming: upcoming, complete: complete };
+    }
+    return appointments;
+  } catch (error) {
+    if (error.response) {
+      console.log(
+        "Error get appointment of doctor: ",
+        error.response.data.error
+      );
+    } else {
+      console.log("Error get appointment of doctor: ", error.message);
+    }
     return null;
   }
 };
@@ -172,7 +206,7 @@ const get_Doctor_Appointment_By_Status = async (doctor_id) => {
       const upcoming = [...appointments]
         .filter(
           (item) =>
-            item.doctor_id._id === doctor_id && item.is_deleted === false
+            item?.doctor_id?._id === doctor_id && item?.is_deleted === false
         )
         .sort(sortAppointments);
 
@@ -187,9 +221,12 @@ const get_Doctor_Appointment_By_Status = async (doctor_id) => {
     return appointments;
   } catch (error) {
     if (error.response) {
-      console.error("Error get appointment of doctor: ", error.response.data.error);
+      console.log(
+        "Error get appointment of doctor: ",
+        error.response.data.error
+      );
     } else {
-      console.error("Error get appointment of doctor: ", error.message);
+      console.log("Error get appointment of doctor: ", error.message);
     }
     return null;
   }
@@ -203,4 +240,5 @@ export default {
   soft_delete_Appointment,
   get_Doctor_Appointment_By_Status,
   canncel_Appointment,
+  get_Appointment_Of_Doctor,
 };

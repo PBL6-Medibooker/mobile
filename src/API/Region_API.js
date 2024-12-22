@@ -8,9 +8,9 @@ const get_Region_List = async () => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error("Error get_Region_List: ", error.response.data.error);
+      console.log("Error get_Region_List: ", error.response.data.error);
     } else {
-      console.error("Error get_Region_List: ", error.message);
+      console.log("Error get_Region_List: ", error.message);
     }
     return [];
   }
@@ -21,7 +21,7 @@ const get_Region_By_Id = async (id) => {
     const regions = await get_Region_List();
     return regions.find((item) => item._id === id);
   } catch (error) {
-    console.error("get_Region_By_Id", error);
+    console.log("get_Region_By_Id", error);
   }
 };
 

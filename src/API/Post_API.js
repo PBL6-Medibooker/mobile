@@ -13,8 +13,8 @@ const get_All_Post = async () => {
     return data;
   } catch (error) {
     if (error.response)
-      console.error("Error get_All_Post: ", error.response.data.error);
-    else console.error("Error get_All_Post: ", error.message);
+      console.log("Error get_All_Post: ", error.response.data.error);
+    else console.log("Error get_All_Post: ", error.message);
     return null;
   }
 };
@@ -25,8 +25,8 @@ const get_Post_By_Id = async (id) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error get_Post_By_Id: ", error.response.data.error);
-    else console.error("Error get_Post_By_Id: ", error.message);
+      console.log("Error get_Post_By_Id: ", error.response.data.error);
+    else console.log("Error get_Post_By_Id: ", error.message);
     return null;
   }
 };
@@ -50,7 +50,7 @@ const get_Post_By_Specialty_Sort = async (specialty, sortBy) => {
       return sortPosts;
     } else return [];
   } catch (error) {
-    console.error("get_Post_By_Specialty_Sort: ", error);
+    console.log("get_Post_By_Specialty_Sort: ", error);
   }
 };
 
@@ -71,8 +71,8 @@ const add_New_Post = async (
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error add_New_Post: ", error.response.data.error);
-    else console.error("Error add_New_Post: ", error.message);
+      console.log("Error add_New_Post: ", error.response.data.error);
+    else console.log("Error add_New_Post: ", error.message);
     return null;
   }
 };
@@ -87,8 +87,8 @@ const add_Comment = async (postId, comment_email, comment_content) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error add_Comment: ", error.response.data.error);
-    else console.error("Error add_Comment: ", error.message);
+      console.log("Error add_Comment: ", error.response.data.error);
+    else console.log("Error add_Comment: ", error.message);
     return null;
   }
 };
@@ -105,8 +105,8 @@ const update_Comment = async (comment_content, comment_id, post_id) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error update_Comment: ", error.response.data.error);
-    else console.error("Error update_Comment: ", error.message);
+      console.log("Error update_Comment: ", error.response.data.error);
+    else console.log("Error update_Comment: ", error.message);
     return null;
   }
 };
@@ -118,8 +118,8 @@ const delete_Comment = async (postId, commentId) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error delete_Comment: ", error.response.data.error);
-    else console.error("Error delete_Comment: ", error.message);
+      console.log("Error delete_Comment: ", error.response.data.error);
+    else console.log("Error delete_Comment: ", error.message);
     return null;
   }
 };
@@ -139,8 +139,8 @@ const search_Post = async (search_query) => {
     return data;
   } catch (error) {
     if (error.response)
-      console.error("Error search_Post: ", error.response.data.error);
-    else console.error("Error search_Post: ", error.message);
+      console.log("Error search_Post: ", error.response.data.error);
+    else console.log("Error search_Post: ", error.message);
     return null;
   }
 };
@@ -167,7 +167,7 @@ const search_Post_By_Specialty_Sort = async (
       return sortPosts;
     } else return [];
   } catch (error) {
-    console.error("search_Post_By_Specialty_Sort", error);
+    console.log("search_Post_By_Specialty_Sort", error);
   }
 };
 

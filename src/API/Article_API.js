@@ -9,8 +9,8 @@ const get_All_Article = async () => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error get articles: ", error.response.data.error);
-    else console.error("Error get articles: ", error.message);
+      console.log("Error get articles: ", error.response.data.error);
+    else console.log("Error get articles: ", error.message);
 
     return null;
   }
@@ -38,8 +38,8 @@ const add_Article = async (email, title, content, image) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error add article: ", error.response.data.error);
-    else console.error("Error 1 add article: ", error.message);
+      console.log("Error add article: ", error.response.data.error);
+    else console.log("Error 1 add article: ", error.message);
 
     return null;
   }
@@ -66,8 +66,8 @@ const update_Article = async (id, title, content, image) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error update article: ", error.response.data.error);
-    else console.error("Error update article: ", error.message);
+      console.log("Error update article: ", error.response.data.error);
+    else console.log("Error update article: ", error.message);
 
     return null;
   }
@@ -84,8 +84,8 @@ const getArticlesByDoctor = async (doctorEmail) => {
     return data;
   } catch (error) {
     if (error.response)
-      console.error("Error getArticlesByDoctor: ", error.response.data.error);
-    else console.error("Error getArticlesByDoctor: ", error.message);
+      console.log("Error getArticlesByDoctor: ", error.response.data.error);
+    else console.log("Error getArticlesByDoctor: ", error.message);
     return null;
   }
 };
@@ -101,11 +101,11 @@ const get_Deleted_Article_By_Doctor = async (doctorEmail) => {
     return data;
   } catch (error) {
     if (error.response)
-      console.error(
+      console.log(
         "Error get_Deleted_Article_By_Doctor: ",
         error.response.data.error
       );
-    else console.error("Error get_Deleted_Article_By_Doctor: ", error.message);
+    else console.log("Error get_Deleted_Article_By_Doctor: ", error.message);
     return null;
   }
 };
@@ -119,11 +119,11 @@ const getArticlesBySpecialty = async (specialtyName) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error(
+      console.log(
         "Error getArticlesBySpecialty: ",
         error.response.data.error
       );
-    else console.error("Error getArticlesBySpecialty: ", error.message);
+    else console.log("Error getArticlesBySpecialty: ", error.message);
     return null;
   }
 };
@@ -145,8 +145,8 @@ const search_Article = async (search_query) => {
     return data;
   } catch (error) {
     if (error.response)
-      console.error("Error search_Article: ", error.response.data.error);
-    else console.error("Error search_Article: ", error.message);
+      console.log("Error search_Article: ", error.response.data.error);
+    else console.log("Error search_Article: ", error.message);
     return null;
   }
 };
@@ -160,8 +160,8 @@ const soft_Delete_Article = async (id) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error soft_Delete_Article: ", error.response.data.error);
-    else console.error("Error soft_Delete_Article: ", error.message);
+      console.log("Error soft_Delete_Article: ", error.response.data.error);
+    else console.log("Error soft_Delete_Article: ", error.message);
     return null;
   }
 };
@@ -175,8 +175,8 @@ const perma_Delete_Article = async (ids) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error perma_Delete_Article: ", error.response.data.error);
-    else console.error("Error perma_Delete_Article: ", error.message);
+      console.log("Error perma_Delete_Article: ", error.response.data.error);
+    else console.log("Error perma_Delete_Article: ", error.message);
     return null;
   }
 };
@@ -190,8 +190,8 @@ const restore_Article = async (ids) => {
     return res.data;
   } catch (error) {
     if (error.response)
-      console.error("Error restore_Article: ", error.response.data.error);
-    else console.error("Error restore_Article: ", error.message);
+      console.log("Error restore_Article: ", error.response.data.error);
+    else console.log("Error restore_Article: ", error.message);
     return null;
   }
 };

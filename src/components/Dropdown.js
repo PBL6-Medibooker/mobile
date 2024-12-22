@@ -17,7 +17,7 @@ const Dropdown = ({
   placeholder,
   disabled,
   value,
-  expanded,  // Kiểm tra trạng thái mở
+  expanded, // Kiểm tra trạng thái mở
   setExpanded, // Thay đổi trạng thái mở
 }) => {
   const [localExpanded, setLocalExpanded] = useState(expanded);
@@ -63,7 +63,9 @@ const Dropdown = ({
           {value ? value.name : placeholder} {/* Hiển thị giá trị hiện tại */}
         </Text>
         <Entypo
-          name={localExpanded && data.length > 0 ? "chevron-up" : "chevron-down"}
+          name={
+            localExpanded && data.length > 0 ? "chevron-up" : "chevron-down"
+          }
           size={18}
           color={COLORS.gray}
         />
@@ -75,6 +77,17 @@ const Dropdown = ({
             style={{ maxHeight: 150 }}
             nestedScrollEnabled={true}
             showsVerticalScrollIndicator={false}>
+            <Text
+              style={[
+                styles.text,
+                {
+                  paddingHorizontal: 8,
+                  color: COLORS.PersianGreen,
+                },
+              ]}>
+              {placeholder}
+            </Text>
+
             {data.map((item, index) => (
               <TouchableOpacity
                 onPress={() => onSelect(item)}
@@ -152,5 +165,11 @@ const styles = StyleSheet.create({
   text: {
     marginVertical: 2,
     paddingVertical: 2,
+    fontSize: 14,
   },
+  textPlaceholder: {
+    marginVertical: 2,
+    paddingVertical: 2,
+    fontSize: 14,
+  }
 });

@@ -28,7 +28,7 @@ const DoctorAppointment = ({ navigation }) => {
   const getAppointments = async () => {
     try {
       const appointments =
-        await Appointment_API.get_Doctor_Appointment_By_Status(account._id);
+        await Appointment_API.get_Appointment_Of_Doctor(account._id);
       
       setAppoinmentsComplete(appointments?.complete);
       setAppoinmentsUpcoming(appointments?.upcoming);

@@ -23,6 +23,7 @@ import { useCallback, useEffect } from "react";
 import useCustomFonts from "../hooks/useCustomFonts";
 import { useFocusEffect } from "@react-navigation/native";
 import { formatToDDMMYYYY, formatToHHMMSS } from "../utils/ConvertDate";
+import { AntDesign, FontAwesome, Ionicons } from "@expo/vector-icons";
 
 const Home = ({ navigation }) => {
   const fontsLoaded = useCustomFonts();
@@ -95,7 +96,7 @@ const Home = ({ navigation }) => {
                 {isLoggedIn && account?.__t === "Doctor" ? (
                   <Pressable
                     onPress={() => {
-                      navigation.navigate("MyArticle");
+                      navigation.navigate("BookingHistory");
                     }}
                     style={({ pressed }) => [
                       {
@@ -106,8 +107,12 @@ const Home = ({ navigation }) => {
                       styles.buttonContainer,
                     ]}>
                     <View style={styles.buttonIcon}>
-                      <Entypo name="calendar" size={24} color={COLORS.white} />
-                      <Text style={styles.text}>Tin tức của bạn</Text>
+                      <Ionicons
+                        name="wallet-outline"
+                        size={24}
+                        color={COLORS.white}
+                      />
+                      <Text style={styles.text}>Cuộc hẹn của tôi</Text>
                     </View>
                   </Pressable>
                 ) : (
@@ -133,16 +138,16 @@ const Home = ({ navigation }) => {
             </View>
 
             <View style={styles.featureFrame}>
-            {/* <View style={[styles.featureRow, { borderBottomWidth: 1 }]}> */}
-              <View style={styles.featureRow}>  
+              <View style={styles.featureRow}>
                 <TouchableOpacity
                   onPress={() => navigation.navigate("Specialty")}
                   style={[styles.featureButton, { borderRightWidth: 1 }]}>
                   <View style={styles.featureIcon}>
-                    <Entypo name="calendar" size={24} color={COLORS.white} />
+                    <AntDesign name="book" size={24} color={COLORS.white} />
                   </View>
                   <Text style={styles.featureText}>Chuyên khoa</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
                   onPress={() => navigation.navigate("Forum")}
                   style={[styles.featureButton, { borderRightWidth: 1 }]}>
@@ -151,70 +156,30 @@ const Home = ({ navigation }) => {
                   </View>
                   <Text style={styles.featureText}>Chuyên mục tư vấn</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("Doctor")}
+                  onPress={() => {
+                    if (account?.__t !== "Doctor")
+                      navigation.navigate("Doctor");
+                    else navigation.navigate("MyArticle");
+                  }}
                   style={styles.featureButton}>
                   <View style={styles.featureIcon}>
-                    <FontAwesome6
-                      name="user-doctor"
-                      size={24}
-                      color={COLORS.white}
-                    />
+                    {account?.__t !== "Doctor" ? (
+                      <FontAwesome6
+                        name="user-doctor"
+                        size={24}
+                        color={COLORS.white}
+                      />
+                    ) : (
+                      <FontAwesome name="list-alt" size={24} color={COLORS.white} />
+                    )}
                   </View>
-                  <Text style={styles.featureText}>Bác sĩ</Text>
+                  <Text style={styles.featureText}>
+                    {account?.__t !== "Doctor" ? "Bác sĩ" : "Tin tức của tôi"}
+                  </Text>
                 </TouchableOpacity>
               </View>
-              {/* <View style={styles.featureRow}>
-                {isLoggedIn && account?.__t === "Doctor" ? (
-                  <TouchableOpacity
-                    onPress={() => {
-                      navigation.navigate("MyArticle");
-                    }}
-                    style={[styles.featureButton, { borderRightWidth: 1 }]}>
-                    <View style={styles.featureIcon}>
-                      <MaterialIcons
-                        name="article"
-                        size={24}
-                        color={COLORS.white}
-                      />
-                    </View>
-                    <Text style={styles.featureText}>Tin tức của bạn</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    style={[styles.featureButton, { borderRightWidth: 1 }]}>
-                    <View style={styles.featureIcon}>
-                      <FontAwesome5
-                        name="search"
-                        size={24}
-                        color={COLORS.white}
-                      />
-                    </View>
-                    <Text style={styles.featureText}>Tra cứu kết quả</Text>
-                  </TouchableOpacity>
-                )}
-                <TouchableOpacity
-                  style={[styles.featureButton, { borderRightWidth: 1 }]}>
-                  <View style={styles.featureIcon}>
-                    <MaterialIcons
-                      name="miscellaneous-services"
-                      size={24}
-                      color={COLORS.white}
-                    />
-                  </View>
-                  <Text style={styles.featureText}>Dịch vụ</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.featureButton}>
-                  <View style={styles.featureIcon}>
-                    <MaterialIcons
-                      name="content-paste-search"
-                      size={24}
-                      color={COLORS.white}
-                    />
-                  </View>
-                  <Text style={styles.featureText}>Hướng dẫn</Text>
-                </TouchableOpacity>
-              </View> */}
             </View>
 
             <View style={{ paddingHorizontal: 15 }}>
@@ -260,7 +225,7 @@ const Home = ({ navigation }) => {
                 </TouchableOpacity>
               )}
 
-              <TextInput  />
+              <TextInput />
 
               <TouchableOpacity
                 style={styles.showAll}
@@ -308,7 +273,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingTop: 10,
-    paddingHorizontal: 4,
+    paddingHorizontal: 5,
     borderColor: COLORS.silver,
   },
   featureIcon: {

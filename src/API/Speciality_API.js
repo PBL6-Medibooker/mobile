@@ -8,8 +8,8 @@ const get_Speciality_List = async () => {
     return response.data;
   } catch (error) {
     if (error.response)
-      console.error("Error get_Speciality_List: ", error.response.data.error);
-    else console.error("Error get_Speciality_List: ", error.message);
+      console.log("Error get_Speciality_List: ", error.response.data.error);
+    else console.log("Error get_Speciality_List: ", error.message);
 
     return [];
   }
@@ -22,7 +22,7 @@ const get_Speciality_By_Id = async (id) => {
     // return specialities.find((item) => item._id === id);
     return response.data
   } catch (error) {
-    console.error("get_Speciality_By_Id", error);
+    console.log("get_Speciality_By_Id", error);
   }
 };
 

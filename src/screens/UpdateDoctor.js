@@ -23,9 +23,10 @@ import Region_API from "../API/Region_API";
 import Dropdown from "../components/Dropdown";
 import Feather from "@expo/vector-icons/Feather";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
- 
+import { splitText } from "../utils/splitText";
+
 let MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
- 
+
 const UpdateDoctor = ({ navigation, route }) => {
   const { storedToken, account, setAccount } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
@@ -37,18 +38,22 @@ const UpdateDoctor = ({ navigation, route }) => {
   const [address, setAddress] = useState(account?.address || "");
   const [speciality, setSpeciality] = useState(account?.speciality || "");
   const [region, setRegion] = useState(account?.region || "");
- 
+
   const [bio, setBio] = useState(account?.bio || "");
-  const [introduce, setIntroduce] = useState(account?.introduce ||"");
-  const [workProcess, setWorkProcess] = useState(account?.workProcess ||"");
-  const [educationProcess, setEducationProcess] = useState(account?.educationProcess ||"");
- 
+  const [bioDoctor, setBioDoctor] = useState(
+    splitText(account?.bio) || {
+      introduction: "",
+      workExperience: "",
+      education: "",
+    }
+  );
+
   const [uriAvatar, setUriAvatar] = useState(account?.profile_image);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [specialities, setSpecialities] = useState([]);
   const [regions, setRegions] = useState([]);
   const [openedDropdown, setOpenedDropdown] = useState(null);
- 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -56,7 +61,7 @@ const UpdateDoctor = ({ navigation, route }) => {
         const regionList = await Region_API.get_Region_List();
         setSpecialities(specialityList);
         setRegions(regionList);
- 
+
         if (account?.speciality_id?._id && account?.region_id?._id) {
           const currentSpeciality = specialityList.find(
             (item) =>
@@ -67,66 +72,32 @@ const UpdateDoctor = ({ navigation, route }) => {
           );
           if (currentSpeciality) setSpeciality(currentSpeciality.name);
           if (currentRegion) setRegion(currentRegion.name);
-          } else {
-            Alert.alert("Vui lòng cập nhật thông tin chuyên khoa và khu vực.");
+        } else {
+          Alert.alert("Vui lòng cập nhật thông tin chuyên khoa và khu vực.");
         }
       } catch (error) {
         console.error("Lỗi khi tải dữ liệu:", error);
       }
     };
     fetchData();
+    // console.log(bioDoctor);
   }, []);
- 
-  useEffect(() => {
-    if (account?.bio) {
-      console.log("Account bio length:", account.bio.length);
-      console.log("account bio: ", account?.bio);
- 
-      const bioParts = account.bio.split("\n").map((part) => part.trim());
-      console.log("bioParts:", bioParts);
- 
-      const intro = bioParts.find(part => part.startsWith("Giới thiệu:"))?.replace("Giới thiệu:", "").trim() || "";
-      const work = bioParts.find(part => part.startsWith("Quá trình công tác:"))?.replace("Quá trình công tác:", "").trim() || "";
-      const education = bioParts.find(part => part.startsWith("Quá trình học tập:"))?.replace("Quá trình học tập:", "").trim() || "";
-     
-      console.log("Giới thiệu:", intro);
-      console.log("Quá trình công tác:", work);
-      console.log("Quá trình học tập:", education);
-     
-      setIntroduce(intro);
-      setWorkProcess(work);
-      setEducationProcess(education);
- 
-    }
-  }, [account?.bio]);
- 
-  useEffect(() => {
-    console.log("State Introduce:", introduce);
-    console.log("State WorkProcess:", workProcess);
-    console.log("State EducationProcess:", educationProcess);
-  }, [introduce, workProcess, educationProcess]);
- 
+
   const handleUploadImage = async () => {
     const image = await UploadImage();
     if (image) {
       setUriAvatar(image);
     }
   };
- 
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const updatedBio = `
-      Giới thiệu: ${introduce}
-      Quá trình công tác: ${workProcess}
-      Quá trình học tập: ${educationProcess}
-    `;
-     
       const selectedSpeciality = specialities.find(
         (item) => item.name === speciality
       );
       const selectedRegion = regions.find((item) => item.name === region);
- 
+
       // Kiểm tra nếu không tìm thấy
       if (!selectedSpeciality && !selectedRegion) {
         Alert.alert("Thông báo", "Vui lòng cập nhật chuyên khoa và khu vực.");
@@ -140,7 +111,7 @@ const UpdateDoctor = ({ navigation, route }) => {
         Alert.alert("Thông báo", "Vui lòng cập nhật khu vực.");
         return;
       }
- 
+
       const formData = new FormData();
       formData.append("username", username);
       formData.append("phone", phone);
@@ -154,31 +125,41 @@ const UpdateDoctor = ({ navigation, route }) => {
         });
       }
       const accountId = account._id;
- 
+
       // Cập nhật thông tin tài khoản
-      const accountResponse = await Account_API.update_Account(accountId, formData);
+      const accountResponse = await Account_API.update_Account(
+        accountId,
+        formData
+      );
       if (!accountResponse) throw new Error("Cập nhật thông tin thất bại");
- 
+
+      const doctor_bio = `GIỚI THIỆU\n${bioDoctor.introduction}\nQUÁ TRÌNH CÔNG TÁC\n${bioDoctor.workExperience}\nQUÁ TRÌNH HỌC TẬP\n${bioDoctor.education}`
+      // console.log(doctor_bio);
+      
       // Cập nhật thông tin bác sĩ
       const doctorResponse = await Account_API.update_Doctor_Info(accountId, {
         speciality: selectedSpeciality.name,
         region: selectedRegion.name,
-        bio: updatedBio,
+        bio: doctor_bio,
       });
- 
-      if (!doctorResponse) throw new Error("Cập nhật thông tin bác sĩ thất bại");
+
+      if (!doctorResponse)
+        throw new Error("Cập nhật thông tin bác sĩ thất bại");
       // Cập nhật thông tin account (không xử lý trường proof ở đây)
       setAccount((prev) => ({
         ...prev,
         ...accountResponse,
-        bio: updatedBio,
+        bio: doctor_bio,
         speciality_id: selectedSpeciality,
         region_id: selectedRegion,
       }));
- 
+
       // Tải lên minh chứng (nếu có) nhưng không bắt buộc
       if (proofDoctor?.uri) {
-        const upload = await Account_API.upload_Doctor_Proof(accountId, proofDoctor)
+        const upload = await Account_API.upload_Doctor_Proof(
+          accountId,
+          proofDoctor
+        )
           .then((response) => {
             if (!response?._id) throw new Error("Upload minh chứng thất bại");
             setAccount((prev) => ({
@@ -188,11 +169,13 @@ const UpdateDoctor = ({ navigation, route }) => {
           })
           .catch((error) => {
             console.warn("Lỗi tải minh chứng:", error.message);
-            Alert.alert("Cảnh báo", "Không thể tải lên minh chứng. Thông tin khác đã được cập nhật.");
+            Alert.alert(
+              "Cảnh báo",
+              "Không thể tải lên minh chứng. Thông tin khác đã được cập nhật."
+            );
           });
       }
- 
-      // Hiển thị thông báo thành công
+
       Alert.alert("Thành công", "Thông tin bác sĩ đã được cập nhật.");
       navigation.goBack();
     } catch (error) {
@@ -202,11 +185,11 @@ const UpdateDoctor = ({ navigation, route }) => {
       setIsSaving(false);
     }
   };
- 
+
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date_of_birth;
     setShowDatePicker(false);
- 
+
     if (currentDate) {
       setDateOfBirth(currentDate.toISOString());
     }
@@ -216,7 +199,7 @@ const UpdateDoctor = ({ navigation, route }) => {
     account?.proof ? { name: "proof", uri: account?.proof } : null
   );
   const [isLoading, setLoading] = useState(false);
- 
+
   const handleUploadFile = async () => {
     try {
       setLoading(true);
@@ -234,11 +217,11 @@ const UpdateDoctor = ({ navigation, route }) => {
       setLoading(false);
     }
   };
- 
+
   const handleRemoveFile = () => {
     setProofDoctor(null);
   };
- 
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderBack navigation={navigation} title="Chỉnh Sửa Thông Tin Bác Sĩ" />
@@ -271,7 +254,7 @@ const UpdateDoctor = ({ navigation, route }) => {
             <Feather name="edit-2" size={18} color={COLORS.gray} />
           </TouchableOpacity>
         </View>
- 
+
         <View style={styles.form}>
           <Text style={styles.label}>Username</Text>
           <TextInput
@@ -279,7 +262,7 @@ const UpdateDoctor = ({ navigation, route }) => {
             value={username}
             onChangeText={setUserName}
           />
- 
+
           <Text style={styles.label}>Số Điện Thoại</Text>
           <TextInput
             style={styles.input}
@@ -287,7 +270,7 @@ const UpdateDoctor = ({ navigation, route }) => {
             onChangeText={setPhoneNumber}
             keyboardType="phone-pad"
           />
- 
+
           <Text style={styles.label}>Ngày sinh</Text>
           <TouchableOpacity onPress={() => setShowDatePicker(true)}>
             <TextInput
@@ -308,14 +291,14 @@ const UpdateDoctor = ({ navigation, route }) => {
               onChange={onDateChange}
             />
           )}
- 
+
           <Text style={styles.label}>Địa chỉ</Text>
           <TextInput
             style={styles.input}
             value={address}
             onChangeText={setAddress}
           />
- 
+
           <Text style={styles.label}>Lĩnh vực chuyên môn</Text>
           <Dropdown
             data={specialities || []}
@@ -328,7 +311,7 @@ const UpdateDoctor = ({ navigation, route }) => {
             expanded={openedDropdown === "speciality"}
             setExpanded={setOpenedDropdown}
           />
- 
+
           <Text style={styles.label}>Khu vực</Text>
           <Dropdown
             data={regions || []}
@@ -339,43 +322,49 @@ const UpdateDoctor = ({ navigation, route }) => {
             expanded={openedDropdown === "region"}
             setExpanded={setOpenedDropdown}
           />
- 
+
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Giới thiệu</Text>
             <TextInput
               style={styles.textarea}
-              value={introduce}
-              onChangeText={(text) => setIntroduce(text)}
+              value={bioDoctor.introduction}
+              onChangeText={(text) =>
+                setBioDoctor({ ...bioDoctor, introduction: text })
+              }
               multiline
               placeholder="Giới thiệu về bác sĩ"
               textAlignVertical="top"
             />
           </View>
- 
+
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Quá trình công tác</Text>
             <TextInput
               style={styles.textarea}
-              value={workProcess}
-              onChangeText={(text) => setWorkProcess(text)}
-              multiline={true}
-              placeholder="Quá trình công tác"
+              value={bioDoctor.workExperience}
+              onChangeText={(text) =>
+                setBioDoctor({ ...bioDoctor, workExperience: text })
+              }
+              multiline
+              placeholder="Quá trình công tác của bác sĩ"
               textAlignVertical="top"
             />
           </View>
- 
+
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Quá trình học tập</Text>
             <TextInput
               style={styles.textarea}
-              value={educationProcess}
-              onChangeText={(text) => setEducationProcess(text)}
-              multiline={true}
-              placeholder="Quá trình học tập"
+              value={bioDoctor.education}
+              onChangeText={(text) =>
+                setBioDoctor({ ...bioDoctor, education: text })
+              }
+              multiline
+              placeholder="Quá trình học tập của bác sĩ"
               textAlignVertical="top"
             />
           </View>
- 
+
           <View style={styles.import}>
             <Text style={styles.label}>Minh chứng (nếu có)</Text>
             <TouchableOpacity
@@ -387,7 +376,7 @@ const UpdateDoctor = ({ navigation, route }) => {
               <ActivityIndicator size="large" color="#0000ff" />
             ) : null}
           </View>
- 
+
           {proofDoctor && (
             <View
               style={{
@@ -407,27 +396,26 @@ const UpdateDoctor = ({ navigation, route }) => {
                   {proofDoctor.name}
                 </Text>
               </TouchableOpacity>
- 
+
               <TouchableOpacity onPress={() => handleRemoveFile()}>
                 <Ionicons name="close" size={24} color={COLORS.gray} />
               </TouchableOpacity>
             </View>
           )}
         </View>
- 
+
         <TouchableOpacity
-        style={styles.saveButton}
-        onPress={() => handleSave()}
-        disabled={isSaving}
-        >
+          style={styles.saveButton}
+          onPress={() => handleSave()}
+          disabled={isSaving}>
           <Text style={styles.saveButtonText}>
-          {isSaving ? "Đang Lưu..." : "Lưu Thông Tin"}
-            </Text>
+            {isSaving ? "Đang Lưu..." : "Lưu Thông Tin"}
+          </Text>
         </TouchableOpacity>
         {isSaving && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size={48} color={COLORS.PersianGreen} />
-        </View>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size={48} color={COLORS.PersianGreen} />
+          </View>
         )}
       </ScrollView>
     </SafeAreaView>

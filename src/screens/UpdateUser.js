@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -14,43 +16,40 @@ import { COLORS, images } from "../constants";
 import { UploadImage } from "../utils/Upload";
 import { HeaderBack } from "../components";
 import { useAuth } from "../AuthProvider";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 import Account_API from "../API/Account_API";
-
-
 
 const UpdateUser = ({ navigation }) => {
   const { storedToken, account, setAccount } = useAuth();
 
+  const [loadingStatus, setLoadingStatus] = useState(false);
+
   const [username, setUserName] = useState(account?.username || "");
   const [phone, setPhoneNumber] = useState(account?.phone || "");
-  // const [email, setEmail] = useState(accountInfo?.email || ""); 
-  const [date_of_birth, setDateOfBirth] = useState(account?.date_of_birth || "");
+  // const [email, setEmail] = useState(accountInfo?.email || "");
+  const [date_of_birth, setDateOfBirth] = useState(
+    account?.date_of_birth || ""
+  );
   const [address, setAddress] = useState(account?.address || "");
   const [uriAvatar, setUriAvatar] = useState(account?.profile_image);
-  const [underlyingCondition, setUnderlyingCondition] = useState(account?.underlying_condition || "");
+  const [underlyingCondition, setUnderlyingCondition] = useState(
+    account?.underlying_condition || ""
+  );
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleUploadImage = async () => {
     const image = await UploadImage();
-    if (image) {
-      // console.log("image selected", image);
-      setUriAvatar(image);
-    }
+    if (image) setUriAvatar(image);
   };
 
-
-
-
   const handleSave = async () => {
-    // console.log("HandleSave goi");
+    setLoadingStatus(true);
     const formData = new FormData();
     formData.append("username", username);
     formData.append("phone", phone);
     formData.append("date_of_birth", date_of_birth);
     formData.append("address", address);
-    // formData.append("email", email);
     formData.append("underlying_condition", underlyingCondition);
 
     if (uriAvatar) {
@@ -62,17 +61,13 @@ const UpdateUser = ({ navigation }) => {
     }
     // Kiểm tra ID
     const accountId = account._id;
-    // console.log('account gg', accountId);
     try {
       const response = await Account_API.update_Account(accountId, formData);
       if (response) {
         Alert.alert("Cập nhật thành công");
-        
 
-        // update_acc_info(response);
-        // console.log("Account log: ", response);
-        setAccount(response)
-        setUriAvatar(null)
+        setAccount(response);
+        setUriAvatar(null);
 
         // Hiển thị thông tin mới nhất
         setUserName(response.username || "");
@@ -80,12 +75,11 @@ const UpdateUser = ({ navigation }) => {
         setDateOfBirth(response.date_of_birth || "");
         setAddress(response.address || "");
         setUnderlyingCondition(response.underlying_condition || "");
-        // setUriAvatar(response.profile_image || null); // Sử dụng URL ảnh trực tiếp từ backend
-
-        // navigation.navigate("UserProfile");
       } else {
         Alert.alert("Cập nhật thất bại", response.error || "Vui lòng thử lại");
       }
+
+      setLoadingStatus(false);
     } catch (error) {
       Alert.alert("Có lỗi xảy ra", "Vui lòng thử lại sau");
     }
@@ -101,21 +95,27 @@ const UpdateUser = ({ navigation }) => {
     }
   };
 
-  // useEffect(() => {
-  //   // Khi vào lại trang, cập nhật state từ accountInfo mới nhất
-  //   console.log("update");
-  //   setUserName(account?.username || "");
-  //   setPhoneNumber(account?.phone || "");
-  //   setDateOfBirth(account?.date_of_birth || "");
-  //   setAddress(account?.address || "");
-  //   setUnderlyingCondition(account?.underlying_condition || "");
-  //   // setUriAvatar(account.profile_image || null);
-  // }, [account]);
-
   return (
     <SafeAreaView style={styles.container}>
+      {loadingStatus && (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" color={COLORS.PersianGreen} />
+        </View>
+      )}
+
       <HeaderBack navigation={navigation} title="Chỉnh Sửa Hồ Sơ" />
-      <View style={styles.content}>
+      <ScrollView style={styles.content}>
         <View style={styles.myAvatar}>
           <TouchableOpacity activeOpacity={0.85}>
             <Image
@@ -123,8 +123,8 @@ const UpdateUser = ({ navigation }) => {
                 uriAvatar
                   ? { uri: uriAvatar }
                   : account?.profile_image
-                    ? { uri: account.profile_image }
-                    : images.user_default
+                  ? { uri: account.profile_image }
+                  : images.user_default
               }
               style={styles.image}
             />
@@ -157,7 +157,11 @@ const UpdateUser = ({ navigation }) => {
           <TouchableOpacity onPress={() => setShowDatePicker(true)}>
             <TextInput
               style={styles.input}
-              value={date_of_birth ? new Date(date_of_birth).toLocaleDateString() : ""}
+              value={
+                date_of_birth
+                  ? new Date(date_of_birth).toLocaleDateString()
+                  : ""
+              }
               editable={false} // Làm cho TextInput không thể chỉnh sửa
             />
           </TouchableOpacity>
@@ -170,7 +174,6 @@ const UpdateUser = ({ navigation }) => {
               onChange={onDateChange}
             />
           )}
-
 
           <Text style={styles.label}>Địa chỉ</Text>
           <TextInput
@@ -188,10 +191,12 @@ const UpdateUser = ({ navigation }) => {
           />
         </View>
 
-        <TouchableOpacity style={styles.saveButton} onPress={() => handleSave()}>
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={() => handleSave()}>
           <Text style={styles.saveButtonText}>Lưu</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -213,6 +218,8 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     marginRight: 5,
     backgroundColor: COLORS.silver,
+    alignSelf: "center",
+    marginBottom: 10,
   },
   image: {
     width: "100%",
@@ -249,6 +256,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: "center",
+    marginBottom: 40,
   },
   saveButtonText: {
     color: COLORS.white,

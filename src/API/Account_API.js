@@ -26,10 +26,10 @@ const userSignup = async (user, proof) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      // console.error("Error sign up: ", error.response.data.error);
+      // console.log("Error sign up: ", error.response.data.error);
       return error.response.data.error;
     } else {
-      // console.error("Error sign up: ", error.message);
+      // console.log("Error sign up: ", error.message);
       return error.message;
     }
   }
@@ -48,10 +48,10 @@ const userLogin = async (user) => {
     return data;
   } catch (error) {
     if (error.response) {
-      // console.error("Error login: ", error.response.data.error);
+      // console.log("Error login: ", error.response.data.error);
       return error.response.data.error;
     } else {
-      // console.error("Error login: ", error.message);
+      // console.log("Error login: ", error.message);
       return error.message;
     }
   }
@@ -68,10 +68,10 @@ const get_Doctor_List = async () => {
     return res.data;
   } catch (error) {
     if (error.response) {
-      console.error("Error get doctor list: ", error.response.data.error);
+      console.log("Error get doctor list: ", error.response.data.error);
       return error.response.data.error;
     } else {
-      console.error("Error get doctor list: ", error.message);
+      console.log("Error get doctor list: ", error.message);
       return error.message;
     }
   }
@@ -84,10 +84,10 @@ const get_Account_By_Email = async (email) => {
     return res.data;
   } catch (error) {
     if (error.response) {
-      console.error("Error get account by email: ", error.response.data.error);
+      console.log("Error get account by email: ", error.response.data.error);
       return error.response.data.error;
     } else {
-      console.error("Error get account by email: ", error.message);
+      console.log("Error get account by email: ", error.message);
       return error.message;
     }
   }
@@ -99,10 +99,10 @@ const get_Account_By_Id = async (id) => {
     return res.data;
   } catch (error) {
     if (error.response) {
-      console.error("Error get account by id: ", error.response.data.error);
+      console.log("Error get account by id: ", error.response.data.error);
       return error.response.data.error;
     } else {
-      console.error("Error get account by id: ", error.message);
+      console.log("Error get account by id: ", error.message);
       return error.message;
     }
   }
@@ -114,18 +114,18 @@ const get_Filter_Doctor_List = async (specialty, region) => {
       speciality: specialty,
       region: region,
     };
-    const res = await client.post("/doc/filter-doctor-list", params);
+    const res = await client.post("/doc/filter-doctor-list-main", params);
     const data = res.data.filter((item) => !item.is_deleted);
     return data;
   } catch (error) {
     if (error.response) {
-      console.error(
+      console.log(
         "Error doctor by specialty and region: ",
         error.response.data.error
       );
       return error.response.data.error;
     } else {
-      console.error("Error doctor by specialty and region: ", error.message);
+      console.log("Error doctor by specialty and region: ", error.message);
       return error.message;
     }
   }
@@ -138,10 +138,10 @@ const get_Doctor_Active_Hour_List = async (doctor_id) => {
     return data;
   } catch (error) {
     if (error.response) {
-      console.error("Error active hours: ", error.response.data.error);
+      console.log("Error active hours: ", error.response.data.error);
       return error.response.data.error;
     } else {
-      console.error("Error active hours: ", error.message);
+      console.log("Error active hours: ", error.message);
       return error.message;
     }
   }
@@ -157,10 +157,10 @@ const update_Account = async (id, data) => {
     return res.data;
   } catch (error) {
     if (error.response) {
-      console.error("Error update account: ", error.response.data.error);
+      console.log("Error update account: ", error.response.data.error);
       return error.response.data.error;
     } else {
-      console.error("Error update account: ", error.message);
+      console.log("Error update account: ", error.message);
       return error.message;
     }
   }
@@ -185,10 +185,10 @@ const upload_Doctor_Proof = async (id, proof) => {
     return res.data;
   } catch (error) {
     if (error.response) {
-      console.error("Error update account: ", error.response.data.error);
+      console.log("Error update account: ", error.response.data.error);
       return error.response.data.error;
     } else {
-      console.error("Error update account: ", error.message);
+      console.log("Error update account: ", error.message);
       return error.message;
     }
   }
@@ -288,10 +288,10 @@ const addDoctorActiveHour = async (doctor_id, activeHour) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error("Lỗi từ backend:", error.response.data.error);
+      console.log("Lỗi từ backend:", error.response.data.error);
       throw new Error(error.response.data.error);
     } else {
-      console.error("Lỗi không từ backend:", error.message);
+      console.log("Lỗi không từ backend:", error.message);
       throw new Error("Đã xảy ra lỗi không xác định.");
     }
   }
@@ -317,10 +317,10 @@ const updateDoctorActiveHour = async (
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error("Lỗi từ backend:", error.response.data.error);
+      console.log("Lỗi từ backend:", error.response.data.error);
       throw new Error(error.response.data.error);
     } else {
-      console.error("Lỗi không từ backend:", error.message);
+      console.log("Lỗi không từ backend:", error.message);
       throw new Error("Đã xảy ra lỗi không xác định.");
     }
   }
@@ -339,10 +339,10 @@ const deleteDoctorActiveHour = async (doctor_id, activeHour) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error("Lỗi từ backend:", error.response.data.error);
+      console.log("Lỗi từ backend:", error.response.data.error);
       throw new Error(error.response.data.error);
     } else {
-      console.error("Lỗi không từ backend:", error.message);
+      console.log("Lỗi không từ backend:", error.message);
       throw new Error("Đã xảy ra lỗi không xác định.");
     }
   }
@@ -359,10 +359,10 @@ const update_Doctor_Info = async (accountId, data) => {
     return res.data;
   } catch (error) {
     if (error.response) {
-      console.error("Error response:", error.response.data.error);
+      console.log("Error response:", error.response.data.error);
       return error.response.data.error;
     } else {
-      console.error("Error not response:", error.message);
+      console.log("Error not response:", error.message);
       return error.message || "An unknown error occurred";
     }
   }

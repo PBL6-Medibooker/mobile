@@ -44,7 +44,7 @@ const Booking = ({ navigation, route }) => {
   const [specialitiesHook] = useSpecialities();
   const [regionsHook] = useRegions();
   const [doctorsHook] = useAccount();
-  const [doctors, setDoctors] = useState(null);
+  const [doctors, setDoctors] = useState([]);
   const [activeHours, setActiveHours] = useState({});
 
   const [openedDropdown, setOpenedDropdown] = useState(null);
@@ -149,15 +149,6 @@ const Booking = ({ navigation, route }) => {
   };
 
   const handleSelectedFull = () => {
-    // console.log(
-    //   area,
-    //   service,
-    //   specialty,
-    //   doctor,
-    //   medicalHistory,
-    //   healthStatus,
-    //   datePicker
-    // );
     const info = {
       region: area,
       specialty: specialty,

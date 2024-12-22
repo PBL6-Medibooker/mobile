@@ -11,6 +11,7 @@ import { COLORS, images } from "../constants";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useEffect } from "react";
 import { useAuth } from "../AuthProvider";
+import { splitText } from "../utils/splitText";
 
 const DoctorItem = ({ item, navigation }) => {
   // useEffect(() => console.log(item));
@@ -37,34 +38,38 @@ const DoctorItem = ({ item, navigation }) => {
             navigation.navigate("DoctorInfo", { doctorSelected: item });
           }}>
           <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.email}>{item.email}</Text>
           <Text style={styles.position} numberOfLines={2} ellipsizeMode="tail">
-            {item.bio}
+            {splitText(item.bio).introduction}
           </Text>
         </Pressable>
-        <TouchableOpacity
-          onPress={() => {
-            if (isLoggedIn && account?.email)
-              navigation.navigate("Booking", { doctorSelected: item });
-            else {
-              Alert.alert(
-                "Thông báo",
-                "Bạn cần đăng nhập để tiếp tục thao tác!",
-                [
-                  {
-                    text: "Để sau",
-                    style: "cancel",
-                  },
-                  {
-                    text: "OK",
-                    onPress: () => navigation.navigate("Login"),
-                  },
-                ]
-              );
-            }
-          }}
-          style={styles.makeAppointment}>
-          <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
-        </TouchableOpacity>
+
+        {account?.__t !== "Doctor" && (
+          <TouchableOpacity
+            onPress={() => {
+              if (isLoggedIn && account?.email)
+                navigation.navigate("Booking", { doctorSelected: item });
+              else {
+                Alert.alert(
+                  "Thông báo",
+                  "Bạn cần đăng nhập để tiếp tục thao tác!",
+                  [
+                    {
+                      text: "Để sau",
+                      style: "cancel",
+                    },
+                    {
+                      text: "OK",
+                      onPress: () => navigation.navigate("Login"),
+                    },
+                  ]
+                );
+              }
+            }}
+            style={styles.makeAppointment}>
+            <AntDesign name="calendar" size={24} color={COLORS.PersianGreen} />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -114,4 +119,8 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     // marginEnd: 5,
   },
+  email: {
+    color: COLORS.gray,
+    marginVertical: 5
+  }
 });

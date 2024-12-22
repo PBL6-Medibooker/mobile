@@ -95,23 +95,6 @@ const DrawerNavigation = () => {
         component={Forum}
       />
 
-      {/* <Drawer.Screen
-        name="Noticed"
-        options={{
-          drawerLabel: "Thông báo",
-          title: "Noticed",
-          headerShadowVisible: false,
-          drawerIcon: ({ color }) => (
-            <MaterialIcons
-              name="circle-notifications"
-              size={24}
-              color={color}
-            />
-          ),
-        }}
-        component={UserProfile}
-      /> */}
-
       {isLoggedIn && account?.__t === "Doctor" && (
         <Drawer.Screen
           name="RecyclingBin"

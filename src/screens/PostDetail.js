@@ -29,6 +29,7 @@ const QADetail = ({ navigation, route }) => {
 
   const [post, setPost] = useState(QA);
   const [myAnswer, setMyAnswer] = useState(null);
+  const [isUpdatedAnswer, setIsUpdatedAnswer] = useState(false);
 
   const handleAddAnswer = async () => {
     try {
@@ -47,6 +48,12 @@ const QADetail = ({ navigation, route }) => {
     // console.log(id);
     const cmt = post.post_comments.filter((item) => item._id !== id);
     setPost({ ...post, post_comments: cmt });
+  };
+
+  const handleUpdateAnswer = (comment_id) => {
+    console.log("update id: ",comment_id);
+    if (!comment_id) setIsUpdatedAnswer(false);
+    else setIsUpdatedAnswer(true);
   };
 
   return (
@@ -90,70 +97,51 @@ const QADetail = ({ navigation, route }) => {
                 post_id={post._id}
                 navigation={navigation}
                 onDeleted={handleDeleteAnswer}
+                onUpdated={handleUpdateAnswer}
               />
             ))}
 
           <View style={{ height: 70 }} />
         </ScrollView>
 
-        <View
-          style={{
-            flexDirection: "row",
-            paddingVertical: 6,
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            // borderWidth: 1,
-            backgroundColor: COLORS.white,
-            paddingHorizontal: 15,
-            alignItems: "center",
-            elevation: 3,
-          }}>
-          <TextInput
-            style={{
-              borderWidth: 1.5,
-              flex: 1,
-              borderRadius: 999,
-              borderColor: COLORS.silver,
-              // fontSize: 12,
-              paddingHorizontal: 15,
-              paddingVertical: 5,
-              height: 38
-            }}
-            placeholder="Nhập câu trả lời ..."
-            value={myAnswer}
-            onChangeText={(value) => setMyAnswer(value)}
-          />
-          <TouchableOpacity
-            onPress={() => {
-              Keyboard.dismiss();
-              if (isLoggedIn && account?.email) handleAddAnswer();
-              else {
-                Alert.alert(
-                  "Thông báo",
-                  "Bạn cần đăng nhập để tiếp tục thao tác!",
-                  [
-                    {
-                      text: "Để sau",
-                      style: "cancel",
-                    },
-                    {
-                      text: "OK",
-                      onPress: () => navigation.navigate("Login"),
-                    },
-                  ]
-                );
-              }
-            }}>
-            <Ionicons
-              name="send"
-              size={30}
-              color={COLORS.PersianGreen}
-              style={{ marginLeft: 6 }}
+        {!isUpdatedAnswer && (
+          <View style={styles.myAnswer}>
+            <TextInput
+              style={styles.inputMyAnswer}
+              placeholder="Nhập câu trả lời ..."
+              value={myAnswer}
+              onChangeText={(value) => setMyAnswer(value)}
             />
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              onPress={() => {
+                Keyboard.dismiss();
+                if (isLoggedIn && account?.email) handleAddAnswer();
+                else {
+                  Alert.alert(
+                    "Thông báo",
+                    "Bạn cần đăng nhập để tiếp tục thao tác!",
+                    [
+                      {
+                        text: "Để sau",
+                        style: "cancel",
+                      },
+                      {
+                        text: "OK",
+                        onPress: () => navigation.navigate("Login"),
+                      },
+                    ]
+                  );
+                }
+              }}>
+              <Ionicons
+                name="send"
+                size={30}
+                color={COLORS.PersianGreen}
+                style={{ marginLeft: 6 }}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -260,5 +248,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     textAlignVertical: "top",
+  },
+  myAnswer: {
+    flexDirection: "row",
+    paddingVertical: 6,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    // borderWidth: 1,
+    backgroundColor: COLORS.white,
+    paddingHorizontal: 15,
+    alignItems: "center",
+    elevation: 3,
+  },
+  inputMyAnswer: {
+    borderWidth: 1.5,
+    flex: 1,
+    borderRadius: 999,
+    borderColor: COLORS.silver,
+    // fontSize: 12,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    height: 38,
   },
 });

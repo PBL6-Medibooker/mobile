@@ -21,6 +21,7 @@ const PostAnswerItem = ({
   post_id,
   navigation,
   onDeleted,
+  onUpdated,
 }) => {
   const [replier, setReplier] = useState(null);
   const [content, setContent] = useState(item.comment_content);
@@ -34,7 +35,10 @@ const PostAnswerItem = ({
         item._id,
         post_id
       );
-      if (typeof updatePost === "object") setEdit(false);
+      if (typeof updatePost === "object") {
+        setEdit(false);
+        onUpdated(null);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -123,29 +127,26 @@ const PostAnswerItem = ({
             </View>
             {!edit && <Text style={styles.contentComment}>{content}</Text>}
           </View>
-          {/* {myAccountEmail === item?.replier?.email && !edit && (
-            <>
-              <TouchableOpacity
-                style={styles.editIcon}
-                onPress={() => setEdit(true)}>
-                <FontAwesome name="edit" size={15} color={COLORS.gray} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.deleteIcon}
-                onPress={() => handleDeleteAnswer()}>
-                <FontAwesome name="trash" size={15} color={COLORS.gray} />
-              </TouchableOpacity>
-            </>
-          )} */}
         </View>
-        <View style={{ marginLeft: 5, marginTop: 5 }}>
-          {!edit && <TouchableOpacity style={{marginBottom: 6}} onPress={() => setEdit(true)}>
-            <FontAwesome name="edit" size={18} color={COLORS.gray} />
-          </TouchableOpacity>}
-          <TouchableOpacity style={{}} onPress={() => handleDeleteAnswer()}>
-            <FontAwesome name="trash" size={20} color={COLORS.gray} />
-          </TouchableOpacity>
-        </View>
+
+        {myAccountEmail === item?.replier?.email && (
+          <View style={{ marginLeft: 5, marginTop: 5 }}>
+            {!edit && (
+              <TouchableOpacity
+                style={{ marginBottom: 6 }}
+                onPress={() => {
+                  setEdit(true);
+                  console.log(item._id);
+                  onUpdated(item._id);
+                }}>
+                <FontAwesome name="edit" size={18} color={COLORS.gray} />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={{}} onPress={() => handleDeleteAnswer()}>
+              <FontAwesome name="trash" size={20} color={COLORS.gray} />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       {edit && (
@@ -166,10 +167,12 @@ const PostAnswerItem = ({
             <TouchableOpacity
               onPress={() => {
                 setEdit(false);
+                onUpdated(null);
                 setContent(item.comment_content);
               }}>
               <FontAwesome name="close" size={25} color={COLORS.gray} />
             </TouchableOpacity>
+
             <TouchableOpacity onPress={() => handleEditAnswer()}>
               <FontAwesome
                 name="check"

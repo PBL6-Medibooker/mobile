@@ -65,7 +65,6 @@ const VerifyBooking = ({ navigation, route }) => {
         insurance
       );
       if (add_appointment?.status) {
-        // console.log(add_appointment?.status);
         Alert.alert("Thông báo", "Đặt lịch hẹn thành công.", [
           {
             text: "OK",
@@ -75,11 +74,10 @@ const VerifyBooking = ({ navigation, route }) => {
           },
         ]);
       }
-      if (!add_appointment) {
-        Alert.alert("Thông báo", "Đặt lịch hẹn thất bại.", [{ text: "OK" }]);
-      }
+      if (add_appointment?.error)
+        Alert.alert("Thông báo", add_appointment.error, [{ text: "OK" }]);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
@@ -104,7 +102,6 @@ const VerifyBooking = ({ navigation, route }) => {
               <Text style={styles.specialty}>
                 {specialty?.name} khu vực {region?.name}
               </Text>
-              {/* <Text style={styles.specialty}>{region.name}</Text> */}
             </View>
           </View>
         </View>
