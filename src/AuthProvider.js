@@ -1,9 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import Account_API from "./API/Account_API"
-import client from "./API/client"
-import { tr } from "date-fns/locale"
-import { Alert } from "react-native"
 
 const AuthContext = createContext()
 
@@ -11,69 +8,38 @@ export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [user, setUser] = useState({})
     const [account, setAccount] = useState({})
-    const [error, setError] = useState(null)
-    const [loginPending, setLoginPending] = useState(false) //loading
+    // const [loginPending, setLoginPending] = useState(false) //loading
 
-    const fetchToken = async () => {
-        const userString = await AsyncStorage.getItem("user")
-        const user = JSON.parse(userString)
+    const fetchUserAndAccount = async () => {
+        try {
+            const userString = await AsyncStorage.getItem("user")
+            const user = JSON.parse(userString)
 
-        console.log(user)
+            if (user?.token) {
+                setUser(user)
 
-        if (user?.token) {
-            setUser(user)
-            console.log(user?.email)
-            setIsLoggedIn(true)
-        } else {
-            setIsLoggedIn(false)
-            setUser({})
-            setAccount({})
+                // Gọi API để lấy thông tin tài khoản
+                const accountData = await Account_API.getUserProfile(user.token)
+
+                setAccount(accountData.user)
+                setIsLoggedIn(true)
+            } else resetState()
+        } catch (error) {
+            console.log("Failed to fetch account:", error)
+            resetState()
+            throw error
         }
     }
 
+    const resetState = () => {
+        setIsLoggedIn(false)
+        setUser({})
+        setAccount({})
+    }
+
     useEffect(() => {
-        fetchToken()
+        fetchUserAndAccount()
     }, [])
-
-    useEffect(() => {
-        const fetchAccountInfo = async () => {
-            setError(null)
-            if (isLoggedIn) {
-                try {
-                    if (!user || !user.token) return null
-
-                    const accountData = await Account_API.getUserProfile(user?.token)
-
-                    const acc = accountData.user
-                    // console.log(accountData.user);
-                    if (acc?.verified === false) {
-                        setAccount({})
-                        setIsLoggedIn(false)
-                        setError("Tài khoản chưa được xác thực!")
-                    } else {
-                        setAccount(accountData.user)
-                        setIsLoggedIn(true)
-                        setError(null)
-                    }
-                } catch (error) {
-                    console.log("Failed to fetch account info: ", error)
-                    setAccount({})
-                    setError(error)
-                    setIsLoggedIn(false)
-                }
-            } else {
-                setAccount({})
-                setError(null)
-                setIsLoggedIn(false)
-            }
-        }
-
-        fetchAccountInfo()
-    }, [isLoggedIn])
-
-    const userLogin = async () => {
-        await fetchToken()
-    }
 
     const userLogout = async () => {
         try {
@@ -85,17 +51,6 @@ export const AuthProvider = ({ children }) => {
             console.log("Error logging out: ", error)
         }
     }
-
-    // const Forgot_Pass = async (email) => {
-    //   try {
-    //     const res = await Account_API.ForgotPassword(email);
-    //     if (!res.success) return { error: res.error };
-    //     return res.data;
-    //   } catch (error) {
-    //     console.error("Error in forgot password:", error);
-    //     throw error;
-    //   }
-    // };
 
     const Forgot_Pass = async (email) => {
         const response = await Account_API.ForgotPassword(email)
@@ -127,15 +82,14 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider
             value={{
                 user,
-                userLogin,
                 userLogout,
                 isLoggedIn,
                 account,
-                error,
                 setAccount,
                 Forgot_Pass,
                 soft_deleteAccount,
                 perma_deleteAccount,
+                fetchUserAndAccount,
             }}>
             {children}
         </AuthContext.Provider>

@@ -26,11 +26,9 @@ const userSignup = async (user, proof) => {
         return response.data
     } catch (error) {
         if (error.response) {
-            // console.log("Error sign up: ", error.response.data.error);
-            return error.response.data.error
+            throw error.response.data.error
         } else {
-            // console.log("Error sign up: ", error.message);
-            return error.message
+            throw error.message
         }
     }
 }
@@ -49,10 +47,10 @@ const userLogin = async (user) => {
     } catch (error) {
         if (error.response) {
             // console.log("Error login: ", error.response.data.error);
-            return error.response.data.error
+            throw error.response.data.error
         } else {
             // console.log("Error login: ", error.message);
-            return error.message
+            throw error.message
         }
     }
 }
@@ -372,15 +370,14 @@ const getUserProfile = async (token) => {
         const res = await client.get("/acc/get-user-profile", {
             headers: { Authorization: `Bearer ${token}` },
         })
-        return res.data
+
+        const account = res.data
+        if (!account?.user?.verified) throw new Error("Tài khoản chưa được xác thực!")
+
+        return account
     } catch (error) {
-        if (error.response) {
-            console.log("Error response: ", error.response.data.error)
-            throw error.response.data.error
-        } else {
-            console.log("Error not response: ", error.message)
-            throw error.message
-        }
+        if (error.response) throw error.response.data.error
+        else throw error.message
     }
 }
 

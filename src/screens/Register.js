@@ -104,11 +104,10 @@ const Register = ({ navigation }) => {
                         },
                     ]
                 )
-            } else {
-                Alert.alert("Lỗi", res, [{ text: "OK" }])
             }
         } catch (error) {
-            console.error("Error during signup:", error)
+            console.log("Error during signup:", error)
+            Alert.alert("Lỗi", error, [{ text: "OK" }])
         }
     }
 

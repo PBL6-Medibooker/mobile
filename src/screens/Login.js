@@ -19,13 +19,10 @@ import { InputPassword } from "../components"
 import Account_API from "../API/Account_API"
 
 const Login = ({ navigation }) => {
-    const [account, setAccount] = useState({
-        email: "",
-        password: "",
-    })
+    const [account, setAccount] = useState({ email: "", password: "123qwe!@#QWE" })
     const [loadingStatus, setLoadingStatus] = useState(false)
 
-    const { userLogin, isLoggedIn, error } = useAuth()
+    const { fetchUserAndAccount } = useAuth()
 
     useEffect(() => {
         const getLoginHistory = async () => {
@@ -40,28 +37,21 @@ const Login = ({ navigation }) => {
             setLoadingStatus(true)
             const res = await Account_API.userLogin(account)
             if (typeof res === "object" && res.token) {
-                await userLogin()
+                await fetchUserAndAccount()
                 setLoadingStatus(false)
 
-                if (!res?.verified)
-                    Alert.alert("Đăng nhập thất bại", "Tài khoản chưa được xác thưc!", [
-                        { text: "OK" },
-                    ])
-                else
-                    Alert.alert("Thông báo", "Đăng nhập thành công.", [
-                        {
-                            text: "OK",
-                            onPress: () => {
-                                navigation.navigate("Home")
-                            },
+                Alert.alert("Thông báo", "Đăng nhập thành công.", [
+                    {
+                        text: "OK",
+                        onPress: () => {
+                            navigation.navigate("Home")
                         },
-                    ])
-            } else {
-                setLoadingStatus(false)
-                Alert.alert("Lỗi", res, [{ text: "OK" }])
+                    },
+                ])
             }
         } catch (error) {
-            console.error("Error during signup:", error)
+            setLoadingStatus(false)
+            Alert.alert("Đăng nhập thất bại", error, [{ text: "OK" }])
         }
     }
 
