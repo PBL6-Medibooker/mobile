@@ -1,6 +1,6 @@
-import images from "./images";
-import theme from "./theme";
+import images from "./images"
+import theme from "./theme"
 
-const {COLORS, FONTS} = theme
+const { COLORS, FONTS } = theme
 
-export {images, COLORS, FONTS}
+export { images, COLORS, FONTS }
